@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="AudioEngine/FancyCards.Audio.csproj" Id="d053a7e2-d75a-4910-be19-f35991da244d" />
+  <Project Path="FancyCards.Tests/FancyCards.Tests.csproj" Id="244d8dcf-dd74-4830-86d8-561b5045e61e" />
   <Project Path="FancyCards/FancyCards.csproj" />
 </Solution>

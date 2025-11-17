@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using FancyCards.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 
-namespace FancyCards.Views.Windows
+
+namespace FancyCards.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -10,6 +13,7 @@ namespace FancyCards.Views.Windows
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = App.Current.Services.GetRequiredService<MainWindowViewModel>();
         }
     }
 }

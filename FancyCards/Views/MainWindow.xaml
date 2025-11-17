@@ -1,0 +1,56 @@
+﻿<Window
+    x:Class="FancyCards.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:FancyCards.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:FancyCards"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="clr-namespace:FancyCards.Views"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    Title="{Binding Title}"
+    Width="500"
+    Height="700"
+    d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
+    Style="{StaticResource MaterialDesignWindow}"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+
+        <ItemsControl
+            Panel.ZIndex="10"
+            Background="Transparent"
+            ItemsSource="{Binding ActiveModals}"
+            Visibility="{Binding HasActiveModals, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl Content="{Binding}">
+                        <ContentControl.Resources>
+                            <DataTemplate DataType="{x:Type vm:CardViewViewModel}">
+                                <views:CardView Margin="10" Background="AliceBlue" />
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <DockPanel>
+            <Button
+                Command="{Binding OpenCardModal}"
+                Content="{materialDesign:PackIcon Kind=Add}"
+                DockPanel.Dock="Bottom" />
+            <ListView ItemsSource="{Binding Cards}" />
+        </DockPanel>
+    </Grid>
+
+</Window>
