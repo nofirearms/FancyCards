@@ -17,127 +17,181 @@ namespace FancyCards.Database
             _context = appDbContext;
         }
 
-
-        public T Get<T>(int id) where T : EntityBase
+        public async Task<Deck> GetDeckByIdAsync(int id)
         {
-            return _context.Set<T>().FirstOrDefault(o => o.Id == id);
+            return await _context.Set<Deck>()
+                .Include(d => d.Cards)
+                    .ThenInclude(c => c.Scores)
+                .Include(d => d.Cards)
+                    .ThenInclude(c => c.Audio)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public ICollection<T> GetAll<T>() where T : EntityBase
+        public async Task<IEnumerable<Deck>> GetAllDecksAsync()
         {
-            return _context.Set<T>().ToList() ?? new List<T>();
+            return await _context.Set<Deck>()
+                .Include(d => d.Cards)
+                //    .ThenInclude(c => c.Scores)
+                //.Include(d => d.Cards)
+                //    .ThenInclude(c => c.Audio)
+                .ToListAsync();
         }
 
-        public async Task<T> Save<T>(T entity, bool saveChanges = true) where T : EntityBase, new()
+        public async Task AddCardToDeckAsync(int deckId, Card card)
         {
-            try
+            var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId);
+            if (deck != null)
             {
-                var ent = _context.Find<T>(entity.Id);
-                
-                if (ent is null)
-                {
-                    _context.Set<T>().Add(entity);
-                }
-                else
-                {
-                    //this.UpdateValues(ent, entity);
-                    _context.Set<T>().Update(ent);
-                }
-
-                if (saveChanges) await _context.SaveChangesAsync();
-
-                return entity;
-
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return null;
+                deck.Cards.Add(card);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task Save<T>(IEnumerable<T> entities, bool saveChanges = true) where T : EntityBase
+        public async Task RemoveCardFromDeckAsync(int deckId, int cardId)
         {
-            try
+            var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId);
+            var card = deck?.Cards.FirstOrDefault(c => c.Id == cardId);
+            if (card != null)
             {
-                foreach (var entity in entities)
-                {
-                    var ent = _context.Find<T>(entity.Id);
-                    if (ent is null)
-                    {
-                        _context.Set<T>().Add(entity);
-                    }
-                    else
-                    {
-                        //_context.Set<T>().Entry(ent).CurrentValues.SetValues(entity);
-                        //this.UpdateValues(ent, entity);
-                        _context.Set<T>().Update(ent);
-                    }
-
-                }
-                if (saveChanges) await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
+                deck.Cards.Remove(card);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task Remove<T>(T entity, bool saveChanges = true) where T : EntityBase, new()
+
+        public async Task RemoveDeckAsync(int id)
         {
-            try
-            {
-                _context.Set<T>().Remove(entity);
+            var entity = await _context.Decks.FirstOrDefaultAsync(d => d.Id == id);
+            if (entity != null)
+                _context.Decks.Remove(entity);
 
-                if (saveChanges) await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
-
-        }
-
-        public async Task Remove<T>(IEnumerable<T> entities, bool saveChanges = true) where T : EntityBase, new()
-        {
-            try
-            {
-                foreach (var entity in entities)
-                {
-                    _context.Set<T>().Remove(entity);
-                }
-
-                if (saveChanges) await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
-        }
-
-        public async Task SaveChangesAsync()
-        {
             await _context.SaveChangesAsync();
         }
 
-        private void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
-        {
-            var entry = _context.Entry(entity);
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
-            entry.CurrentValues.SetValues(changedEntity);
+        #region obsolete
+        //public T Get<T>(int id) where T : EntityBase
+        //{
+        //    return _context.Set<T>().FirstOrDefault(o => o.Id == id);
+        //}
 
-            var entityType = entry.Metadata;
-            //обновляем только owned properties
-            //TODO передалать чтобы обновлялось рекурсивно
-            foreach (var navigation in entityType.GetNavigations())
-            {
-                if (navigation.IsOnDependent || navigation.IsCollection || !navigation.ForeignKey.IsOwnership)
-                {
-                    continue;
-                }
+        //public ICollection<T> GetAll<T>() where T : EntityBase
+        //{
+        //    return _context.Set<T>().ToList() ?? new List<T>();
+        //}
 
-                entry.Reference(navigation.Name).TargetEntry.CurrentValues.SetValues(navigation.GetGetter().GetClrValue(changedEntity));
-            }
-        }
+        //public async Task<T> Save<T>(T entity, bool saveChanges = true) where T : EntityBase, new()
+        //{
+        //    try
+        //    {
+        //        var ent = _context.Find<T>(entity.Id);
+
+        //        if (ent is null)
+        //        {
+        //            _context.Set<T>().Add(entity);
+        //        }
+        //        else
+        //        {
+        //            //this.UpdateValues(ent, entity);
+        //            _context.Set<T>().Update(ent);
+        //        }
+
+        //        if (saveChanges) await _context.SaveChangesAsync();
+
+        //        return entity;
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.WriteLine(e.Message);
+        //        return null;
+        //    }
+        //}
+
+        //public async Task Save<T>(IEnumerable<T> entities, bool saveChanges = true) where T : EntityBase
+        //{
+        //    try
+        //    {
+        //        foreach (var entity in entities)
+        //        {
+        //            var ent = _context.Find<T>(entity.Id);
+        //            if (ent is null)
+        //            {
+        //                _context.Set<T>().Add(entity);
+        //            }
+        //            else
+        //            {
+        //                //_context.Set<T>().Entry(ent).CurrentValues.SetValues(entity);
+        //                //this.UpdateValues(ent, entity);
+        //                _context.Set<T>().Update(ent);
+        //            }
+
+        //        }
+        //        if (saveChanges) await _context.SaveChangesAsync();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.WriteLine(e.Message);
+        //    }
+        //}
+
+        //public async Task Remove<T>(T entity, bool saveChanges = true) where T : EntityBase, new()
+        //{
+        //    try
+        //    {
+        //        _context.Set<T>().Remove(entity);
+
+        //        if (saveChanges) await _context.SaveChangesAsync();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.WriteLine(e.Message);
+        //    }
+
+        //}
+
+        //public async Task Remove<T>(IEnumerable<T> entities, bool saveChanges = true) where T : EntityBase, new()
+        //{
+        //    try
+        //    {
+        //        foreach (var entity in entities)
+        //        {
+        //            _context.Set<T>().Remove(entity);
+        //        }
+
+        //        if (saveChanges) await _context.SaveChangesAsync();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.WriteLine(e.Message);
+        //    }
+        //}
+
+        //public async Task SaveChangesAsync()
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
+
+        //private void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
+        //{
+        //    var entry = _context.Entry(entity);
+
+        //    entry.CurrentValues.SetValues(changedEntity);
+
+        //    var entityType = entry.Metadata;
+        //    //обновляем только owned properties
+        //    //TODO передалать чтобы обновлялось рекурсивно
+        //    foreach (var navigation in entityType.GetNavigations())
+        //    {
+        //        if (navigation.IsOnDependent || navigation.IsCollection || !navigation.ForeignKey.IsOwnership)
+        //        {
+        //            continue;
+        //        }
+
+        //        entry.Reference(navigation.Name).TargetEntry.CurrentValues.SetValues(navigation.GetGetter().GetClrValue(changedEntity));
+        //    }
+        //}
+        #endregion
     }
 }

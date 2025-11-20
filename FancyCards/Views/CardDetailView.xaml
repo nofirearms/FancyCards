@@ -1,0 +1,55 @@
+﻿<UserControl
+    x:Class="FancyCards.Views.CardDetailView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:FancyCards.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    d:Background="White"
+    d:DataContext="{d:DesignInstance vm:CardDetailViewModel}"
+    d:DesignHeight="700"
+    d:DesignWidth="400"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Vertical">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBox
+                Grid.Column="0"
+                materialDesign:HintAssist.Hint="Prefix"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                Grid.Column="1"
+                materialDesign:HintAssist.Hint="Suffix"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <TextBox
+            materialDesign:HintAssist.Hint="Front"
+            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+            Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            materialDesign:HintAssist.Hint="Back"
+            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+            Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            materialDesign:HintAssist.Hint="Comment"
+            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+            Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            materialDesign:HintAssist.Hint="Message"
+            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+            Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" />
+        <StackPanel Orientation="Horizontal">
+            <Button Command="{Binding SaveCardCommand}" Content="{materialDesign:PackIcon Kind=ContentSave}" />
+            <Button Command="{Binding CancelCommand}" Content="{materialDesign:PackIcon Kind=Close}" />
+
+        </StackPanel>
+
+    </StackPanel>
+</UserControl>

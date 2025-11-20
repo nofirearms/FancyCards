@@ -8,7 +8,7 @@ namespace FancyCards.Models
     {
         public string Name { get; set; }
         public string Description { get; set; } 
-        public IEnumerable<Card> Cards { get; set; }
+        public ICollection<Card> Cards { get; set; }
         public DateTime DateCreated { get; set; }
 
     }

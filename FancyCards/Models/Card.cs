@@ -11,7 +11,8 @@ namespace FancyCards.Models
         public string BackText { get; set; }
         public string PrefixText { get; set; }
         public string SuffixText { get; set; }
-        public string Comment { get; set; }
+        public string CommentText { get; set; }
+        public string MessageText { get; set; }
         public CardState State { get; set; }
         public CardScores Scores { get; }
         public AudioSource Audio { get; set; }

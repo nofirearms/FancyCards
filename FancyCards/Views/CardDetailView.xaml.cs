@@ -16,9 +16,9 @@ namespace FancyCards.Views
     /// <summary>
     /// Interaction logic for CardView.xaml
     /// </summary>
-    public partial class CardView : UserControl
+    public partial class CardDetailView : UserControl
     {
-        public CardView()
+        public CardDetailView()
         {
             InitializeComponent();
         }

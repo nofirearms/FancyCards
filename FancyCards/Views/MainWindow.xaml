@@ -4,10 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:FancyCards.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:FancyCards"
+    xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:views="clr-namespace:FancyCards.Views"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Title="{Binding Title}"
     Width="500"
@@ -19,7 +18,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
     <Grid>
-
+        <!--  Модальные окна  -->
         <ItemsControl
             Panel.ZIndex="10"
             Background="Transparent"
@@ -29,8 +28,8 @@
                 <DataTemplate>
                     <ContentControl Content="{Binding}">
                         <ContentControl.Resources>
-                            <DataTemplate DataType="{x:Type vm:CardViewViewModel}">
-                                <views:CardView Margin="10" Background="AliceBlue" />
+                            <DataTemplate DataType="{x:Type vm:CardDetailViewModel}">
+                                <local:CardDetailView Margin="10" Background="AliceBlue" />
                             </DataTemplate>
                         </ContentControl.Resources>
                     </ContentControl>
@@ -45,12 +44,19 @@
         </ItemsControl>
 
         <DockPanel>
-            <Button
-                Command="{Binding OpenCardModal}"
-                Content="{materialDesign:PackIcon Kind=Add}"
-                DockPanel.Dock="Bottom" />
-            <ListView ItemsSource="{Binding Cards}" />
+            <StackPanel
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal">
+                <Button Command="{Binding OpenCardModal}" Content="{materialDesign:PackIcon Kind=Add}" />
+                <Button Command="{Binding OpenStatsModal}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
+                <Button Command="{Binding OpenSettingsModal}" Content="{materialDesign:PackIcon Kind=Settings}" />
+                <Button Command="{Binding OpenReplaceModal}" Content="{materialDesign:PackIcon Kind=Cached}" />
+            </StackPanel>
+
+            <local:CardListView DataContext="{Binding CardListViewModel}" />
         </DockPanel>
+
     </Grid>
 
 </Window>

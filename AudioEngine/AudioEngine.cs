@@ -18,7 +18,8 @@ namespace FancyCards.Audio
         private readonly MMDevice _captureDevice;
         private readonly WasapiCapture _captureSource;
 
-        private List<AudioSource> _audioSources;
+        private AudioStateManager _audioStateManager;
+        private BufferedWaveProvider _bufferedWaveProvider;
 
         public State State { get; set; }
 
@@ -30,32 +31,20 @@ namespace FancyCards.Audio
             _captureDevice = _utilities.GetDefaultOutputDevice();//_utilities.GetDeviceById(deviceId);
             _captureSource = _utilities.GetWasapiCaptureInstance(_captureDevice);
 
-            _audioSources = new List<AudioSource>();
+            _audioStateManager = new AudioStateManager(_captureSource.WaveFormat);
+            _bufferedWaveProvider = new BufferedWaveProvider(_captureSource.WaveFormat);
 
             _outputDevice.PlaybackStopped += OnPlaybackStopped;
         }
 
 
-
         public async Task OpenAudioAsync(string path)
         {
-            var reader = new AudioFileReader(path);
-
-            var source = new AudioSource(reader.WaveFormat);
-            _audioSources.Add(source);
-
-            await reader.CopyToAsync(source.MemoryStream);
-
-            reader.Close();
-            reader.Dispose();
+            _audioStateManager.LoadFromAudioFile(path);
         }
 
-        public void StartPlayback(TimeSpan? startPosition = null, TimeSpan? endPosition = null, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, double tempo = 1.0, float targetRMS = 0.2f)
-        {
-
-            //if (_outputDevice.PlaybackState == PlaybackState.Playing) StopPlayback();
-            //if (source is null) return;
-
+        public void StartPlayback(TimeSpan? startPosition = null, TimeSpan? endPosition = null, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, float tempo = 1.0f, float targetRMS = 0.2f)
+        {         
 
             if (State == State.Recording || State == State.Initial)
             {
@@ -74,32 +63,21 @@ namespace FancyCards.Audio
             }
             else if (State == State.Stopped)
             {
+                var source = _audioStateManager.CreateWaveProvider() as RawSourceWaveStream;
 
-                var rms = _utilities.GetRMS(_audioSources.Last().RawSource.ToSampleProvider());
-                
-                var normalized = new NormalizerSampleProvider(_audioSources.Last().RawSource.ToSampleProvider())
+                var settings = new AudioSettings
                 {
-                    Ratio = (float)(targetRMS / rms)
+                    Volume = volume,
+                    SlowMotion = playbackSpeed == PlaybackSpeed.Half,
+                    StartTime = startPosition ?? TimeSpan.Zero,
+                    EndTime = endPosition ?? source.TotalTime,
+                    TargetRMS = targetRMS,
+                    Tempo = tempo
                 };
 
-                var skip_time = startPosition ?? TimeSpan.Zero;
-                var take_time = endPosition ?? _audioSources.Last().RawSource.TotalTime;
-                var offset_sp = new OffsetSampleProvider(normalized)
-                {
-                    SkipOver = skip_time,
-                    Take = take_time - skip_time
-                };
+                var audio_pipeline = AudioPipeline.Create(source.ToSampleProvider(), settings);
 
-                var volume_sp = new VolumeSampleProvider(offset_sp)
-                {
-                    Volume = volume
-                };
-
-                var halfspeed_sp = SetHalfSpeed(volume_sp, playbackSpeed == PlaybackSpeed.Half);
-
-                _audioSources.Last().RawSource.Position = 0;
-
-                _outputDevice.Init(halfspeed_sp);
+                _outputDevice.Init(audio_pipeline);
                 _outputDevice.Play();
 
                 State = State.Playing;
@@ -143,8 +121,7 @@ namespace FancyCards.Audio
             }
             else if (State == State.Stopped || State == State.Initial)
             {
-                //_writer = new WaveFileWriterWithCounter(path, _captureSource.WaveFormat);
-                _audioSources.Add(new AudioSource(_captureSource.WaveFormat));
+                _bufferedWaveProvider.ClearBuffer();
 
                 _captureSource.DataAvailable += OnCaptureDataAvailable;
                 _captureSource.RecordingStopped += OnRecordingStopped;
@@ -158,13 +135,12 @@ namespace FancyCards.Audio
         public void StopRecording()
         {
             _captureSource.StopRecording();
-            _audioSources.Last().RewindStream();
             State = State.Stopped;
         }
 
         private void OnCaptureDataAvailable(object? sender, WaveInEventArgs e)
         {
-            _audioSources.Last().MemoryStream.Write(e.Buffer, 0, e.BytesRecorded);
+            _bufferedWaveProvider.AddSamples(e.Buffer, 0, e.BytesRecorded);
             //var peak = _audioService.PeakSampleFromBuffer(e.Buffer, e.BytesRecorded);
             //GraphChanged?.Invoke(this, new Point((_writer as WaveFileWriterWithCounter).Counter, peak));
         }
@@ -174,7 +150,7 @@ namespace FancyCards.Audio
             _captureSource.DataAvailable -= OnCaptureDataAvailable;
             _captureSource.RecordingStopped -= OnRecordingStopped;
 
-            //_rawSourceWaveStream = new RawSourceWaveStream(_memoryStream, _captureSource.WaveFormat);
+            _audioStateManager.SetData(GetBufferedData(_bufferedWaveProvider));
 
             //добавляем точку чтобы знать где конец списка, для графа
             //GraphChanged?.Invoke(this, new Point(-1, -1));
@@ -186,28 +162,12 @@ namespace FancyCards.Audio
         }
 
 
-
-        //костыль, так как не ясно как ещё замедлить аудио, алгоритмы стретча работают плохо
-        private ISampleProvider SetHalfSpeed(ISampleProvider source, bool enabled)
+        public byte[] GetBufferedData(BufferedWaveProvider provider)
         {
-            if (enabled)
-            {
-                var st_wp = new SoundTouchWaveProvider(source.ToWaveProvider())
-                {
-                    RateChange = -50
-                };
-
-                var shifter_sp = new SmbPitchShiftingSampleProvider(st_wp.ToSampleProvider())
-                {
-                    PitchFactor = 2.0f
-                };
-
-                return shifter_sp;
-            }
-            else
-            {
-                return source;
-            }
+            int bytesAvailable = provider.BufferedBytes;
+            byte[] buffer = new byte[bytesAvailable];
+            provider.Read(buffer, 0, bytesAvailable); // достаёт из очереди
+            return buffer;
         }
     }
 
@@ -223,18 +183,4 @@ namespace FancyCards.Audio
         Initial, Playing, Recording, Paused, Stopped
     }
 
-    public class AudioSource
-    {
-        public MemoryStream MemoryStream { get; set; }
-        public RawSourceWaveStream RawSource { get; set; }
-        public double RMS { get; set; }
-
-        public AudioSource(WaveFormat waveFormat)
-        {
-            MemoryStream = new MemoryStream(); 
-            RawSource = new RawSourceWaveStream(MemoryStream, waveFormat);
-        }
-
-        public void RewindStream() => MemoryStream.Position = 0;
-    }
 }
