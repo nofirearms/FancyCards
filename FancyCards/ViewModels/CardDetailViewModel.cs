@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.ViewModels.Modal;
 using System;
@@ -34,10 +35,13 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private string _messageText;
 
+        [ObservableProperty]
+        private AudioSamplerViewModel _audioSamplerViewModel;
 
-        public CardDetailViewModel()
+
+        public CardDetailViewModel(AudioEngine audioEngine)
         {
-            
+            _audioSamplerViewModel = new AudioSamplerViewModel(audioEngine);
         }
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private void SaveCard()

@@ -1,4 +1,5 @@
-﻿using FancyCards.Database;
+﻿using FancyCards.Audio;
+using FancyCards.Database;
 using FancyCards.Services;
 using FancyCards.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,7 @@ namespace FancyCards
             services.AddSingleton<Repository>();
             services.AddSingleton<DataService>();
             services.AddSingleton<ModalService>();
+            services.AddSingleton<AudioEngine>();
 
 
             return services.BuildServiceProvider();

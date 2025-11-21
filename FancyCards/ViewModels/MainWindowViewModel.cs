@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
+using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
 using FancyCards.ViewModels.Modal;
@@ -17,6 +18,7 @@ namespace FancyCards.ViewModels
     {
         private readonly ModalService _modalService;
         private readonly DataService _dataService;
+        private readonly AudioEngine _audioEngine;
 
         public string Title => "Fancy Cards";
 
@@ -32,10 +34,11 @@ namespace FancyCards.ViewModels
 
 
 
-        public MainWindowViewModel(DataService dataService, ModalService modalService)
+        public MainWindowViewModel(DataService dataService, ModalService modalService, AudioEngine audioEngine)
         {
             _modalService = modalService;
             _dataService = dataService;
+            _audioEngine = audioEngine;
 
             _decks = new ObservableCollection<Deck>(dataService.Decks);
 
@@ -55,7 +58,7 @@ namespace FancyCards.ViewModels
         private IRelayCommand _openCardModal;
         public IRelayCommand OpenCardModal => _openCardModal ??= new RelayCommand(async() =>
         {
-            var result = await _modalService.ShowModalAsync(new CardDetailViewModel());
+            var result = await _modalService.ShowModalAsync(new CardDetailViewModel(_audioEngine));
             if (result.Success)
             {
                 await _dataService.CreateCardAsync(1, result.Data);

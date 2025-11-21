@@ -5,13 +5,13 @@ using System.Text;
 
 namespace FancyCards.Audio
 {
-    public class UniversalWaveformRenderer
+    public class AudioWaveform
     {
         private readonly double[] _points;
         private readonly int _width;
         private int _currentIndex;
 
-        public UniversalWaveformRenderer(int width = 800)
+        public AudioWaveform(int width = 800)
         {
             _width = width;
             _points = new double[width];
@@ -24,6 +24,14 @@ namespace FancyCards.Audio
             double amplitude = CalculateAmplitude(samples);
 
             AddPoint(amplitude);
+        }
+
+        public double GetAmplitude(byte[] audioData, int bytesRecorded)
+        {
+            float[] samples = ConvertToSamples(audioData, bytesRecorded);
+            double amplitude = CalculateAmplitude(samples);
+
+            return amplitude;
         }
 
         // ДЛЯ ФАЙЛА (открытие)

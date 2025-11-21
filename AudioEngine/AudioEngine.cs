@@ -1,38 +1,45 @@
-﻿using FancyCards.Audio.Providers;
-using NAudio.CoreAudioApi;
+﻿using NAudio.CoreAudioApi;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using SoundTouch.Net.NAudioSupport;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace FancyCards.Audio
 {
     public class AudioEngine
     {
-
         private readonly AudioUtilities _utilities;
+        private readonly AudioWaveform _audioWaveform;
+
         private readonly WaveOutEvent _outputDevice;
         private readonly MMDevice _captureDevice;
         private readonly WasapiCapture _captureSource;
 
         private AudioStateManager _audioStateManager;
-        private BufferedWaveProvider _bufferedWaveProvider;
+        //private BufferedWaveProvider _bufferedWaveProvider;
+        private List<byte[]> _audioChunks;
 
-        public State State { get; set; }
+        public event Action<State> StateChanged;
+        public event Action<double> GraphChanged;
+
+        private State _state = State.Initial;
+        public State State
+        {
+            get => _state;
+            private set
+            {
+                _state = value;
+                StateChanged?.Invoke(value);
+            }
+        }
 
         public AudioEngine()
         {
             _utilities = new AudioUtilities();
+            _audioWaveform = new AudioWaveform();
             _outputDevice = new WaveOutEvent();
 
             _captureDevice = _utilities.GetDefaultOutputDevice();//_utilities.GetDeviceById(deviceId);
             _captureSource = _utilities.GetWasapiCaptureInstance(_captureDevice);
 
             _audioStateManager = new AudioStateManager(_captureSource.WaveFormat);
-            _bufferedWaveProvider = new BufferedWaveProvider(_captureSource.WaveFormat);
 
             _outputDevice.PlaybackStopped += OnPlaybackStopped;
         }
@@ -52,7 +59,6 @@ namespace FancyCards.Audio
             }
             else if (State == State.Playing)
             {
-                OnPlaybackStopped(null, null);
                 StopPlayback();
                 StartPlayback();
             }
@@ -77,6 +83,7 @@ namespace FancyCards.Audio
 
                 var audio_pipeline = AudioPipeline.Create(source.ToSampleProvider(), settings);
 
+
                 _outputDevice.Init(audio_pipeline);
                 _outputDevice.Play();
 
@@ -86,6 +93,7 @@ namespace FancyCards.Audio
 
         public void StopPlayback()
         {
+            State = State.Stopped;
             _outputDevice?.Stop();
         }
 
@@ -116,12 +124,12 @@ namespace FancyCards.Audio
             }
             else if (State == State.Recording)
             {
-                //StopRecording();
+                StopRecording();
                 StartRecording();
             }
             else if (State == State.Stopped || State == State.Initial)
             {
-                _bufferedWaveProvider.ClearBuffer();
+                _audioChunks = new List<byte[]>();
 
                 _captureSource.DataAvailable += OnCaptureDataAvailable;
                 _captureSource.RecordingStopped += OnRecordingStopped;
@@ -140,7 +148,12 @@ namespace FancyCards.Audio
 
         private void OnCaptureDataAvailable(object? sender, WaveInEventArgs e)
         {
-            _bufferedWaveProvider.AddSamples(e.Buffer, 0, e.BytesRecorded);
+            var chunk = new byte[e.BytesRecorded];
+            Array.Copy(e.Buffer, 0, chunk, 0, e.BytesRecorded);
+            _audioChunks.Add(chunk);
+
+            var peak = _audioWaveform.GetAmplitude(e.Buffer, e.BytesRecorded);
+            GraphChanged?.Invoke(peak);
             //var peak = _audioService.PeakSampleFromBuffer(e.Buffer, e.BytesRecorded);
             //GraphChanged?.Invoke(this, new Point((_writer as WaveFileWriterWithCounter).Counter, peak));
         }
@@ -150,7 +163,7 @@ namespace FancyCards.Audio
             _captureSource.DataAvailable -= OnCaptureDataAvailable;
             _captureSource.RecordingStopped -= OnRecordingStopped;
 
-            _audioStateManager.SetData(GetBufferedData(_bufferedWaveProvider));
+            _audioStateManager.SetData(GetSoundData(_audioChunks));
 
             //добавляем точку чтобы знать где конец списка, для графа
             //GraphChanged?.Invoke(this, new Point(-1, -1));
@@ -158,20 +171,30 @@ namespace FancyCards.Audio
 
         private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            State = State.Stopped;
+            //если остановка произошла по окончанию воспроизведения файла
+            if((sender as WaveOutEvent).PlaybackState == PlaybackState.Stopped)
+            {
+                State = State.Stopped;
+            }
+
         }
 
 
-        public byte[] GetBufferedData(BufferedWaveProvider provider)
+        public byte[] GetSoundData(List<byte[]> chunks)
         {
-            int bytesAvailable = provider.BufferedBytes;
-            byte[] buffer = new byte[bytesAvailable];
-            provider.Read(buffer, 0, bytesAvailable); // достаёт из очереди
-            return buffer;
+            // Объединяем все чанки в один массив
+            int totalSize = chunks.Sum(chunk => chunk.Length);
+            byte[] result = new byte[totalSize];
+
+            int offset = 0;
+            foreach (byte[] chunk in chunks)
+            {
+                Buffer.BlockCopy(chunk, 0, result, offset, chunk.Length);
+                offset += chunk.Length;
+            }
+            return result;
         }
     }
-
-
 
     public enum PlaybackSpeed
     {

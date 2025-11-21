@@ -1,0 +1,57 @@
+﻿<UserControl
+    x:Class="FancyCards.Views.AudioSamplerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:FancyCards.Controls"
+    xmlns:converters="clr-namespace:FancyCards.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:FancyCards.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    d:DataContext="{d:DesignInstance vm:AudioSamplerViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel>
+            <StackPanel
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal">
+                <Grid>
+                    <Button Command="{Binding StopRecordingCommand}" Content="{materialDesign:PackIcon Kind=StopCircle}" />
+                    <Button
+                        Command="{Binding StartRecordingCommand}"
+                        Content="{materialDesign:PackIcon Kind=RecordCircle}"
+                        Foreground="Red">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource MaterialDesignRaisedButton}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <!--  Переопределяем только для Recording  -->
+                                    <DataTrigger Binding="{Binding AudioSamplerState}" Value="Recording">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding StartPlaybackCommand}" Content="{materialDesign:PackIcon Kind=Play}" />
+                    <Button Command="{Binding StopPlaybackCommand}" Content="{materialDesign:PackIcon Kind=Stop}" />
+                </StackPanel>
+            </StackPanel>
+
+            <Border Height="100">
+                <controls:AudioGraph Points="{Binding Points}" SamplerState="{Binding AudioSamplerState}" />
+            </Border>
+        </DockPanel>
+
+
+    </Grid>
+</UserControl>
