@@ -17,19 +17,37 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
+        <Grid.Resources>
+            <Style
+                x:Key="SamplerButton"
+                BasedOn="{StaticResource MaterialDesignRaisedButton}"
+                TargetType="Button" />
+        </Grid.Resources>
         <DockPanel>
             <StackPanel
                 HorizontalAlignment="Center"
                 DockPanel.Dock="Bottom"
                 Orientation="Horizontal">
-                <Grid>
-                    <Button Command="{Binding StopRecordingCommand}" Content="{materialDesign:PackIcon Kind=StopCircle}" />
+                <Grid Margin="2,2">
+                    <Button Command="{Binding StopRecordingCommand}" Content="{materialDesign:PackIcon Kind=StopCircle}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource SamplerButton}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <!--  Переопределяем только для Recording  -->
+                                    <DataTrigger Binding="{Binding AudioSamplerState}" Value="Recording">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button
                         Command="{Binding StartRecordingCommand}"
-                        Content="{materialDesign:PackIcon Kind=RecordCircle}"
+                        Content="{materialDesign:PackIcon Kind=Record}"
                         Foreground="Red">
                         <Button.Style>
-                            <Style BasedOn="{StaticResource MaterialDesignRaisedButton}" TargetType="Button">
+                            <Style BasedOn="{StaticResource SamplerButton}" TargetType="Button">
                                 <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
                                     <!--  Переопределяем только для Recording  -->
@@ -42,13 +60,36 @@
                     </Button>
                 </Grid>
                 <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding StartPlaybackCommand}" Content="{materialDesign:PackIcon Kind=Play}" />
-                    <Button Command="{Binding StopPlaybackCommand}" Content="{materialDesign:PackIcon Kind=Stop}" />
+                    <Button
+                        Margin="2,2"
+                        Command="{Binding StartPlaybackCommand}"
+                        Content="{materialDesign:PackIcon Kind=Play}" />
+                    <Button
+                        Margin="2,2"
+                        Command="{Binding StartSlowMotionPlaybackCommand}"
+                        Content="{materialDesign:PackIcon Kind=FractionOneHalf}"
+                        Style="{StaticResource SamplerButton}" />
+                    <Button
+                        Margin="2,2"
+                        Command="{Binding StopPlaybackCommand}"
+                        Content="{materialDesign:PackIcon Kind=Stop}"
+                        Style="{StaticResource SamplerButton}" />
                 </StackPanel>
             </StackPanel>
 
-            <Border Height="100">
-                <controls:AudioGraph Points="{Binding Points}" SamplerState="{Binding AudioSamplerState}" />
+            <Border
+                Margin="1"
+                Padding="1"
+                BorderBrush="black"
+                BorderThickness="1"
+                CornerRadius="3">
+
+                <Grid>
+                    <!--  Фон с waveform  -->
+                    <controls:AudioGraph Points="{Binding Points}" SamplerState="{Binding AudioSamplerState}" />
+
+
+                </Grid>
             </Border>
         </DockPanel>
 

@@ -21,6 +21,7 @@ namespace FancyCards.ViewModels
         [NotifyCanExecuteChangedFor(nameof(StopPlaybackCommand))]
         [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand))]
         [NotifyCanExecuteChangedFor(nameof(StopRecordingCommand))]
+        [NotifyCanExecuteChangedFor(nameof(StartSlowMotionPlaybackCommand))]
         private State _audioSamplerState;
 
         [ObservableProperty]
@@ -55,12 +56,22 @@ namespace FancyCards.ViewModels
         }
         private bool CanStartPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 
+
+        [RelayCommand(CanExecute = nameof(CanStartSlowMotionPlayback))]
+        private void StartSlowMotionPlayback()
+        {
+            _audioEngine.StartPlayback(playbackSpeed: PlaybackSpeed.Half);
+        }
+        private bool CanStartSlowMotionPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
+
+
         [RelayCommand(CanExecute = nameof(CanStopPlayback))]
         private void StopPlayback()
         {
             _audioEngine.StopPlayback();
         }
         private bool CanStopPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
+
 
         [RelayCommand(CanExecute = nameof(CanStartRecording))]
         private void StartRecording()

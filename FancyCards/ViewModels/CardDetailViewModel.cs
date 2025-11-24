@@ -13,6 +13,9 @@ namespace FancyCards.ViewModels
     public partial class CardDetailViewModel : BaseModalViewModel<Card>
     {
         [ObservableProperty]
+        private string _title = "Card";
+
+        [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SaveCardCommand))] 
         private string _frontText;
         partial void OnFrontTextChanged(string value)

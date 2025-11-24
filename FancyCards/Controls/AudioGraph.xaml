@@ -3,8 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="self"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -13,34 +16,60 @@
             x:Name="AudioGraphBorder"
             HorizontalAlignment="Left"
             IsHitTestVisible="True">
+            <!--<Border Background="{DynamicResource MaterialDesign.Brush.Secondary}" CornerRadius="3" />-->
             <Polyline
                 x:Name="AudioGraphPolyline"
                 Height="100"
                 HorizontalAlignment="Left"
-                Fill="Red"
-                Stretch="None">
-                <!--<interaction:Interaction.Triggers>
-                    <interaction:DataTrigger Binding="{Binding ElementName=AudioGraph, Path=Points.Count}" Value="0">
+                Fill="{DynamicResource MaterialDesign.Brush.Primary}"
+                IsHitTestVisible="False"
+                RenderTransformOrigin="1,0.5">
+                <!--  Скрываем рамку если нет аудио  -->
+                <interaction:Interaction.Triggers>
+                    <interaction:DataTrigger Binding="{Binding ElementName=AudioGraphPolyline, Path=Points.Count}" Value="0">
                         <interaction:ChangePropertyAction
-                                        PropertyName="Visibility"
-                                        TargetObject="{Binding ElementName=AudioGraphBorder}"
-                                        Value="Hidden" />
+                            PropertyName="Visibility"
+                            TargetObject="{Binding ElementName=AudioGraphBorder}"
+                            Value="Hidden" />
                     </interaction:DataTrigger>
                     <interaction:DataTrigger
-                                    Binding="{Binding ElementName=AudioGraph, Path=Points.Count}"
-                                    Comparison="GreaterThan"
-                                    Value="0">
+                        Binding="{Binding ElementName=AudioGraphPolyline, Path=Points.Count}"
+                        Comparison="GreaterThan"
+                        Value="0">
                         <interaction:ChangePropertyAction
-                                        PropertyName="Visibility"
-                                        TargetObject="{Binding ElementName=AudioGraphBorder}"
-                                        Value="Visible" />
+                            PropertyName="Visibility"
+                            TargetObject="{Binding ElementName=AudioGraphBorder}"
+                            Value="Visible" />
                     </interaction:DataTrigger>
-                </interaction:Interaction.Triggers>-->
+                </interaction:Interaction.Triggers>
                 <Polyline.LayoutTransform>
                     <ScaleTransform ScaleX="1" ScaleY="1" />
                 </Polyline.LayoutTransform>
+                <Polyline.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Polyline.RenderTransform>
             </Polyline>
-            <Border BorderBrush="BlueViolet" BorderThickness="1" />
+            <Border
+                BorderBrush="black"
+                BorderThickness="1"
+                CornerRadius="3" />
+
+            <!--  Canvas для выделения  -->
+            <Canvas
+                x:Name="SelectionCanvas"
+                Background="Transparent"
+                MouseLeftButtonDown="OnMouseLeftButtonDown"
+                MouseLeftButtonUp="OnMouseLeftButtonUp"
+                MouseMove="OnMouseMove">
+
+                <!--  Выделенная область  -->
+                <Rectangle
+                    x:Name="SelectionRect"
+                    Fill="Red"
+                    Opacity="0.4"
+                    Visibility="Collapsed" />
+            </Canvas>
+
             <Canvas
                 x:Name="ManipulationCanvas"
                 HorizontalAlignment="Stretch"

@@ -60,7 +60,7 @@ namespace FancyCards.Audio
             else if (State == State.Playing)
             {
                 StopPlayback();
-                StartPlayback();
+                StartPlayback(startPosition, endPosition, playbackSpeed, volume, tempo, targetRMS);
             }
             else if (State == State.Paused)
             {

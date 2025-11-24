@@ -1,9 +1,10 @@
 ﻿using FancyCards.Audio;
 using FancyCards.Helpers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -22,6 +23,8 @@ namespace FancyCards.Controls
     public partial class AudioGraph : UserControl
     {
 
+        private Point _startPoint;
+        private bool _isSelecting;
 
         public ObservableCollection<double> Points
         {
@@ -94,8 +97,6 @@ namespace FancyCards.Controls
 
         }
 
-
-
         public State SamplerState
         {
             get { return (State)GetValue(SamplerStateProperty); }
@@ -118,9 +119,124 @@ namespace FancyCards.Controls
             }
         }
 
+
+        public double StartSelection
+        {
+            get { return (double)GetValue(StartSelectionProperty); }
+            set { SetValue(StartSelectionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for StartSelection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty StartSelectionProperty =
+            DependencyProperty.Register(nameof(StartSelection), typeof(double), typeof(AudioGraph), new PropertyMetadata(0d, OnStartSelectionChanged));
+
+        private static void OnStartSelectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (AudioGraph)d;
+
+            control.UpdateSelection();
+        }
+
+        public double EndSelection
+        {
+            get { return (double)GetValue(EndSelectionProperty); }
+            set { SetValue(EndSelectionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EndSelection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty EndSelectionProperty =
+            DependencyProperty.Register(nameof(EndSelection), typeof(double), typeof(AudioGraph), new PropertyMetadata(1d, OnEndSelectionChanged));
+
+        private static void OnEndSelectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (AudioGraph)d;
+            control.UpdateSelection();
+        }
+
+        public double StartPlaybackPosition
+        {
+            get { return (double)GetValue(StartPlaybackPositionProperty); }
+            set { SetValue(StartPlaybackPositionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for StartPlaybackPosition.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty StartPlaybackPositionProperty =
+            DependencyProperty.Register(nameof(StartPlaybackPosition), typeof(double), typeof(AudioGraph), new PropertyMetadata(0d));
+
+
+
         public AudioGraph()
         {
-            InitializeComponent(); 
+            InitializeComponent();
+
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            SelectionRect.Width = 0;
+            SelectionRect.Height = SelectionCanvas.ActualHeight;
+        }
+
+        /// <summary>
+        /// position 0-1
+        /// </summary>
+        /// <param name="start"></param>
+        private void UpdateSelection()
+        {
+            Canvas.SetLeft(SelectionRect, Math.Max(0, StartSelection * ActualWidth));
+            SelectionRect.Width = Math.Abs(EndSelection * ActualWidth - StartSelection * ActualWidth);
+        }
+
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _startPoint = e.GetPosition(SelectionCanvas);
+            _isSelecting = true;
+
+            SelectionRect.Visibility = Visibility.Visible;
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isSelecting) return;
+
+            var canvas = (Canvas)sender;
+            var currentPoint = e.GetPosition(canvas);
+            canvas.CaptureMouse();
+
+            var x = Math.Clamp(currentPoint.X / canvas.ActualWidth, 0, 1);
+            var start_x = _startPoint.X / canvas.ActualWidth;
+
+            if (start_x <= x)
+            {
+                StartSelection = start_x;
+                EndSelection = x;
+            }
+            else
+            {
+                StartSelection = x;
+                EndSelection = start_x;
+            }
+        }
+
+        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isSelecting = false;
+
+            var element = (UIElement)sender;
+            element.ReleaseMouseCapture();
+
+            // Передаём выбранный диапазон во ViewModel
+            var startX = Math.Min(_startPoint.X, e.GetPosition(SelectionCanvas).X);
+            var endX = Math.Max(_startPoint.X, e.GetPosition(SelectionCanvas).X);
+
+        }
+
+
+        private void ManipulationCanvasMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var position = e.GetPosition(ManipulationCanvas);
+            StartPlaybackPosition = position.X / ManipulationCanvas.ActualWidth;
         }
 
         private void AddGraphPoint(double y)
@@ -143,21 +259,39 @@ namespace FancyCards.Controls
 
         private async void StretchGraph()
         {
+
             AudioGraphPolyline.Dispatcher.Invoke(() =>
             {
-                var scale_transform = (ScaleTransform)AudioGraphPolyline.LayoutTransform;
-                scale_transform.ScaleX = AudioGraphGrid.ActualWidth / ((AudioGraphPolyline.Points.Count - 1) / 2);
-            });
+                var layout_transform = (ScaleTransform)AudioGraphPolyline.LayoutTransform;
+                layout_transform.ScaleX = AudioGraphGrid.ActualWidth / ((AudioGraphPolyline.Points.Count - 1) / 2);
 
+                var render_transform = (ScaleTransform)AudioGraphPolyline.RenderTransform;
+                var max_y = Points.Max();
+                if (max_y > 0)
+                {
+                    var y_ratio = 1 / max_y;
+                    render_transform.ScaleY = y_ratio;
+                }
+
+            });
+            StartSelection = 0;
+            EndSelection = 1;
+            UpdateSelection();
+            SelectionRect.Visibility = Visibility.Visible;
         }
 
         private async void ResetGraphScale()
         {
-
+            
             AudioGraphPolyline.Dispatcher.Invoke(() =>
             {
+                SelectionRect.Visibility = Visibility.Collapsed;
+
                 var scale_transform = (ScaleTransform)AudioGraphPolyline.LayoutTransform;
                 scale_transform.ScaleX = 1;
+
+                var render_transform = (ScaleTransform)AudioGraphPolyline.RenderTransform;
+                render_transform.ScaleY = 1;
             });
         }
     }

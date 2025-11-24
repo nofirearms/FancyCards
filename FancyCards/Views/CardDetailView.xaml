@@ -10,49 +10,55 @@
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     d:Background="White"
     d:DataContext="{d:DesignInstance vm:CardDetailViewModel}"
-    d:DesignHeight="700"
-    d:DesignWidth="400"
     mc:Ignorable="d">
-    <StackPanel Orientation="Vertical">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <TextBox
-                Grid.Column="0"
-                materialDesign:HintAssist.Hint="Prefix"
-                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox
-                Grid.Column="1"
-                materialDesign:HintAssist.Hint="Suffix"
-                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged}" />
-        </Grid>
-        <TextBox
-            materialDesign:HintAssist.Hint="Front"
-            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-            Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged}" />
-        <TextBox
-            materialDesign:HintAssist.Hint="Back"
-            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-            Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged}" />
-        <TextBox
-            materialDesign:HintAssist.Hint="Comment"
-            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-            Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged}" />
-        <TextBox
-            materialDesign:HintAssist.Hint="Message"
-            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-            Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" />
+    <Grid Width="400" Height="500">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
 
-        <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}" />
+        <TextBlock
+            Grid.Row="0"
+            HorizontalAlignment="Center"
+            Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+            Text="{Binding Title}" />
 
-        <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding SaveCardCommand}" Content="{materialDesign:PackIcon Kind=ContentSave}" />
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    Grid.Column="0"
+                    materialDesign:HintAssist.Hint="Prefix"
+                    Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    Grid.Column="1"
+                    materialDesign:HintAssist.Hint="Suffix"
+                    Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <TextBox materialDesign:HintAssist.Hint="Front" Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox materialDesign:HintAssist.Hint="Back" Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox materialDesign:HintAssist.Hint="Comment" Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox materialDesign:HintAssist.Hint="Message" Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" />
+
+            <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}" />
+
+
+
+        </StackPanel>
+        <StackPanel
+            Grid.Row="2"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                Margin="5,0"
+                Command="{Binding SaveCardCommand}"
+                Content="{materialDesign:PackIcon Kind=ContentSave}" />
             <Button Command="{Binding CancelCommand}" Content="{materialDesign:PackIcon Kind=Close}" />
         </StackPanel>
+    </Grid>
 
-    </StackPanel>
 </UserControl>

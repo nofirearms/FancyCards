@@ -18,6 +18,7 @@ namespace FancyCards.Views
     /// </summary>
     public partial class AudioSamplerView : UserControl
     {
+
         public AudioSamplerView()
         {
             InitializeComponent();
