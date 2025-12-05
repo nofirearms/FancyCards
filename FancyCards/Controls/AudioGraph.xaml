@@ -62,20 +62,14 @@
                 MouseLeftButtonUp="OnMouseLeftButtonUp"
                 MouseMove="OnMouseMove">
 
+
                 <!--  Выделенная область  -->
                 <Rectangle
                     x:Name="SelectionRect"
                     Fill="Red"
                     Opacity="0.4"
                     Visibility="Collapsed" />
-            </Canvas>
 
-            <Canvas
-                x:Name="ManipulationCanvas"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Background="Transparent"
-                IsHitTestVisible="False">
                 <Line
                     x:Name="CurrentPositionLine"
                     Stroke="Black"
@@ -85,6 +79,15 @@
                     X2="0"
                     Y1="0"
                     Y2="100" />
+            </Canvas>
+
+            <Canvas
+                x:Name="ManipulationCanvas"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent"
+                IsHitTestVisible="False">
+
                 <Line
                     x:Name="PlaybackStartPositionLine"
                     HorizontalAlignment="Center"

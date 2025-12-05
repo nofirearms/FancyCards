@@ -86,13 +86,19 @@
 
                 <Grid>
                     <!--  Фон с waveform  -->
-                    <controls:AudioGraph Points="{Binding Points}" SamplerState="{Binding AudioSamplerState}" />
-
-
+                    <controls:AudioGraph
+                        PlaybackCurrentPosition="{Binding PlaybackCurrentPosition}"
+                        Points="{Binding Points}"
+                        SamplerState="{Binding AudioSamplerState}"
+                        StartPlaybackPosition="{Binding PlaybackStartPosition}" />
                 </Grid>
             </Border>
         </DockPanel>
-
+        <TextBlock
+            Margin="6,3"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Text="{Binding AudioDuration, StringFormat='{}{0:m\\:ss\\.fff}'}" />
 
     </Grid>
 </UserControl>

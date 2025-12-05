@@ -10,7 +10,7 @@ namespace FancyCards.Audio
 {
     public static class AudioPipeline
     {
-        
+
         public static ISampleProvider Create(ISampleProvider source, AudioSettings settings)
         {
             return source

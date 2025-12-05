@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
+using FancyCards.Audio.Common;
 using FancyCards.Helpers;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,21 @@ namespace FancyCards.ViewModels
         private State _audioSamplerState;
 
         [ObservableProperty]
+        private double _playbackStartPosition = 0;
+        [ObservableProperty]
+        private double _startSelection = 0;
+        [ObservableProperty]
+        private double _endSelection = 1;
+
+        [ObservableProperty]
+        private TimeSpan _audioDuration = TimeSpan.Zero;
+
+        [ObservableProperty]
+        private TimeSpan _playbackCurrentPositionTimeSpan;
+        [ObservableProperty]
+        private double _playbackCurrentPosition;
+
+        [ObservableProperty]
         private ObservableCollection<double> _points = [];
 
         public AudioSamplerViewModel(AudioEngine audioEngine)
@@ -33,6 +49,19 @@ namespace FancyCards.ViewModels
 
             _audioEngine.StateChanged += OnAudioEngineStateChanged;
             _audioEngine.GraphChanged += OnGraphChanged;
+            _audioEngine.AudioDurationChanged += OnDurationChanged;
+            _audioEngine.PlaybackPositionChanged += OnPlaybackPositionChanged;
+        }
+
+        private void OnPlaybackPositionChanged(PlaybackPositionArgs args)
+        {
+            PlaybackCurrentPositionTimeSpan = args.PositionTimeSpan;
+            PlaybackCurrentPosition = args.PositionPercent;
+        }
+
+        private void OnDurationChanged(TimeSpan span)
+        {
+            AudioDuration = span;
         }
 
         private void OnGraphChanged(double obj)

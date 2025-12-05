@@ -29,6 +29,12 @@ namespace FancyCards.Audio
             return new RawSourceWaveStream(new MemoryStream(_currentData), _format);
         }
 
+        public TimeSpan GetDuration()
+        {
+            double seconds = (double)_currentData.Length / _format.AverageBytesPerSecond;
+            return TimeSpan.FromSeconds(seconds);
+        }
+
         /// <summary>Получить текущее PCM-состояние (копию)</summary>
         public byte[] GetDataCopy() => (byte[])_currentData?.Clone();
 

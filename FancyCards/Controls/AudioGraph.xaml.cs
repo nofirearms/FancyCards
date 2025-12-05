@@ -79,7 +79,7 @@ namespace FancyCards.Controls
 
                             if (x >= control.AudioGraphGrid.ActualWidth)
                             {
-                                control.StretchGraph();
+                                control.StretchGraphHorizontally();
                             }
                             else
                             {
@@ -113,12 +113,8 @@ namespace FancyCards.Controls
             var oldState = (State)e.OldValue;
             var newState = (State)e.NewValue;
 
-            if(oldState == State.Recording && newState == State.Stopped)
-            {
-                control.StretchGraph();
-            }
+            control.OnStateChanged(oldState, newState);
         }
-
 
         public double StartSelection
         {
@@ -165,6 +161,25 @@ namespace FancyCards.Controls
 
 
 
+
+
+        public double PlaybackCurrentPosition
+        {
+            get { return (double)GetValue(PlaybackCurrentPositionProperty); }
+            set { SetValue(PlaybackCurrentPositionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PlaybackCurrentPosition.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PlaybackCurrentPositionProperty =
+            DependencyProperty.Register(nameof(PlaybackCurrentPosition), typeof(double), typeof(AudioGraph), new PropertyMetadata(0d, OnPlaybackCurrentPositionChanged));
+
+        private static void OnPlaybackCurrentPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (AudioGraph)d;
+
+            control.UpdateCurrentPlaybackPosition();
+        }
+
         public AudioGraph()
         {
             InitializeComponent();
@@ -178,6 +193,28 @@ namespace FancyCards.Controls
             SelectionRect.Height = SelectionCanvas.ActualHeight;
         }
 
+        private void OnStateChanged(State oldState, State newState)
+        {
+            if(newState == State.Recording)
+            {
+                CurrentPositionLine.Visibility = Visibility.Collapsed;
+            }
+            if(newState == State.Playing)
+            {
+                
+            }
+            if (newState == State.Stopped)
+            {
+                CurrentPositionLine.Visibility = Visibility.Collapsed;
+            }
+
+            if (oldState == State.Recording && newState == State.Stopped)
+            {
+                StretchGraphHorizontally();
+                OnRecodringStopped();
+            }
+        }
+
         /// <summary>
         /// position 0-1
         /// </summary>
@@ -187,6 +224,17 @@ namespace FancyCards.Controls
             Canvas.SetLeft(SelectionRect, Math.Max(0, StartSelection * ActualWidth));
             SelectionRect.Width = Math.Abs(EndSelection * ActualWidth - StartSelection * ActualWidth);
         }
+
+        private void UpdateCurrentPlaybackPosition()
+        {
+            if (SamplerState != State.Playing) return;
+
+            var pos = Math.Clamp(PlaybackCurrentPosition, 0, 1);
+            Canvas.SetLeft(CurrentPositionLine, (SelectionCanvas.ActualWidth - CurrentPositionLine.StrokeThickness) * pos);
+            //если через стейт делать, то он отображается вконце графа и перескакивает вначало
+            CurrentPositionLine.Visibility = Visibility.Visible;
+        }
+
 
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -257,14 +305,19 @@ namespace FancyCards.Controls
             });
         }
 
-        private async void StretchGraph()
+        private async void StretchGraphHorizontally()
         {
-
+            
             AudioGraphPolyline.Dispatcher.Invoke(() =>
             {
                 var layout_transform = (ScaleTransform)AudioGraphPolyline.LayoutTransform;
                 layout_transform.ScaleX = AudioGraphGrid.ActualWidth / ((AudioGraphPolyline.Points.Count - 1) / 2);
-
+            });
+        }
+        private async void StretchGraphVertically()
+        {
+            AudioGraphPolyline.Dispatcher.Invoke(() =>
+            {
                 var render_transform = (ScaleTransform)AudioGraphPolyline.RenderTransform;
                 var max_y = Points.Max();
                 if (max_y > 0)
@@ -272,11 +325,16 @@ namespace FancyCards.Controls
                     var y_ratio = 1 / max_y;
                     render_transform.ScaleY = y_ratio;
                 }
-
             });
+
+        }
+
+        private void OnRecodringStopped()
+        {
             StartSelection = 0;
             EndSelection = 1;
-            UpdateSelection();
+            StretchGraphVertically();
+            UpdateSelection();           
             SelectionRect.Visibility = Visibility.Visible;
         }
 

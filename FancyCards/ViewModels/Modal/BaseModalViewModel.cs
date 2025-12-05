@@ -17,13 +17,13 @@ namespace FancyCards.ViewModels.Modal
 
         protected BaseModalViewModel()
         {
-            _completionSource = new TaskCompletionSource<ModalResult<TResult>>();
+            _completionSource = new TaskCompletionSource<ModalResult<TResult>>(); 
         }
 
         protected void Close(bool success = true, TResult data = default)
         {
             _completionSource.TrySetResult(new ModalResult<TResult>
-            {
+            { 
                 Success = success,
                 Data = data
             });

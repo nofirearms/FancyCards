@@ -1,5 +1,10 @@
-﻿using NAudio.CoreAudioApi;
+﻿using FancyCards.Audio.Common;
+using NAudio.CoreAudioApi;
+using NAudio.Utils;
 using NAudio.Wave;
+using System.Linq;
+using System.Timers;
+
 
 namespace FancyCards.Audio
 {
@@ -11,15 +16,20 @@ namespace FancyCards.Audio
         private readonly WaveOutEvent _outputDevice;
         private readonly MMDevice _captureDevice;
         private readonly WasapiCapture _captureSource;
-
         private AudioStateManager _audioStateManager;
-        //private BufferedWaveProvider _bufferedWaveProvider;
+        private PlaybackSettings _playbackSettings;
+
         private List<byte[]> _audioChunks;
+        private System.Timers.Timer _playbackPositionTimer; 
 
         public event Action<State> StateChanged;
         public event Action<double> GraphChanged;
+        public event Action<TimeSpan> AudioDurationChanged;
+        public event Action<PlaybackPositionArgs> PlaybackPositionChanged;
 
         private State _state = State.Initial;
+
+
         public State State
         {
             get => _state;
@@ -42,6 +52,12 @@ namespace FancyCards.Audio
             _audioStateManager = new AudioStateManager(_captureSource.WaveFormat);
 
             _outputDevice.PlaybackStopped += OnPlaybackStopped;
+
+            _playbackPositionTimer = new System.Timers.Timer(1)
+            {
+                AutoReset = true
+            };
+            _playbackPositionTimer.Elapsed += OnPlaybackPositionChanged;
         }
 
 
@@ -49,6 +65,8 @@ namespace FancyCards.Audio
         {
             _audioStateManager.LoadFromAudioFile(path);
         }
+
+        //--------------------------------------------------------------------------------------------------PLAYBACK-----------------------------------------------------
 
         public void StartPlayback(TimeSpan? startPosition = null, TimeSpan? endPosition = null, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, float tempo = 1.0f, float targetRMS = 0.2f)
         {         
@@ -70,7 +88,7 @@ namespace FancyCards.Audio
             else if (State == State.Stopped)
             {
                 var source = _audioStateManager.CreateWaveProvider() as RawSourceWaveStream;
-
+                
                 var settings = new AudioSettings
                 {
                     Volume = volume,
@@ -83,9 +101,15 @@ namespace FancyCards.Audio
 
                 var audio_pipeline = AudioPipeline.Create(source.ToSampleProvider(), settings);
 
+                _playbackSettings = new PlaybackSettings
+                {
+                    Speed = (double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1),
+                    TotalLength = source.Length / ((double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1))
+                };
+                _playbackPositionTimer.Start();
 
-                _outputDevice.Init(audio_pipeline);
-                _outputDevice.Play();
+                _outputDevice.Init(audio_pipeline); 
+                _outputDevice.Play(); 
 
                 State = State.Playing;
             }
@@ -94,6 +118,7 @@ namespace FancyCards.Audio
         public void StopPlayback()
         {
             State = State.Stopped;
+            _playbackPositionTimer.Stop();
             _outputDevice?.Stop();
         }
 
@@ -111,6 +136,32 @@ namespace FancyCards.Audio
             }
         }
 
+
+        private void OnPlaybackPositionChanged(object? sender, ElapsedEventArgs e)
+        {
+            if (_outputDevice.PlaybackState == PlaybackState.Stopped) return;
+
+            //var seconds = (double)_outputDevice.GetPosition() / _outputDevice.OutputWaveFormat.AverageBytesPerSecond;
+            //var time = TimeSpan.FromSeconds(seconds);
+
+            PlaybackPositionChanged?.Invoke(new PlaybackPositionArgs
+            {
+                PositionTimeSpan = _outputDevice.GetPositionTimeSpan(),
+                PositionPercent = (double)_outputDevice.GetPosition() / _playbackSettings.TotalLength
+            }); 
+        }
+
+        private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
+        {
+            //если остановка произошла по окончанию воспроизведения файла
+            if ((sender as WaveOutEvent).PlaybackState == PlaybackState.Stopped)
+            {
+                State = State.Stopped;
+                _playbackPositionTimer.Stop();
+            }
+
+        }
+        //----------------------------------------------------------------------------------------------------RECORDING---------------------------------------------------
         public void StartRecording()
         {
             if (State == State.Playing)
@@ -154,6 +205,11 @@ namespace FancyCards.Audio
 
             var peak = _audioWaveform.GetAmplitude(e.Buffer, e.BytesRecorded);
             GraphChanged?.Invoke(peak);
+
+            //TODO возможно лучше переделать через таймер
+            var duration = GetDuration(_audioChunks, _captureSource.WaveFormat);
+            AudioDurationChanged?.Invoke(duration);
+
             //var peak = _audioService.PeakSampleFromBuffer(e.Buffer, e.BytesRecorded);
             //GraphChanged?.Invoke(this, new Point((_writer as WaveFileWriterWithCounter).Counter, peak));
         }
@@ -169,15 +225,6 @@ namespace FancyCards.Audio
             //GraphChanged?.Invoke(this, new Point(-1, -1));
         }
 
-        private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
-        {
-            //если остановка произошла по окончанию воспроизведения файла
-            if((sender as WaveOutEvent).PlaybackState == PlaybackState.Stopped)
-            {
-                State = State.Stopped;
-            }
-
-        }
 
 
         public byte[] GetSoundData(List<byte[]> chunks)
@@ -193,6 +240,16 @@ namespace FancyCards.Audio
                 offset += chunk.Length;
             }
             return result;
+        }
+
+
+        private TimeSpan GetDuration(List<byte[]> chunks, WaveFormat waveFormat)
+        {
+            var result = chunks.SelectMany(arr => arr).ToArray();
+
+            var seconds = (double)result.Length / waveFormat.AverageBytesPerSecond;
+
+            return TimeSpan.FromSeconds(seconds);
         }
     }
 
