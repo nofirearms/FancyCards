@@ -2,11 +2,15 @@
 using FancyCards.Database;
 using FancyCards.Services;
 using FancyCards.ViewModels;
+using FancyCards.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 
 namespace FancyCards
 {
@@ -17,10 +21,12 @@ namespace FancyCards
     {
         public App()
         {
-            Services = ConfigureServices();
+            Services = ConfigureServices(); 
         }
 
         public static App Current => (App)Application.Current;
+
+        public FrameworkElement ContextMenuParent { get; set; }
 
         public IServiceProvider Services { get; }
         private IServiceProvider ConfigureServices()
@@ -28,11 +34,17 @@ namespace FancyCards
             var services = new ServiceCollection();
 
             services.AddDbContext<AppDbContext>(o => o.UseSqlite($"Data source=data.db"));
+
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<CardListViewModel>();
+
             services.AddSingleton<Repository>();
             services.AddSingleton<DataService>();
             services.AddSingleton<ModalService>();
-            services.AddSingleton<AudioEngine>();
+            
+            services.AddSingleton<ViewModelFactory>();
+
+            services.AddTransient<AudioEngine>();
 
 
             return services.BuildServiceProvider();
@@ -41,6 +53,22 @@ namespace FancyCards
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            var window = new MainWindow();
+            window.Loaded += OnWindowLoaded;
+
+            MainWindow = window;
+            MainWindow.Show();
+        }
+
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            MainWindow.PreviewMouseDown += OnMouseDown;
+        }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            
         }
     }
 

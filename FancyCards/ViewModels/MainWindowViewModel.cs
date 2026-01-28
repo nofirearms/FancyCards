@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
+using System.Windows.Controls;
 
 namespace FancyCards.ViewModels
 {
@@ -19,6 +20,7 @@ namespace FancyCards.ViewModels
         private readonly ModalService _modalService;
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
+        private readonly ViewModelFactory _viewModelFactory;
 
         public string Title => "Fancy Cards";
 
@@ -31,18 +33,25 @@ namespace FancyCards.ViewModels
         public bool HasActiveModals => _modalService.ActiveModals.Any();
 
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ContextMenuOpen))]
+        private BaseModalViewModel _contextMenu;
 
+        public bool ContextMenuOpen => _contextMenu != null;
 
-
-        public MainWindowViewModel(DataService dataService, ModalService modalService, AudioEngine audioEngine)
+        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine)
         {
             _modalService = modalService;
             _dataService = dataService;
             _audioEngine = audioEngine;
+            _viewModelFactory = viewModelFactory;
+
+            
 
             _decks = new ObservableCollection<Deck>(dataService.Decks);
 
-            CardListViewModel = new CardListViewModel(dataService);
+            CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this);
+
 
             // Подписываемся на изменение коллекции модальных окон
             ((INotifyCollectionChanged)_modalService.ActiveModals).CollectionChanged += (s, e) =>
@@ -54,14 +63,25 @@ namespace FancyCards.ViewModels
 
         }
 
+        
+        public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)
+        {
+            ContextMenu = context;
+
+            var result = await context.Task;
+
+            ContextMenu = null;
+
+            return result;
+        }
 
         private IRelayCommand _openCardModal;
         public IRelayCommand OpenCardModal => _openCardModal ??= new RelayCommand(async() =>
         {
-            var result = await _modalService.ShowModalAsync(new CardDetailViewModel(_audioEngine));
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>());
             if (result.Success)
             {
-                await _dataService.CreateCardAsync(1, result.Data);
+                
             }
         });
     }

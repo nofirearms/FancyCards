@@ -59,8 +59,9 @@
                 x:Name="SelectionCanvas"
                 Background="Transparent"
                 MouseLeftButtonDown="OnMouseLeftButtonDown"
-                MouseLeftButtonUp="OnMouseLeftButtonUp"
-                MouseMove="OnMouseMove">
+                MouseMove="OnMouseMove"
+                MouseRightButtonDown="OnMouseRightButtonDown"
+                MouseRightButtonUp="OnMouseRightButtonUp">
 
 
                 <!--  Выделенная область  -->
@@ -79,6 +80,17 @@
                     X2="0"
                     Y1="0"
                     Y2="100" />
+
+                <Line
+                    x:Name="StartPlaybackPositionLine"
+                    HorizontalAlignment="Center"
+                    Stroke="Red"
+                    StrokeThickness="2"
+                    Visibility="Visible"
+                    X1="0"
+                    X2="0"
+                    Y1="0.5"
+                    Y2="99.5" />
             </Canvas>
 
             <Canvas

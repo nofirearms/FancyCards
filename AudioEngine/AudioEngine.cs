@@ -53,7 +53,7 @@ namespace FancyCards.Audio
 
             _outputDevice.PlaybackStopped += OnPlaybackStopped;
 
-            _playbackPositionTimer = new System.Timers.Timer(1)
+            _playbackPositionTimer = new System.Timers.Timer(10)
             {
                 AutoReset = true
             };
@@ -68,7 +68,7 @@ namespace FancyCards.Audio
 
         //--------------------------------------------------------------------------------------------------PLAYBACK-----------------------------------------------------
 
-        public void StartPlayback(TimeSpan? startPosition = null, TimeSpan? endPosition = null, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, float tempo = 1.0f, float targetRMS = 0.2f)
+        public void StartPlayback(double startPosition = 0, double endPosition = 1, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, float tempo = 1.0f, float targetRMS = 0.2f)
         {         
 
             if (State == State.Recording || State == State.Initial)
@@ -93,8 +93,8 @@ namespace FancyCards.Audio
                 {
                     Volume = volume,
                     SlowMotion = playbackSpeed == PlaybackSpeed.Half,
-                    StartTime = startPosition ?? TimeSpan.Zero,
-                    EndTime = endPosition ?? source.TotalTime,
+                    StartTime = startPosition * source.TotalTime,
+                    EndTime = endPosition * source.TotalTime,
                     TargetRMS = targetRMS,
                     Tempo = tempo
                 };
@@ -104,12 +104,13 @@ namespace FancyCards.Audio
                 _playbackSettings = new PlaybackSettings
                 {
                     Speed = (double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1),
-                    TotalLength = source.Length / ((double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1))
+                    TotalLength = source.Length / ((double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1)),
+                    StartPosition = (startPosition * source.Length) / ((double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1)),
                 };
                 _playbackPositionTimer.Start();
 
                 _outputDevice.Init(audio_pipeline); 
-                _outputDevice.Play(); 
+                _outputDevice.Play();
 
                 State = State.Playing;
             }
@@ -136,7 +137,6 @@ namespace FancyCards.Audio
             }
         }
 
-
         private void OnPlaybackPositionChanged(object? sender, ElapsedEventArgs e)
         {
             if (_outputDevice.PlaybackState == PlaybackState.Stopped) return;
@@ -147,7 +147,8 @@ namespace FancyCards.Audio
             PlaybackPositionChanged?.Invoke(new PlaybackPositionArgs
             {
                 PositionTimeSpan = _outputDevice.GetPositionTimeSpan(),
-                PositionPercent = (double)_outputDevice.GetPosition() / _playbackSettings.TotalLength
+                PositionPercent = (double)(_outputDevice.GetPosition() + _playbackSettings.StartPosition) / _playbackSettings.TotalLength
+                
             }); 
         }
 
@@ -250,6 +251,12 @@ namespace FancyCards.Audio
             var seconds = (double)result.Length / waveFormat.AverageBytesPerSecond;
 
             return TimeSpan.FromSeconds(seconds);
+        }
+
+
+        public async Task RenderToMp3Async(string path, int bitRate = 128000)
+        {
+            await _audioStateManager.ExportToMp3Async(path, bitRate);
         }
     }
 

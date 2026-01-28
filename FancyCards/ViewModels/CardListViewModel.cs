@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
 using FancyCards.Models;
@@ -13,14 +14,16 @@ namespace FancyCards.ViewModels
     public partial class CardListViewModel : ObservableObject
     {
         private readonly DataService _dataService;
+        private readonly MainWindowViewModel _host;
 
         [ObservableProperty]
         private ReadOnlyObservableCollection<Card> _cards;
         
         private SourceCache<Card, int> _sourceCache;
-        public CardListViewModel(DataService dataService)
+        public CardListViewModel(MainWindowViewModel host, DataService dataService)
         {
             _dataService = dataService;
+            _host = host;
             //_cards = new ObservableCollection<Card>(_decks.First().Cards ?? new List<Card>());
             _sourceCache = new SourceCache<Card, int>(o => o.Id);
             _sourceCache.AddOrUpdate(_dataService.GetCards(1) ?? new List<Card>());
@@ -45,6 +48,13 @@ namespace FancyCards.ViewModels
                     _sourceCache.AddOrUpdate(card);
                 }
             }
+        }
+
+
+        [RelayCommand]
+        private async void OpenCardContext()
+        {
+            var result = await _host.OpenContext(new CardContextViewModel());
         }
 
 

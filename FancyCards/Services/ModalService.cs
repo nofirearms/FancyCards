@@ -32,6 +32,7 @@ namespace FancyCards.Services
             }
         }
 
+
         public void CloseAll()
         {
             _activeModals.Clear();

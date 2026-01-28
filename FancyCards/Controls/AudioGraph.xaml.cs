@@ -157,10 +157,14 @@ namespace FancyCards.Controls
 
         // Using a DependencyProperty as the backing store for StartPlaybackPosition.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StartPlaybackPositionProperty =
-            DependencyProperty.Register(nameof(StartPlaybackPosition), typeof(double), typeof(AudioGraph), new PropertyMetadata(0d));
+            DependencyProperty.Register(nameof(StartPlaybackPosition), typeof(double), typeof(AudioGraph), new PropertyMetadata(0d, OnStartPlaybackPositionChanged));
 
+        private static void OnStartPlaybackPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (AudioGraph)d;
 
-
+            control.UpdateStartPlaybackPosition();
+        }
 
 
         public double PlaybackCurrentPosition
@@ -235,8 +239,16 @@ namespace FancyCards.Controls
             CurrentPositionLine.Visibility = Visibility.Visible;
         }
 
+        private void UpdateStartPlaybackPosition()
+        {
+            var pos = Math.Clamp(StartPlaybackPosition, 0, 1);
 
-        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+            Canvas.SetLeft(StartPlaybackPositionLine, (SelectionCanvas.ActualWidth - StartPlaybackPositionLine.StrokeThickness) * pos);
+
+        }
+
+
+        private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             _startPoint = e.GetPosition(SelectionCanvas);
             _isSelecting = true;
@@ -259,15 +271,19 @@ namespace FancyCards.Controls
             {
                 StartSelection = start_x;
                 EndSelection = x;
+
+                StartPlaybackPosition = start_x;
             }
             else
             {
                 StartSelection = x;
                 EndSelection = start_x;
+
+                StartPlaybackPosition = x;
             }
         }
 
-        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             _isSelecting = false;
 
@@ -351,6 +367,16 @@ namespace FancyCards.Controls
                 var render_transform = (ScaleTransform)AudioGraphPolyline.RenderTransform;
                 render_transform.ScaleY = 1;
             });
+        }
+
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var canvas = (Canvas)sender;
+            var currentPoint = e.GetPosition(canvas);
+
+            var x = Math.Clamp(currentPoint.X / canvas.ActualWidth, 0, 1);
+
+            StartPlaybackPosition = x;
         }
     }
 }

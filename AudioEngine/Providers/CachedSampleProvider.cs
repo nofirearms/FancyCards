@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using FancyCards.Audio.Common;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,7 @@ namespace FancyCards.Audio.Providers
     {
         private readonly float[] _cachedSamples;
         private int _position;
+        public int Position => _position;
 
         public WaveFormat WaveFormat { get; }
         public double RMS { get; }
@@ -52,6 +54,7 @@ namespace FancyCards.Audio.Providers
             }
 
             _position += samplesToCopy;
+
             return samplesToCopy;
         }
 

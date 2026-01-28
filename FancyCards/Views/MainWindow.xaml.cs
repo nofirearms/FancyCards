@@ -13,7 +13,7 @@ namespace FancyCards.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = App.Current.Services.GetRequiredService<MainWindowViewModel>();
+            DataContext = App.Current.Services.GetRequiredService<MainWindowViewModel>(); 
         }
     }
 }

@@ -33,12 +33,19 @@ namespace FancyCards.ViewModels
         private double _endSelection = 1;
 
         [ObservableProperty]
+        private double _tempo = 1d;
+        [ObservableProperty]
+        private double _volume = 1d;
+
+        [ObservableProperty]
         private TimeSpan _audioDuration = TimeSpan.Zero;
 
         [ObservableProperty]
         private TimeSpan _playbackCurrentPositionTimeSpan;
         [ObservableProperty]
         private double _playbackCurrentPosition;
+
+
 
         [ObservableProperty]
         private ObservableCollection<double> _points = [];
@@ -81,7 +88,7 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanStartPlayback))]
         private void StartPlayback()
         {
-            _audioEngine.StartPlayback(); 
+            _audioEngine.StartPlayback(startPosition: _playbackStartPosition); 
         }
         private bool CanStartPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 

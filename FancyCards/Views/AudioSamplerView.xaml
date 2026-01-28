@@ -90,7 +90,7 @@
                         PlaybackCurrentPosition="{Binding PlaybackCurrentPosition}"
                         Points="{Binding Points}"
                         SamplerState="{Binding AudioSamplerState}"
-                        StartPlaybackPosition="{Binding PlaybackStartPosition}" />
+                        StartPlaybackPosition="{Binding PlaybackStartPosition, Mode=TwoWay}" />
                 </Grid>
             </Border>
         </DockPanel>

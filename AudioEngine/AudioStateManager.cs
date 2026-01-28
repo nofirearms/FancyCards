@@ -136,6 +136,18 @@ namespace FancyCards.Audio
             writer.Write(_currentData, 0, _currentData.Length);
         }
 
+        public async Task ExportToMp3Async(string path, int bitRate)
+        {
+            await Task.Run(() =>
+            {
+                CreateDirectory(path);
+                using (var resampler = new MediaFoundationResampler(this.CreateWaveProvider(), _format))
+                {
+                    MediaFoundationEncoder.EncodeToMp3(resampler, path, bitRate);
+                }
+            });
+        }
+
         // ========== AUDIO OPERATIONS EXAMPLES ========== //
 
         /// <summary>Обрезать по сэмплам</summary>
@@ -179,6 +191,16 @@ namespace FancyCards.Audio
                 byte[] b = BitConverter.GetBytes((short)newSample);
                 _currentData[i] = b[0];
                 _currentData[i + 1] = b[1];
+            }
+        }
+
+
+        public void CreateDirectory(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
             }
         }
     }

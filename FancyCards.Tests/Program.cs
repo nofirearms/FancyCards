@@ -1,4 +1,5 @@
-﻿using FancyCards.Audio; 
+﻿using FancyCards.Audio;
+using FancyCards.Audio.Common;
 
 namespace FancyCards.Tests
 {
@@ -12,19 +13,12 @@ namespace FancyCards.Tests
 
         private static async Task DoStuff()
         {
-            var engine = new AudioEngine();
-            //await engine.OpenAudioAsync("D:\\downloads\\Sound20210923_141107.mp3");
-
-            Console.WriteLine("Press enter to record");
-            Console.ReadLine();
-            engine.StartRecording();
-            await Task.Delay(3000);
-            engine.StopRecording();
-
-            Console.WriteLine("Recorded 3 secs, press enter to play");
-            Console.ReadLine();
-            engine.StartPlayback();
-            Console.WriteLine("Playback");
+            var timer = new AudioTimer(100);
+            timer.Tick += () =>
+            {
+                Console.WriteLine(DateTime.Now.ToString());
+            };
+            timer.Start();
             Console.ReadLine();
             //engine.StartPlayback(playbackSpeed: PlaybackSpeed.Half);
 

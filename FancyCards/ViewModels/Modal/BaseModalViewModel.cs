@@ -7,7 +7,7 @@ namespace FancyCards.ViewModels.Modal
 {
     public abstract class BaseModalViewModel : ObservableObject
     {
-
+        public abstract void CancelObject();
     }
     public abstract class BaseModalViewModel<TResult> : BaseModalViewModel
     {
@@ -36,6 +36,11 @@ namespace FancyCards.ViewModels.Modal
                 Success = false,
                 Data = default
             });
+        }
+
+        public override void CancelObject()
+        {
+            Cancel();
         }
     }
 }

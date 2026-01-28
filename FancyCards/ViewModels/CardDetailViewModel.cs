@@ -2,16 +2,20 @@
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
 using FancyCards.Models;
+using FancyCards.Services;
 using FancyCards.ViewModels.Modal;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
 {
     public partial class CardDetailViewModel : BaseModalViewModel<Card>
     {
+        private readonly DataService _dataService;
+        private readonly AudioEngine _audioEngine;
+
         [ObservableProperty]
         private string _title = "Card";
 
@@ -22,8 +26,9 @@ namespace FancyCards.ViewModels
         {
 
         }
-        [NotifyCanExecuteChangedFor(nameof(SaveCardCommand))]
+
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCardCommand))]
         private string _backText;
 
         [ObservableProperty]
@@ -37,17 +42,46 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private string _messageText;
-
+        
         [ObservableProperty]
         private AudioSamplerViewModel _audioSamplerViewModel;
 
 
-        public CardDetailViewModel(AudioEngine audioEngine)
+        public CardDetailViewModel(AudioEngine audioEngine, DataService dataService, Card card = null)
         {
-            _audioSamplerViewModel = new AudioSamplerViewModel(audioEngine);
+            _dataService = dataService;
+            _audioEngine = audioEngine;
+
+            if(card == null)
+            {
+                Title = "Create Card";
+            }
+            else
+            {
+                Title = "Edit Card";
+
+                FrontText = card.FrontText;
+                BackText = card.BackText;
+                PrefixText = card.PrefixText;
+                SuffixText = card.SuffixText;
+                CommentText = card.CommentText;
+                MessageText = card.MessageText;
+
+                audioEngine.OpenAudioAsync(card.Audio.Path);
+            }
+
+            _audioSamplerViewModel = new AudioSamplerViewModel(_audioEngine);
+
+            _audioEngine.AudioDurationChanged += (_) =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    SaveCardCommand?.NotifyCanExecuteChanged();
+                });
+            };
         }
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
-        private void SaveCard()
+        private async void SaveCard()
         {
             var card = new Card
             {
@@ -58,10 +92,25 @@ namespace FancyCards.ViewModels
                 CommentText = CommentText,
                 MessageText = MessageText,
                 DateCreated = DateTime.Now
+
             };
+            var audio_source = new AudioSource
+            {
+                Path = $"audio/{card.DateCreated:ddMMyyyy_HHmmss}.mp3",
+                EndPosition = _audioSamplerViewModel.EndSelection,
+                StartPosition = _audioSamplerViewModel.StartSelection,
+                Tempo = _audioSamplerViewModel.Tempo,
+                Volume = _audioSamplerViewModel.Volume
+            };
+
+            card.Audio = audio_source;
+
+            await _dataService.CreateCardAsync(1, card);
+            await _audioEngine.RenderToMp3Async(card.Audio.Path);
+
             Close(true, card);
         }
-        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText);
+        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) && _audioSamplerViewModel.AudioDuration != TimeSpan.Zero;
 
 
         private RelayCommand _cancelCommand;

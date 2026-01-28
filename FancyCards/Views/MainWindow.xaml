@@ -46,6 +46,19 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
+        <!--  Контекстное меню  -->
+        <controls:ContextBase
+            Panel.ZIndex="11"
+            d:Visibility="Collapsed"
+            Content="{Binding ContextMenu}"
+            Visibility="{Binding ContextMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+            <controls:ContextBase.Resources>
+                <DataTemplate DataType="{x:Type vm:CardContextViewModel}">
+                    <local:CardContextView />
+                </DataTemplate>
+            </controls:ContextBase.Resources>
+        </controls:ContextBase>
+
         <DockPanel>
             <StackPanel
                 HorizontalAlignment="Center"
