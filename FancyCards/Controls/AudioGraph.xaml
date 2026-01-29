@@ -58,10 +58,9 @@
             <Canvas
                 x:Name="SelectionCanvas"
                 Background="Transparent"
-                MouseLeftButtonDown="OnMouseLeftButtonDown"
-                MouseMove="OnMouseMove"
-                MouseRightButtonDown="OnMouseRightButtonDown"
-                MouseRightButtonUp="OnMouseRightButtonUp">
+                MouseDown="OnMouseDown"
+                MouseLeftButtonUp="OnMouseLeftButtonUp"
+                MouseMove="OnMouseMove">
 
 
                 <!--  Выделенная область  -->

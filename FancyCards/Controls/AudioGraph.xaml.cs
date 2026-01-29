@@ -253,12 +253,61 @@ namespace FancyCards.Controls
         }
 
 
-        private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            _startPoint = e.GetPosition(SelectionCanvas);
-            _isSelecting = true;
+            var point_canvas = e.GetPosition(SelectionCanvas);
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if(e.ClickCount > 1)
+                {
+                    //micro selection
 
-            SelectionRect.Visibility = Visibility.Visible;
+                    var selection_mouse_position = e.GetPosition(SelectionRect);
+                    var to_left_edge = Math.Abs(selection_mouse_position.X);
+                    var to_right_edge = Math.Abs(SelectionRect.ActualWidth - selection_mouse_position.X);
+
+                    var x = Math.Clamp(point_canvas.X / SelectionCanvas.ActualWidth, 0, 1);
+
+                    if (to_left_edge < to_right_edge)
+                    {
+                        StartSelection = x;
+                        StartPlaybackPosition = x;
+                    }
+                    else
+                    {
+                        EndSelection = x;
+                    }
+                }
+                else
+                {
+                    //start selection
+                    _startPoint = point_canvas;
+                    _isSelecting = true;
+
+                    SelectionRect.Visibility = Visibility.Visible;
+                }
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                //start position
+                var x = Math.Clamp(point_canvas.X / SelectionCanvas.ActualWidth, 0, 1);
+
+                StartPlaybackPosition = x;
+            }
+        }
+
+
+        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isSelecting = false;
+
+            var element = (UIElement)sender;
+            element.ReleaseMouseCapture();
+
+            // Передаём выбранный диапазон во ViewModel
+            var startX = Math.Min(_startPoint.X, e.GetPosition(SelectionCanvas).X);
+            var endX = Math.Max(_startPoint.X, e.GetPosition(SelectionCanvas).X);
+
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -267,6 +316,10 @@ namespace FancyCards.Controls
 
             var canvas = (Canvas)sender;
             var currentPoint = e.GetPosition(canvas);
+
+            if (Math.Abs(currentPoint.X - _startPoint.X) < 3) return;
+
+
             canvas.CaptureMouse();
 
             var x = Math.Clamp(currentPoint.X / canvas.ActualWidth, 0, 1);
@@ -288,18 +341,7 @@ namespace FancyCards.Controls
             }
         }
 
-        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            _isSelecting = false;
 
-            var element = (UIElement)sender;
-            element.ReleaseMouseCapture();
-
-            // Передаём выбранный диапазон во ViewModel
-            var startX = Math.Min(_startPoint.X, e.GetPosition(SelectionCanvas).X);
-            var endX = Math.Max(_startPoint.X, e.GetPosition(SelectionCanvas).X);
-
-        }
 
 
         private void ManipulationCanvasMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -374,14 +416,6 @@ namespace FancyCards.Controls
             });
         }
 
-        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var canvas = (Canvas)sender;
-            var currentPoint = e.GetPosition(canvas);
 
-            var x = Math.Clamp(currentPoint.X / canvas.ActualWidth, 0, 1);
-
-            StartPlaybackPosition = x;
-        }
     }
 }
