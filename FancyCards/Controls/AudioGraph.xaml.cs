@@ -57,6 +57,11 @@ namespace FancyCards.Controls
                 control.AddGraphPoint(point);
             }
 
+            if (points.Any())
+            {
+                control.StretchGraphHorizontally();
+                control.OnRecodringStopped();
+            }
 
             points.CollectionChanged += (s, a) =>
             {
@@ -193,7 +198,7 @@ namespace FancyCards.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            SelectionRect.Width = 0;
+            //SelectionRect.Width = 0;
             SelectionRect.Height = SelectionCanvas.ActualHeight;
         }
 

@@ -39,10 +39,10 @@
                     materialDesign:HintAssist.Hint="Suffix"
                     Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
-            <TextBox materialDesign:HintAssist.Hint="Front" Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox materialDesign:HintAssist.Hint="Back" Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox materialDesign:HintAssist.Hint="Comment" Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox materialDesign:HintAssist.Hint="Message" Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox materialDesign:HintAssist.Hint="Front" Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox materialDesign:HintAssist.Hint="Back" Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox materialDesign:HintAssist.Hint="Comment" Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox materialDesign:HintAssist.Hint="Message" Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 
             <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}" />
 

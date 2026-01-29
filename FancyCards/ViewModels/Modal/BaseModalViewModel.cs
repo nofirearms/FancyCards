@@ -20,12 +20,13 @@ namespace FancyCards.ViewModels.Modal
             _completionSource = new TaskCompletionSource<ModalResult<TResult>>(); 
         }
 
-        protected void Close(bool success = true, TResult data = default)
+        protected void Close(bool success = true, TResult data = default, string buttonTag = "Close")
         {
             _completionSource.TrySetResult(new ModalResult<TResult>
             { 
                 Success = success,
-                Data = data
+                Data = data,
+                ButtonTag = buttonTag
             });
         }
 
@@ -34,7 +35,8 @@ namespace FancyCards.ViewModels.Modal
             _completionSource.TrySetResult(new ModalResult<TResult>
             {
                 Success = false,
-                Data = default
+                Data = default,
+                ButtonTag = "Cancel"
             });
         }
 

@@ -19,7 +19,7 @@
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="Background" Value="White" />
+                    <!--<Setter Property="Background" Value="White" />-->
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -27,7 +27,7 @@
                 <DataTemplate>
                     <Border Background="Transparent">
                         <interation:Interaction.Behaviors>
-                            <behaviors:OpenContextMenuBehavior Command="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.OpenCardContextCommand}" />
+                            <behaviors:OpenContextMenuBehavior Command="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.OpenCardContextCommand}" Parameter="{Binding}" />
                         </interation:Interaction.Behaviors>
                         <Grid Margin="10">
 

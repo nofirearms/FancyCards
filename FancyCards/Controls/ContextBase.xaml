@@ -33,7 +33,7 @@
                 UseLayoutRounding="True">
                 <ContentPresenter
                     x:Name="ContextContent"
-                    Margin="-5"
+                    Margin="5"
                     Content="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Content}"
                     DataContextChanged="ContextContent_DataContextChanged"
                     LayoutUpdated="ContextContent_LayoutUpdated" />

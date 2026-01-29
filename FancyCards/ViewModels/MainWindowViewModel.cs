@@ -74,15 +74,23 @@ namespace FancyCards.ViewModels
 
             return result;
         }
-
-        private IRelayCommand _openCardModal;
-        public IRelayCommand OpenCardModal => _openCardModal ??= new RelayCommand(async() =>
+        [RelayCommand]
+        private void CreateCard()
         {
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>());
-            if (result.Success)
-            {
-                
-            }
-        });
+            OpenCardModal(null);
+        }
+
+        public async Task<ModalResult<Card>> OpenCardModal(Card card)
+        {
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
+
+            return result;
+        }
+
+        public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!")
+        {
+            var result = await _modalService.ShowModalAsync(new MessageBoxViewModel(header, message, buttons));
+            return result;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using FancyCards.Models;
 using FancyCards.ViewModels.Modal;
 using System;
 using System.Collections.Generic;
@@ -6,10 +7,18 @@ using System.Text;
 
 namespace FancyCards.ViewModels
 {
-    public partial class CardContextViewModel : BaseModalViewModel<object>
+    public partial class CardContextViewModel : BaseModalViewModel<Card>
     {
+        private readonly Card _card;
+
+        public CardContextViewModel(Card card)
+        {
+            _card = card;
+        }
 
         [RelayCommand]
-        private void Test() => Close(true);
+        private void Edit() => Close(true, _card, "Edit");
+        [RelayCommand]
+        private void Remove() => Close(true, _card, "Remove");
     }
 }

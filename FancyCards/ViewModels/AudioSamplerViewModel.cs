@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
 using FancyCards.Audio.Common;
 using FancyCards.Helpers;
+using FancyCards.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,14 +51,27 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private ObservableCollection<double> _points = [];
 
-        public AudioSamplerViewModel(AudioEngine audioEngine)
+        public AudioSamplerViewModel(Card card)
         {
-            _audioEngine = audioEngine;
+            _audioEngine = new AudioEngine();
 
             _audioEngine.StateChanged += OnAudioEngineStateChanged;
             _audioEngine.GraphChanged += OnGraphChanged;
             _audioEngine.AudioDurationChanged += OnDurationChanged;
             _audioEngine.PlaybackPositionChanged += OnPlaybackPositionChanged;
+
+            if(card.Id != default)
+            {
+                LoadGraph(card.Audio.Path);
+            }
+            
+        }
+
+        private async void LoadGraph(string path)
+        {
+            _audioEngine.OpenAudioAsync(path);
+            var points = await _audioEngine.GetWaveformPoints(path);
+            Points = new ObservableCollection<double>(points);
         }
 
         private void OnPlaybackPositionChanged(PlaybackPositionArgs args)
@@ -123,5 +137,10 @@ namespace FancyCards.ViewModels
             _audioEngine.StopRecording();
         }
         private bool CanStopRecording() => AudioSamplerState == State.Recording;
+
+        public async Task RenderAudioToMp3Async(string path, int bitrate = 128_000)
+        {
+            await _audioEngine.RenderToMp3Async(path, bitrate);
+        }
     }
 }

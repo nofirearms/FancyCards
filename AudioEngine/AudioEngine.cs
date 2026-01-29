@@ -61,9 +61,20 @@ namespace FancyCards.Audio
         }
 
 
-        public async Task OpenAudioAsync(string path)
+        public async void OpenAudioAsync(string path)
         {
             _audioStateManager.LoadFromAudioFile(path);
+
+            var duration = GetDuration(_audioStateManager.CurrentData, _captureSource.WaveFormat);
+            AudioDurationChanged?.Invoke(duration);
+
+            State = State.Stopped;
+        }
+
+        public async Task<double[]> GetWaveformPoints(string path)
+        {
+            var points = _audioWaveform.GetPointsFromAudio(path);
+            return points;
         }
 
         //--------------------------------------------------------------------------------------------------PLAYBACK-----------------------------------------------------
@@ -253,6 +264,13 @@ namespace FancyCards.Audio
             return TimeSpan.FromSeconds(seconds);
         }
 
+        private TimeSpan GetDuration(byte[] bytes, WaveFormat waveFormat)
+        {
+            //TODO разобраться почему в 2 раза меньше
+            var seconds = (double)bytes.Length * 2 / waveFormat.AverageBytesPerSecond ;
+
+            return TimeSpan.FromSeconds(seconds);
+        }
 
         public async Task RenderToMp3Async(string path, int bitRate = 128000)
         {

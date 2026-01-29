@@ -14,7 +14,6 @@ namespace FancyCards.ViewModels
     public partial class CardDetailViewModel : BaseModalViewModel<Card>
     {
         private readonly DataService _dataService;
-        private readonly AudioEngine _audioEngine;
 
         [ObservableProperty]
         private string _title = "Card";
@@ -47,10 +46,9 @@ namespace FancyCards.ViewModels
         private AudioSamplerViewModel _audioSamplerViewModel;
 
 
-        public CardDetailViewModel(AudioEngine audioEngine, DataService dataService, Card card = null)
+        public CardDetailViewModel(DataService dataService, Card card = null)
         {
             _dataService = dataService;
-            _audioEngine = audioEngine;
 
             if(card == null)
             {
@@ -66,19 +64,17 @@ namespace FancyCards.ViewModels
                 SuffixText = card.SuffixText;
                 CommentText = card.CommentText;
                 MessageText = card.MessageText;
-
-                audioEngine.OpenAudioAsync(card.Audio.Path);
             }
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(_audioEngine);
+            _audioSamplerViewModel = new AudioSamplerViewModel(card);
 
-            _audioEngine.AudioDurationChanged += (_) =>
-            {
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    SaveCardCommand?.NotifyCanExecuteChanged();
-                });
-            };
+            //_audioEngine.AudioDurationChanged += (_) =>
+            //{
+            //    App.Current.Dispatcher.Invoke(() =>
+            //    {
+            //        SaveCardCommand?.NotifyCanExecuteChanged();
+            //    });
+            //};
         }
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()
@@ -106,7 +102,7 @@ namespace FancyCards.ViewModels
             card.Audio = audio_source;
 
             await _dataService.CreateCardAsync(1, card);
-            await _audioEngine.RenderToMp3Async(card.Audio.Path);
+            await _audioSamplerViewModel.RenderAudioToMp3Async(card.Audio.Path);
 
             Close(true, card);
         }

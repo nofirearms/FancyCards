@@ -1,30 +1,21 @@
 ﻿using NAudio.Wave;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace FancyCards.Audio
 {
     public class AudioWaveform
     {
-        private readonly double[] _points;
-        private readonly int _width;
-        private int _currentIndex;
 
-        public AudioWaveform(int width = 800)
+        public AudioWaveform()
         {
-            _width = width;
-            _points = new double[width];
+
         }
 
-        // ДЛЯ РЕАЛЬНОГО ВРЕМЕНИ (запись)
-        public void ProcessAudioChunk(byte[] audioData, int bytesRecorded)
-        {
-            float[] samples = ConvertToSamples(audioData, bytesRecorded);
-            double amplitude = CalculateAmplitude(samples);
-
-            AddPoint(amplitude);
-        }
 
         public double GetAmplitude(byte[] audioData, int bytesRecorded)
         {
@@ -34,29 +25,32 @@ namespace FancyCards.Audio
             return amplitude;
         }
 
-        // ДЛЯ ФАЙЛА (открытие)
-        public void LoadFromSamples(float[] allSamples)
+
+        /// <summary>
+        /// Get points collection from stream to create a graph
+        /// </summary>
+        public double[] GetPointsFromAudio(string path)
         {
-            int samplesPerPoint = allSamples.Length / _width;
+            var points = new List<double>();
 
-            for (int i = 0; i < _width; i++)
+            using (var reader = new AudioFileReader(path))
             {
-                int start = i * samplesPerPoint;
-                int end = Math.Min(start + samplesPerPoint, allSamples.Length);
-
-                double amplitude = CalculateAmplitude(allSamples, start, end);
-                _points[i] = amplitude;
+                //TODO переделать под float
+                reader.Position = 0;
+                
+                var length = reader.Length / 200;
+                var buffer = new byte[length - length % reader.WaveFormat.BlockAlign];
+                while (reader.Read(buffer, 0, buffer.Length) > 0)
+                {
+                    var max = GetAmplitude(buffer, buffer.Length);
+                    points.Add(max);
+                }
             }
 
-            UpdateWaveform?.Invoke(_points);
+            return points.ToArray();
         }
 
-        private void AddPoint(double amplitude)
-        {
-            _points[_currentIndex] = amplitude;
-            _currentIndex = (_currentIndex + 1) % _width;
-            UpdateWaveform?.Invoke(_points);
-        }
+
 
         private double CalculateAmplitude(float[] samples, int start = 0, int end = -1)
         {
@@ -78,7 +72,5 @@ namespace FancyCards.Audio
             Buffer.BlockCopy(audioData, 0, samples, 0, bytesRecorded);
             return samples;
         }
-
-        public event Action<double[]> UpdateWaveform;
     }
 }

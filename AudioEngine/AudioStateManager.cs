@@ -24,6 +24,8 @@ namespace FancyCards.Audio
             _currentData = Array.Empty<byte>();
         }
 
+        public byte[] CurrentData => _currentData;
+
         public IWaveProvider CreateWaveProvider()
         {
             return new RawSourceWaveStream(new MemoryStream(_currentData), _format);
@@ -105,7 +107,7 @@ namespace FancyCards.Audio
             _currentData = pcmData;
             typeof(AudioStateManager)
                 .GetField("_format", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                ?.SetValue(this, new WaveFormat(reader.WaveFormat.SampleRate, 16, reader.WaveFormat.Channels));
+                ?.SetValue(this, new WaveFormat(reader.WaveFormat.SampleRate, reader.WaveFormat.BitsPerSample, reader.WaveFormat.Channels));
 
             if (createUndoPoint) SaveState();
 

@@ -48,13 +48,40 @@ namespace FancyCards.ViewModels
                     _sourceCache.AddOrUpdate(card);
                 }
             }
+            else if(args.Action == CardAction.Remove)
+            {
+                foreach (var card in cards)
+                {
+                    _sourceCache.Remove(card);
+                }
+            }
         }
 
 
         [RelayCommand]
-        private async void OpenCardContext()
+        private async void OpenCardContext(Card card)
         {
-            var result = await _host.OpenContext(new CardContextViewModel());
+            if (card is null) return;
+            var result = await _host.OpenContext(new CardContextViewModel(card));
+            if (result.Success)
+            {
+                if(result.ButtonTag == "Edit")
+                {
+                    var edit_result = await _host.OpenCardModal(card);
+                }
+                else if(result.ButtonTag == "Remove")
+                {
+                    var mb_result = await _host.OpenMessageBox("Remove selected card?", ["Yes", "No"]);
+                    if(mb_result.ButtonTag == "Yes")
+                    {
+                        var remove_result = await _dataService.RemoveCardAsync(1, card);
+                        if (!remove_result)
+                        {
+                            await _host.OpenMessageBox("Failed to remove the file", ["OK"]);
+                        }
+                    }
+                }
+            }
         }
 
 

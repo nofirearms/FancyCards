@@ -1,4 +1,5 @@
 ﻿using FancyCards.Database;
+using FancyCards.Helpers;
 using FancyCards.Models;
 using System;
 using System.Collections.Generic;
@@ -29,11 +30,29 @@ namespace FancyCards.Services
 
         public async Task<Card> CreateCardAsync(int deckId, Card card)
         {
-            await _repository.AddCardToDeckAsync(deckId, card);
+            await _repository.AddCardToDeckAsync(deckId, card); 
 
             CardEvent?.Invoke(new CardsEventArgs([card], CardAction.Create));
 
             return card;
+        }
+
+        public async Task<bool> RemoveCardAsync(int deckId, Card card)
+        {
+            bool output = true;
+            var result = await _repository.RemoveCardFromDeckAsync(deckId, card.Id);
+            if (result)
+            {
+                if(card.Audio != null)
+                {
+                    var delete_result = PathHelper.DeleteFile(card.Audio.Path);
+                    if (!delete_result) output = false;
+                }
+
+            }
+
+            CardEvent?.Invoke(new CardsEventArgs([card], CardAction.Remove));
+            return result;
         }
 
         public Deck GetDeckById(int id) => _decks.FirstOrDefault(d => d.Id == id);

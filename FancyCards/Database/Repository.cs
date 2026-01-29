@@ -47,15 +47,25 @@ namespace FancyCards.Database
             }
         }
 
-        public async Task RemoveCardFromDeckAsync(int deckId, int cardId)
+        public async Task<bool> RemoveCardFromDeckAsync(int deckId, int cardId)
         {
-            var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId);
-            var card = deck?.Cards.FirstOrDefault(c => c.Id == cardId);
-            if (card != null)
+            try
             {
-                deck.Cards.Remove(card);
-                await _context.SaveChangesAsync();
+                var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId);
+                var card = deck?.Cards.FirstOrDefault(c => c.Id == cardId);
+                if (card != null)
+                {
+                    deck.Cards.Remove(card);
+                    await _context.SaveChangesAsync();
+                }
+                return true;
             }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+
         }
 
 

@@ -8,5 +8,6 @@ namespace FancyCards.Models
     {
         public bool Success { get; set; }
         public T Data { get; set; }
+        public string ButtonTag { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace FancyCards.Models
         public DateTime DateCreated { get; set; }
         public DateTime NextReviewDate { get; set; }
         public DateTime LastReviewDate { get; set; }
+        public int DeckId { get; set; }
         
     }
 }
