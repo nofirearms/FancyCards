@@ -93,8 +93,8 @@ namespace FancyCards.ViewModels
             var audio_source = new AudioSource
             {
                 Path = $"audio/{card.DateCreated:ddMMyyyy_HHmmss}.mp3",
-                EndPosition = _audioSamplerViewModel.EndSelection,
-                StartPosition = _audioSamplerViewModel.StartSelection,
+                EndPosition = _audioSamplerViewModel.Selection.End,
+                StartPosition = _audioSamplerViewModel.Selection.Start,
                 Tempo = _audioSamplerViewModel.Tempo,
                 Volume = _audioSamplerViewModel.Volume
             };

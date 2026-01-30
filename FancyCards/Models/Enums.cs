@@ -20,4 +20,21 @@ namespace FancyCards.Models
     {
         Create, Remove, Update
     }
+
+    public struct Selection
+    {
+        public double Start { get; set; }
+        public double End { get; set; }
+
+        public Selection(double start, double end)
+        {
+            Start = start;
+            End = end;
+        }
+
+        public Selection()
+        {
+            
+        }
+    }
 }

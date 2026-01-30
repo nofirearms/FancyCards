@@ -1,5 +1,6 @@
 ﻿using FancyCards.Audio;
 using FancyCards.Helpers;
+using FancyCards.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace FancyCards.Controls
             if (points.Any())
             {
                 control.StretchGraphHorizontally();
-                control.OnRecodringStopped();
+                control.StretchGraphVertically();
             }
 
             points.CollectionChanged += (s, a) =>
@@ -121,38 +122,24 @@ namespace FancyCards.Controls
             control.OnStateChanged(oldState, newState);
         }
 
-        public double StartSelection
+
+        public Selection Selection
         {
-            get { return (double)GetValue(StartSelectionProperty); }
-            set { SetValue(StartSelectionProperty, value); }
+            get { return (Selection)GetValue(SelectionProperty); }
+            set { SetValue(SelectionProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for StartSelection.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty StartSelectionProperty =
-            DependencyProperty.Register(nameof(StartSelection), typeof(double), typeof(AudioGraph), new PropertyMetadata(0d, OnStartSelectionChanged));
+        // Using a DependencyProperty as the backing store for Selection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectionProperty =
+            DependencyProperty.Register(nameof(Selection), typeof(Selection), typeof(AudioGraph), new PropertyMetadata(new Selection(0, 0), OnSelectionChanged));
 
-        private static void OnStartSelectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnSelectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (AudioGraph)d;
 
             control.UpdateSelection();
         }
 
-        public double EndSelection
-        {
-            get { return (double)GetValue(EndSelectionProperty); }
-            set { SetValue(EndSelectionProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for EndSelection.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty EndSelectionProperty =
-            DependencyProperty.Register(nameof(EndSelection), typeof(double), typeof(AudioGraph), new PropertyMetadata(1d, OnEndSelectionChanged));
-
-        private static void OnEndSelectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (AudioGraph)d;
-            control.UpdateSelection();
-        }
 
         public double StartPlaybackPosition
         {
@@ -198,14 +185,14 @@ namespace FancyCards.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            //SelectionRect.Width = 0;
-            SelectionRect.Height = SelectionCanvas.ActualHeight;
+            SelectionOuter.Rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
         }
 
         private void OnStateChanged(State oldState, State newState)
         {
             if(newState == State.Recording)
             {
+                InteractionCanvas.IsHitTestVisible = false;
                 CurrentPositionLine.Visibility = Visibility.Collapsed;
             }
             if(newState == State.Playing)
@@ -224,14 +211,9 @@ namespace FancyCards.Controls
             }
         }
 
-        /// <summary>
-        /// position 0-1
-        /// </summary>
-        /// <param name="start"></param>
         private void UpdateSelection()
         {
-            Canvas.SetLeft(SelectionRect, Math.Max(0, StartSelection * ActualWidth));
-            SelectionRect.Width = Math.Abs(EndSelection * ActualWidth - StartSelection * ActualWidth);
+            SelectionInner.Rect = new Rect(new Point(Selection.Start * ActualWidth, 0), new Point(Selection.End * ActualWidth, ActualHeight));
         }
 
         private void UpdateCurrentPlaybackPosition()
@@ -239,7 +221,7 @@ namespace FancyCards.Controls
             if (SamplerState != State.Playing) return;
 
             var pos = Math.Clamp(PlaybackCurrentPosition, 0, 1);
-            Canvas.SetLeft(CurrentPositionLine, (SelectionCanvas.ActualWidth - CurrentPositionLine.StrokeThickness) * pos);
+            Canvas.SetLeft(CurrentPositionLine, (InteractionCanvas.ActualWidth - CurrentPositionLine.StrokeThickness) * pos);
             //если через стейт делать, то он отображается вконце графа и перескакивает вначало
             CurrentPositionLine.Visibility = Visibility.Visible;
         }
@@ -248,35 +230,19 @@ namespace FancyCards.Controls
         {
             var pos = Math.Clamp(StartPlaybackPosition, 0, 1);
 
-            Canvas.SetLeft(StartPlaybackPositionLine, (SelectionCanvas.ActualWidth - StartPlaybackPositionLine.StrokeThickness) * pos);
+            Canvas.SetLeft(StartPlaybackPositionLine, (ActualWidth - StartPlaybackPositionLine.StrokeThickness) * pos);
 
         }
 
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var point_canvas = e.GetPosition(SelectionCanvas);
+            var point_canvas = e.GetPosition(InteractionCanvas);
             if (e.ChangedButton == MouseButton.Left)
             {
                 if(e.ClickCount > 1)
                 {
-                    //micro selection
 
-                    var selection_mouse_position = e.GetPosition(SelectionRect);
-                    var to_left_edge = Math.Abs(selection_mouse_position.X);
-                    var to_right_edge = Math.Abs(SelectionRect.ActualWidth - selection_mouse_position.X);
-
-                    var x = Math.Clamp(point_canvas.X / SelectionCanvas.ActualWidth, 0, 1);
-
-                    if (to_left_edge < to_right_edge)
-                    {
-                        StartSelection = x;
-                        StartPlaybackPosition = x;
-                    }
-                    else
-                    {
-                        EndSelection = x;
-                    }
                 }
                 else
                 {
@@ -284,15 +250,31 @@ namespace FancyCards.Controls
                     _startPoint = point_canvas;
                     _isSelecting = true;
 
-                    SelectionRect.Visibility = Visibility.Visible;
+                    //start playback position
+                    var x = Math.Clamp(point_canvas.X / InteractionCanvas.ActualWidth, 0, 1);
+
+                    StartPlaybackPosition = x;
                 }
             }
             else if (e.ChangedButton == MouseButton.Right)
             {
-                //start position
-                var x = Math.Clamp(point_canvas.X / SelectionCanvas.ActualWidth, 0, 1);
+                //micro selection
 
-                StartPlaybackPosition = x;
+                var mouse_canvas = point_canvas.X / InteractionCanvas.ActualWidth;
+                var to_left_edge = Math.Abs(Selection.Start - mouse_canvas);
+                var to_right_edge = Math.Abs(Selection.End - mouse_canvas);
+
+                var x = Math.Clamp(mouse_canvas, 0, 1);
+
+                if (to_left_edge < to_right_edge)
+                {
+                    Selection = new Selection(x, Selection.End);
+                    StartPlaybackPosition = x;
+                }
+                else
+                {
+                    Selection = new Selection(Selection.Start, x);
+                }
             }
         }
 
@@ -305,8 +287,8 @@ namespace FancyCards.Controls
             element.ReleaseMouseCapture();
 
             // Передаём выбранный диапазон во ViewModel
-            var startX = Math.Min(_startPoint.X, e.GetPosition(SelectionCanvas).X);
-            var endX = Math.Max(_startPoint.X, e.GetPosition(SelectionCanvas).X);
+            var startX = Math.Min(_startPoint.X, e.GetPosition(InteractionCanvas).X);
+            var endX = Math.Max(_startPoint.X, e.GetPosition(InteractionCanvas).X);
 
         }
 
@@ -327,28 +309,19 @@ namespace FancyCards.Controls
 
             if (start_x <= x)
             {
-                StartSelection = start_x;
-                EndSelection = x;
+                Selection = new Selection(start_x, x);
 
                 StartPlaybackPosition = start_x;
             }
             else
             {
-                StartSelection = x;
-                EndSelection = start_x;
+                Selection = new Selection(x, start_x);
 
                 StartPlaybackPosition = x;
             }
         }
 
 
-
-
-        private void ManipulationCanvasMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var position = e.GetPosition(ManipulationCanvas);
-            StartPlaybackPosition = position.X / ManipulationCanvas.ActualWidth;
-        }
 
         private void AddGraphPoint(double y)
         {
@@ -394,11 +367,9 @@ namespace FancyCards.Controls
 
         private void OnRecodringStopped()
         {
-            StartSelection = 0;
-            EndSelection = 1;
+            Selection = new Selection(0, 1);
+            InteractionCanvas.IsHitTestVisible = true;
             StretchGraphVertically();
-            UpdateSelection();           
-            SelectionRect.Visibility = Visibility.Visible;
         }
 
         private async void ResetGraphScale()
@@ -406,8 +377,6 @@ namespace FancyCards.Controls
             
             AudioGraphPolyline.Dispatcher.Invoke(() =>
             {
-                SelectionRect.Visibility = Visibility.Collapsed;
-
                 var scale_transform = (ScaleTransform)AudioGraphPolyline.LayoutTransform;
                 scale_transform.ScaleX = 1;
 

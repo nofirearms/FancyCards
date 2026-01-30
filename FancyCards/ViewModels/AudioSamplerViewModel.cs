@@ -28,10 +28,9 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private double _playbackStartPosition = 0;
+
         [ObservableProperty]
-        private double _startSelection = 0;
-        [ObservableProperty]
-        private double _endSelection = 1;
+        private Selection _selection = new Selection(0, 1);
 
         [ObservableProperty]
         private double _tempo = 1d;
@@ -43,6 +42,7 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private TimeSpan _playbackCurrentPositionTimeSpan;
+
         [ObservableProperty]
         private double _playbackCurrentPosition;
 
@@ -63,6 +63,8 @@ namespace FancyCards.ViewModels
             if(card.Id != default)
             {
                 LoadGraph(card.Audio.Path);
+                Selection = new Selection(card.Audio.StartPosition, card.Audio.EndPosition);
+                PlaybackStartPosition = Selection.Start;
             }
             
         }
@@ -102,7 +104,7 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanStartPlayback))]
         private void StartPlayback()
         {
-            _audioEngine.StartPlayback(startPosition: _playbackStartPosition); 
+            _audioEngine.StartPlayback(startPosition: PlaybackStartPosition, endPosition: Selection.End); 
         }
         private bool CanStartPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 
@@ -110,7 +112,7 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanStartSlowMotionPlayback))]
         private void StartSlowMotionPlayback()
         {
-            _audioEngine.StartPlayback(playbackSpeed: PlaybackSpeed.Half);
+            _audioEngine.StartPlayback(startPosition: PlaybackStartPosition, endPosition: Selection.End, playbackSpeed: PlaybackSpeed.Half);
         }
         private bool CanStartSlowMotionPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 

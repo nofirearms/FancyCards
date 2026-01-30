@@ -8,8 +8,8 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="self"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="100"
+    d:DesignWidth="400"
     mc:Ignorable="d">
     <Grid x:Name="AudioGraphGrid">
         <Grid
@@ -54,21 +54,31 @@
                 BorderThickness="1"
                 CornerRadius="3" />
 
+            <Path
+                Fill="Red"
+                IsHitTestVisible="False"
+                Opacity="0.5">
+                <Path.Data>
+                    <CombinedGeometry GeometryCombineMode="Exclude">
+                        <!--  Внешний прямоугольник (черный)  -->
+                        <CombinedGeometry.Geometry1>
+                            <RectangleGeometry x:Name="SelectionOuter" />
+                        </CombinedGeometry.Geometry1>
+                        <!--  Внутренний прямоугольник (вырезается)  -->
+                        <CombinedGeometry.Geometry2>
+                            <RectangleGeometry x:Name="SelectionInner" />
+                        </CombinedGeometry.Geometry2>
+                    </CombinedGeometry>
+                </Path.Data>
+            </Path>
+
             <!--  Canvas для выделения  -->
             <Canvas
-                x:Name="SelectionCanvas"
+                x:Name="InteractionCanvas"
                 Background="Transparent"
                 MouseDown="OnMouseDown"
                 MouseLeftButtonUp="OnMouseLeftButtonUp"
                 MouseMove="OnMouseMove">
-
-
-                <!--  Выделенная область  -->
-                <Rectangle
-                    x:Name="SelectionRect"
-                    Fill="Red"
-                    Opacity="0.4"
-                    Visibility="Collapsed" />
 
                 <Line
                     x:Name="CurrentPositionLine"
@@ -86,25 +96,6 @@
                     Stroke="Red"
                     StrokeThickness="2"
                     Visibility="Visible"
-                    X1="0"
-                    X2="0"
-                    Y1="0.5"
-                    Y2="99.5" />
-            </Canvas>
-
-            <Canvas
-                x:Name="ManipulationCanvas"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Background="Transparent"
-                IsHitTestVisible="False">
-
-                <Line
-                    x:Name="PlaybackStartPositionLine"
-                    HorizontalAlignment="Center"
-                    Stroke="Red"
-                    StrokeThickness="2"
-                    Visibility="Collapsed"
                     X1="0"
                     X2="0"
                     Y1="0.5"
