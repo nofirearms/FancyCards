@@ -46,10 +46,10 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private double _playbackCurrentPosition;
 
-
-
         [ObservableProperty]
         private ObservableCollection<double> _points = [];
+
+        public bool AudioSourceChanged { get; set; } = false;
 
         public AudioSamplerViewModel(Card card)
         {
@@ -128,6 +128,7 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanStartRecording))]
         private void StartRecording()
         {
+            AudioSourceChanged = true;
             Points.Clear();
             _audioEngine.StartRecording();
         }

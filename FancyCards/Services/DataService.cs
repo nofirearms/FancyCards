@@ -37,6 +37,15 @@ namespace FancyCards.Services
             return card;
         }
 
+        public async Task<Card> UpdateCardAsync(int deckId, Card card)
+        {
+            await _repository.UpdateCardAsync(card);
+
+            CardEvent?.Invoke(new CardsEventArgs([card], CardAction.Update));
+
+            return card;
+        }
+
         public async Task<bool> RemoveCardAsync(int deckId, Card card)
         {
             bool output = true;

@@ -41,18 +41,25 @@ namespace FancyCards.ViewModels
             var cards = args.Cards;
             var action = args.Action;
 
-            if(args.Action == CardAction.Create)
+            if (args.Action == CardAction.Create)
             {
-                foreach(var card in cards)
+                foreach (var card in cards)
                 {
                     _sourceCache.AddOrUpdate(card);
                 }
             }
-            else if(args.Action == CardAction.Remove)
+            else if (args.Action == CardAction.Remove)
             {
                 foreach (var card in cards)
                 {
                     _sourceCache.Remove(card);
+                }
+            }
+            else if (args.Action == CardAction.Update) 
+            {
+                foreach (var card in cards)
+                {
+                    _sourceCache.AddOrUpdate(card);
                 }
             }
         }

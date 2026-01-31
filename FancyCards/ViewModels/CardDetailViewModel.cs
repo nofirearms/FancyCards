@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
+using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
 using FancyCards.ViewModels.Modal;
@@ -14,6 +15,8 @@ namespace FancyCards.ViewModels
     public partial class CardDetailViewModel : BaseModalViewModel<Card>
     {
         private readonly DataService _dataService;
+        private Card _card;
+
 
         [ObservableProperty]
         private string _title = "Card";
@@ -50,6 +53,9 @@ namespace FancyCards.ViewModels
         {
             _dataService = dataService;
 
+            _card = card == null ? null : card.Clone();
+            
+
             if(card == null)
             {
                 Title = "Create Card";
@@ -79,32 +85,65 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()
         {
-            var card = new Card
+            //create
+            if(_card == null)
             {
-                FrontText = FrontText,
-                BackText = BackText,
-                PrefixText = PrefixText,
-                SuffixText = SuffixText,
-                CommentText = CommentText,
-                MessageText = MessageText,
-                DateCreated = DateTime.Now
+                var card = new Card
+                {
+                    FrontText = FrontText,
+                    BackText = BackText,
+                    PrefixText = PrefixText,
+                    SuffixText = SuffixText,
+                    CommentText = CommentText,
+                    MessageText = MessageText,
+                    DateCreated = DateTime.Now
 
-            };
-            var audio_source = new AudioSource
+                };
+                var audio_source = new AudioSource
+                {
+                    Path = $"audio/{card.DateCreated:ddMMyyyy_HHmmss}.mp3",
+                    EndPosition = _audioSamplerViewModel.Selection.End,
+                    StartPosition = _audioSamplerViewModel.Selection.Start,
+                    Tempo = _audioSamplerViewModel.Tempo,
+                    Volume = _audioSamplerViewModel.Volume
+                };
+
+                card.Audio = audio_source;
+
+                _card = card;
+
+                await _dataService.CreateCardAsync(1, _card);
+                await _audioSamplerViewModel.RenderAudioToMp3Async(_card.Audio.Path);
+
+                Close(true, _card);
+            }
+            //edit
+            else
             {
-                Path = $"audio/{card.DateCreated:ddMMyyyy_HHmmss}.mp3",
-                EndPosition = _audioSamplerViewModel.Selection.End,
-                StartPosition = _audioSamplerViewModel.Selection.Start,
-                Tempo = _audioSamplerViewModel.Tempo,
-                Volume = _audioSamplerViewModel.Volume
-            };
+                _card.FrontText = FrontText;
+                _card.BackText = BackText;
+                _card.PrefixText = PrefixText;
+                _card.SuffixText = SuffixText;
+                _card.CommentText = CommentText;
+                _card.MessageText = MessageText;
+                _card.Audio.Volume = _audioSamplerViewModel.Volume;
+                _card.Audio.StartPosition = _audioSamplerViewModel.Selection.Start;
+                _card.Audio.EndPosition = _audioSamplerViewModel.Selection.End;
+                _card.Audio.Tempo = _audioSamplerViewModel.Tempo;
 
-            card.Audio = audio_source;
+                await _dataService.UpdateCardAsync(1, _card);
 
-            await _dataService.CreateCardAsync(1, card);
-            await _audioSamplerViewModel.RenderAudioToMp3Async(card.Audio.Path);
+                if (_audioSamplerViewModel.AudioSourceChanged)
+                {
+                    await _audioSamplerViewModel.RenderAudioToMp3Async(_card.Audio.Path);
+                }
 
-            Close(true, card);
+                Close(true, _card);
+            }
+
+
+
+            
         }
         private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) && _audioSamplerViewModel.AudioDuration != TimeSpan.Zero;
 

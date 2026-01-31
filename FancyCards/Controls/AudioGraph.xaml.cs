@@ -194,6 +194,8 @@ namespace FancyCards.Controls
             {
                 InteractionCanvas.IsHitTestVisible = false;
                 CurrentPositionLine.Visibility = Visibility.Collapsed;
+                StartPlaybackPosition = 0;
+                Selection = new Selection(0, 1);
             }
             if(newState == State.Playing)
             {

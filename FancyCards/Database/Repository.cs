@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Windows.Controls;
 
 namespace FancyCards.Database
 {
@@ -45,6 +46,28 @@ namespace FancyCards.Database
                 deck.Cards.Add(card);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> UpdateCardAsync(Card card)
+        {
+            try
+            {
+                var db_card = _context.Cards.FirstOrDefault(c => c.Id == card.Id);
+                if (db_card != null)
+                {
+                    UpdateValues(db_card, card);
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+
+
         }
 
         public async Task<bool> RemoveCardFromDeckAsync(int deckId, int cardId)
@@ -182,26 +205,26 @@ namespace FancyCards.Database
         //{
         //    await _context.SaveChangesAsync();
         //}
-
-        //private void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
-        //{
-        //    var entry = _context.Entry(entity);
-
-        //    entry.CurrentValues.SetValues(changedEntity);
-
-        //    var entityType = entry.Metadata;
-        //    //обновляем только owned properties
-        //    //TODO передалать чтобы обновлялось рекурсивно
-        //    foreach (var navigation in entityType.GetNavigations())
-        //    {
-        //        if (navigation.IsOnDependent || navigation.IsCollection || !navigation.ForeignKey.IsOwnership)
-        //        {
-        //            continue;
-        //        }
-
-        //        entry.Reference(navigation.Name).TargetEntry.CurrentValues.SetValues(navigation.GetGetter().GetClrValue(changedEntity));
-        //    }
-        //}
         #endregion
+
+        private void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
+        {
+            var entry = _context.Entry(entity);
+
+            entry.CurrentValues.SetValues(changedEntity);
+
+            var entityType = entry.Metadata;
+            //обновляем только owned properties
+            //TODO передалать чтобы обновлялось рекурсивно
+            foreach (var navigation in entityType.GetNavigations())
+            {
+                if (navigation.IsOnDependent || navigation.IsCollection || !navigation.ForeignKey.IsOwnership)
+                {
+                    continue;
+                }
+
+                entry.Reference(navigation.Name).TargetEntry.CurrentValues.SetValues(navigation.GetGetter().GetClrValue(changedEntity));
+            }
+        }
     }
 }
