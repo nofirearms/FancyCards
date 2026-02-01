@@ -54,9 +54,8 @@ namespace FancyCards.ViewModels
             _dataService = dataService;
 
             _card = card == null ? null : card.Clone();
-            
 
-            if(card == null)
+            if (_card == null)
             {
                 Title = "Create Card";
             }
@@ -64,16 +63,15 @@ namespace FancyCards.ViewModels
             {
                 Title = "Edit Card";
 
-                FrontText = card.FrontText;
-                BackText = card.BackText;
-                PrefixText = card.PrefixText;
-                SuffixText = card.SuffixText;
-                CommentText = card.CommentText;
-                MessageText = card.MessageText;
+                FrontText = _card.FrontText;
+                BackText = _card.BackText;
+                PrefixText = _card.PrefixText;
+                SuffixText = _card.SuffixText;
+                CommentText = _card.CommentText;
+                MessageText = _card.MessageText;
             }
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(card);
-
+            _audioSamplerViewModel = new AudioSamplerViewModel(_card);
             //_audioEngine.AudioDurationChanged += (_) =>
             //{
             //    App.Current.Dispatcher.Invoke(() =>
@@ -82,6 +80,9 @@ namespace FancyCards.ViewModels
             //    });
             //};
         }
+
+
+
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()
         {
@@ -145,7 +146,7 @@ namespace FancyCards.ViewModels
 
             
         }
-        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) && _audioSamplerViewModel.AudioDuration != TimeSpan.Zero;
+        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) /*&& _audioSamplerViewModel.AudioDuration != TimeSpan.Zero*/;
 
 
         private RelayCommand _cancelCommand;

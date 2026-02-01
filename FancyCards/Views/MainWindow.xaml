@@ -5,10 +5,12 @@
     xmlns:controls="clr-namespace:FancyCards.Controls"
     xmlns:converters="clr-namespace:FancyCards.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    x:Name="root"
     Title="{Binding Title}"
     Width="500"
     Height="700"
@@ -20,30 +22,32 @@
     </Window.Resources>
     <Grid>
         <!--  Модальные окна  -->
-        <ItemsControl
-            Panel.ZIndex="10"
-            Background="Transparent"
-            ItemsSource="{Binding ActiveModals}"
-            Visibility="{Binding HasActiveModals, Converter={StaticResource BoolToVisibilityConverter}}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ContentControl Content="{Binding}">
-                        <ContentControl.Resources>
-                            <DataTemplate DataType="{x:Type vm:CardDetailViewModel}">
-                                <controls:ModalBase>
-                                    <local:CardDetailView Margin="10" />
-                                </controls:ModalBase>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
-                                <controls:ModalBase>
-                                    <local:MessageBoxView />
-                                </controls:ModalBase>
+        <ItemsControl Panel.ZIndex="10" ItemsSource="{Binding ActiveModals}">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type vm:CardDetailViewModel}">
+                    <controls:ModalBase
+                        Margin="0"
+                        ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadedCommand}"
+                        ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadingCommand}">
+                        <local:CardDetailView Margin="10" />
+                    </controls:ModalBase>
 
-                            </DataTemplate>
-                        </ContentControl.Resources>
-                    </ContentControl>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
+                    <controls:ModalBase>
+                        <local:MessageBoxView />
+                    </controls:ModalBase>
+
+                </DataTemplate>
+            </ItemsControl.Resources>
+            <!--<ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <controls:ModalBase
+                        Content="{Binding}"
+                        ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadedCommand}"
+                        ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadingCommand}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>-->
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -78,6 +82,19 @@
 
             <local:CardListView DataContext="{Binding CardListViewModel}" />
         </DockPanel>
+
+
+        <Grid d:Visibility="Collapsed" Visibility="{Binding Loading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ProgressBar IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
+            <!--<TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Foreground="White"
+                Text="LOADING..." />-->
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.5" Color="Black" />
+            </Grid.Background>
+        </Grid>
 
     </Grid>
 

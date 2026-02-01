@@ -1,4 +1,5 @@
 ﻿using FancyCards.Models;
+using FancyCards.ViewModels;
 using FancyCards.ViewModels.Modal;
 using System;
 using System.Collections.Generic;
@@ -19,17 +20,21 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<TResult>> ShowModalAsync<TResult>(BaseModalViewModel<TResult> modalViewModel)
         {
-            _activeModals.Add(modalViewModel);
 
-            try
+            return await App.Current.Dispatcher.Invoke(async () =>
             {
-                var result = await modalViewModel.Task;
-                return result;
-            }
-            finally
-            {
-                _activeModals.Remove(modalViewModel);
-            }
+                try
+                {
+                    _activeModals.Add(modalViewModel);
+                    var result = await modalViewModel.OpenAsync();
+                    return result;
+                }
+                finally
+                {
+                    _activeModals.Remove(modalViewModel);
+                }
+            });
+
         }
 
 

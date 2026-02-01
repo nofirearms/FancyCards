@@ -21,6 +21,8 @@ namespace FancyCards.Views
         public CardDetailView()
         {
             InitializeComponent();
+
         }
+
     }
 }

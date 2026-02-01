@@ -37,6 +37,9 @@ namespace FancyCards.ViewModels
         [NotifyPropertyChangedFor(nameof(ContextMenuOpen))]
         private BaseModalViewModel _contextMenu;
 
+        [ObservableProperty]
+        private bool _loading = false;
+
         public bool ContextMenuOpen => _contextMenu != null;
 
         public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine)
@@ -60,19 +63,27 @@ namespace FancyCards.ViewModels
                 OnPropertyChanged(nameof(ActiveModals));
             };
 
-
         }
 
         
         public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)
         {
-            ContextMenu = context;
+            try
+            {
+                ContextMenu = context;
 
-            var result = await context.Task;
+                var result = await context.OpenAsync();
 
-            ContextMenu = null;
+                ContextMenu = null;
 
-            return result;
+                return result;
+            }
+            finally
+            {
+                ////unfreeze ui
+                //await Task.Delay(15);
+            }
+
         }
         [RelayCommand]
         private void CreateCard()
@@ -82,15 +93,37 @@ namespace FancyCards.ViewModels
 
         public async Task<ModalResult<Card>> OpenCardModal(Card card)
         {
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
+            await ModalLoading();
+            try
+            {
+                var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
 
-            return result;
+                return result;
+            }
+            finally
+            {
+
+            }
+
         }
 
         public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!")
         {
             var result = await _modalService.ShowModalAsync(new MessageBoxViewModel(header, message, buttons));
             return result;
+        }
+
+
+        [RelayCommand]
+        private async Task ModalLoading()
+        {
+            Loading = true;
+            await Task.Delay(30);
+        }
+        [RelayCommand]
+        private void ModalLoaded()
+        {
+            Loading = false;
         }
     }
 }

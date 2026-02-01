@@ -19,6 +19,7 @@ namespace FancyCards.Controls
     public partial class ModalBase : UserControl
     {
 
+
         public new object Content
         {
             get { return (object)GetValue(ContentProperty); }
@@ -27,11 +28,56 @@ namespace FancyCards.Controls
 
         // Using a DependencyProperty as the backing store for Content.  This enables animation, styling, binding, etc...
         public new static readonly DependencyProperty ContentProperty =
-            DependencyProperty.Register("Content", typeof(object), typeof(ModalBase), new PropertyMetadata(null));
+            DependencyProperty.Register("Content", typeof(object), typeof(ModalBase), new PropertyMetadata(null, OnNewContentChanged));
+
+        private static void OnNewContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (ModalBase)d;
+            var content = e.NewValue as FrameworkElement;
+            if (content is null) return;
+
+            //doesn't work
+            control.ContentLoading?.Execute(null);
+
+
+            content.Loaded += (_, _) =>
+            {
+                control.ContentLoaded?.Execute(null);
+            };
+        }
+
+
+
+
+        public ICommand ContentLoaded
+        {
+            get { return (ICommand)GetValue(ContentLoadedProperty); }
+            set { SetValue(ContentLoadedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ContentLoaded.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContentLoadedProperty =
+            DependencyProperty.Register(nameof(ContentLoaded), typeof(ICommand), typeof(ModalBase), new PropertyMetadata(null));
+
+
+
+        public ICommand ContentLoading
+        {
+            get { return (ICommand)GetValue(ContentLoadingProperty); }
+            set { SetValue(ContentLoadingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ContentLoading.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContentLoadingProperty =
+            DependencyProperty.Register(nameof(ContentLoading), typeof(ICommand), typeof(ModalBase), new PropertyMetadata(null));
+
+
+
 
         public ModalBase()
         {
             InitializeComponent();
         }
+
     }
 }
