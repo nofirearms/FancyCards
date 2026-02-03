@@ -85,8 +85,8 @@
 
 
         <Grid d:Visibility="Collapsed" Visibility="{Binding Loading, Converter={StaticResource BoolToVisibilityConverter}}">
-            <ProgressBar IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
-            <!--<TextBlock
+            <!--<ProgressBar IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
+            <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Foreground="White"

@@ -21,6 +21,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly ViewModelFactory _viewModelFactory;
+        private readonly LoadingAnimationService _loadingAnimationService;
 
         public string Title => "Fancy Cards";
 
@@ -42,12 +43,13 @@ namespace FancyCards.ViewModels
 
         public bool ContextMenuOpen => _contextMenu != null;
 
-        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine)
+        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine, LoadingAnimationService loadingAnimationService)
         {
             _modalService = modalService;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _viewModelFactory = viewModelFactory;
+            _loadingAnimationService = loadingAnimationService;
 
             
 
@@ -86,9 +88,9 @@ namespace FancyCards.ViewModels
 
         }
         [RelayCommand]
-        private void CreateCard()
+        private async void CreateCard()
         {
-            OpenCardModal(null);
+            await OpenCardModal(null);
         }
 
         public async Task<ModalResult<Card>> OpenCardModal(Card card)
@@ -117,6 +119,7 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async Task ModalLoading()
         {
+            _loadingAnimationService.StartLoadingAniamtion();
             Loading = true;
             await Task.Delay(30);
         }
@@ -124,6 +127,7 @@ namespace FancyCards.ViewModels
         private void ModalLoaded()
         {
             Loading = false;
+            _loadingAnimationService.StopLoadingAniamtion() ;
         }
     }
 }
