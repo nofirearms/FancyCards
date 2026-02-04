@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:FancyCards.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interactions="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -33,18 +34,80 @@
                 <TextBox
                     Grid.Column="0"
                     materialDesign:HintAssist.Hint="Prefix"
+                    materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
                     Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBox
                     Grid.Column="1"
                     materialDesign:HintAssist.Hint="Suffix"
+                    materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
                     Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
-            <TextBox materialDesign:HintAssist.Hint="Front" Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-            <TextBox materialDesign:HintAssist.Hint="Back" Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-            <TextBox materialDesign:HintAssist.Hint="Comment" Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-            <TextBox materialDesign:HintAssist.Hint="Message" Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox
+                materialDesign:HintAssist.Hint="Front"
+                materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox
+                materialDesign:HintAssist.Hint="Back"
+                materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox
+                materialDesign:HintAssist.Hint="Comment"
+                materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <TextBox
+                materialDesign:HintAssist.Hint="Message"
+                materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 
-            <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}"  />
+            <Grid Margin="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Grid.Column="0"
+                    Margin="0,0,1,0"
+                    Orientation="Vertical">
+                    <ComboBox
+                        Padding="10"
+                        materialDesign:HintAssist.Hint="State"
+                        materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                        ItemsSource="{Binding States}"
+                        SelectedValue="{Binding SelectedState, Mode=TwoWay}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="1,0,0,0"
+                    Orientation="Vertical">
+                    <DatePicker
+                        Padding="10"
+                        materialDesign:HintAssist.Hint="Review date"
+                        materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                        SelectedDate="{Binding NextReviewDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
+                    <DatePicker
+                        Margin="0,2,0,0"
+                        Padding="10"
+                        materialDesign:HintAssist.Hint="Date created"
+                        materialDesign:HintAssist.HintPaddingBrush="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                        IsHitTestVisible="False"
+                        SelectedDate="{Binding DateCreated}"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}">
+                        <interactions:Interaction.Triggers>
+                            <interactions:DataTrigger Binding="{Binding CardAction}" Value="Create">
+                                <interactions:ChangePropertyAction PropertyName="Visibility" Value="Collapsed" />
+                            </interactions:DataTrigger>
+                            <interactions:DataTrigger Binding="{Binding CardAction}" Value="Update">
+                                <interactions:ChangePropertyAction PropertyName="Visibility" Value="Visible" />
+                            </interactions:DataTrigger>
+                        </interactions:Interaction.Triggers>
+                    </DatePicker>
+                </StackPanel>
+            </Grid>
+
+            <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}" />
 
 
 

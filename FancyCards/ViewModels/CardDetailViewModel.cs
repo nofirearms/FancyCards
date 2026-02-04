@@ -48,20 +48,33 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private AudioSamplerViewModel _audioSamplerViewModel;
 
+        public IEnumerable<CardState> States => Enum.GetValues<CardState>().Cast<CardState>();
+        [ObservableProperty]
+        private CardState _selectedState = CardState.Learning;
 
-        public CardDetailViewModel(DataService dataService, Card card = null)
+        [ObservableProperty]
+        private DateTime _nextReviewDate = DateTime.Now;
+
+        [ObservableProperty]
+        private DateTime _dateCreated;
+
+        public CardAction CardAction { get; } = CardAction.Create;
+
+        public CardDetailViewModel(DataService dataService, Card card)
         {
             _dataService = dataService;
 
-            _card = card == null ? null : card.Clone();
+            CardAction = card.Id == default ? CardAction.Create : CardAction.Update;
 
-            if (_card == null)
+             if (CardAction == CardAction.Create)
             {
                 Title = "Create Card";
+                _card = card;
             }
             else
             {
                 Title = "Edit Card";
+                _card = card.Clone();
 
                 FrontText = _card.FrontText;
                 BackText = _card.BackText;
@@ -69,6 +82,9 @@ namespace FancyCards.ViewModels
                 SuffixText = _card.SuffixText;
                 CommentText = _card.CommentText;
                 MessageText = _card.MessageText;
+                DateCreated = _card.DateCreated;
+                NextReviewDate = _card.NextReviewDate;
+                SelectedState = _card.State;
             }
 
             _audioSamplerViewModel = new AudioSamplerViewModel(_card);
@@ -87,7 +103,7 @@ namespace FancyCards.ViewModels
         private async void SaveCard()
         {
             //create
-            if(_card == null)
+            if(CardAction == CardAction.Create)
             {
                 var card = new Card
                 {
@@ -97,7 +113,9 @@ namespace FancyCards.ViewModels
                     SuffixText = SuffixText,
                     CommentText = CommentText,
                     MessageText = MessageText,
-                    DateCreated = DateTime.Now
+                    DateCreated = DateTime.Now,
+                    NextReviewDate = NextReviewDate.Date,
+                    State = SelectedState
 
                 };
                 var audio_source = new AudioSource
@@ -142,9 +160,6 @@ namespace FancyCards.ViewModels
                 Close(true, _card);
             }
 
-
-
-            
         }
         private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) /*&& _audioSamplerViewModel.AudioDuration != TimeSpan.Zero*/;
 
