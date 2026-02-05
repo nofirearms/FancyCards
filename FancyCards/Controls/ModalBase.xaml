@@ -17,18 +17,13 @@
             <SolidColorBrush Opacity="0.5" Color="Black" />
         </Grid.Background>
 
-        <ProgressBar
-            IsIndeterminate="True"
-            Style="{StaticResource MaterialDesignCircularProgressBar}"
-            Visibility="{Binding Loading, Converter={StaticResource BoolToVisibilityConverter}}" />
 
         <Border
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
             CornerRadius="3"
-            UseLayoutRounding="True"
-            Visibility="{Binding Loading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Reversed}">
+            UseLayoutRounding="True">
             <ContentPresenter
                 x:Name="ContentPresenter"
                 Grid.Row="1"

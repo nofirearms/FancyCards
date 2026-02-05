@@ -26,7 +26,7 @@ namespace FancyCards.Services
                 try
                 {
                     _activeModals.Add(modalViewModel);
-                    var result = await modalViewModel.OpenAsync();
+                    var result = await modalViewModel.Task;
                     return result;
                 }
                 finally

@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using FancyCards.Models;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+
 
 namespace FancyCards.ViewModels.Modal
 {
@@ -13,35 +12,12 @@ namespace FancyCards.ViewModels.Modal
     {
         private TaskCompletionSource<ModalResult<TResult>> _completionSource;
 
-        [ObservableProperty]
-        private bool _loading = false;
+        public Task<ModalResult<TResult>> Task => _completionSource.Task;
 
         protected BaseModalViewModel()
         {
             _completionSource = new TaskCompletionSource<ModalResult<TResult>>(); 
         }
-
-        public async Task<ModalResult<TResult>> OpenAsync()
-        {
-            try
-            {
-                Loading = true;
-
-                await LoadData();
-
-                Loading = false;
-
-                return await _completionSource.Task;
-            }
-            finally
-            {
-                Dispose();
-            }
-
-        }
-
-        protected async virtual Task LoadData() { }
-        protected void Dispose() { }
 
         protected async Task Close(bool success = true, TResult data = default, string buttonTag = "Close")
         {

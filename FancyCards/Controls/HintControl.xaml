@@ -1,0 +1,26 @@
+﻿<UserControl
+    x:Class="FancyCards.Controls.HintControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:FancyCards.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="self"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid>
+
+        <ContentPresenter Content="{Binding ElementName=self, Path=Content}" />
+        <TextBlock
+            x:Name="HintTextBlock"
+            Margin="10,-5"
+            Padding="3,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="{Binding ElementName=self, Path=HintBackground}"
+            FontSize="12"
+            IsHitTestVisible="False"
+            Text="{Binding ElementName=self, Path=HintText}" />
+    </Grid>
+</UserControl>

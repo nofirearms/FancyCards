@@ -74,7 +74,7 @@ namespace FancyCards.ViewModels
             {
                 ContextMenu = context;
 
-                var result = await context.OpenAsync();
+                var result = await context.Task;
 
                 ContextMenu = null;
 
