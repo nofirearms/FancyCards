@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:Background="White"
+    d:Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
     d:DesignHeight="450"
     d:DesignWidth="400"
     mc:Ignorable="d">
@@ -17,7 +17,7 @@
             Height="40"
             Padding="0"
             Content="{materialDesign:PackIcon Kind=Eye}" />
-        <controls:HintControl HintBackground="White" HintText="Back">
+        <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
             <TextBox IsHitTestVisible="False" />
         </controls:HintControl>
         <TextBlock Text="Hint" />
@@ -26,7 +26,7 @@
             Height="40"
             Padding="0"
             Content="{materialDesign:PackIcon Kind=Eye}" />
-        <controls:HintControl HintBackground="White" HintText="Front">
+        <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
             <TextBox />
         </controls:HintControl>
         <Button
@@ -62,5 +62,13 @@
                 Content="{materialDesign:PackIcon Kind=Stop}" />
 
         </StackPanel>
+
+        <Button
+            Width="40"
+            Height="40"
+            Padding="0"
+            Command="{Binding CancelTrainingCommand}"
+            Content="{materialDesign:PackIcon Kind=Cancel}" />
+
     </StackPanel>
 </UserControl>

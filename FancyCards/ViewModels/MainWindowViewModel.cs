@@ -93,6 +93,18 @@ namespace FancyCards.ViewModels
             await OpenCardModal(null);
         }
 
+        [RelayCommand]
+        private async void StartTraining()
+        {
+            var start_view_result = await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingStartViewModel>());
+            if(start_view_result.ButtonTag == "StartTraining")
+            {
+                await ModalLoading();
+                await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingViewModel>());
+            }
+        }
+
+
         public async Task<ModalResult<Card>> OpenCardModal(Card card)
         {
             await ModalLoading();

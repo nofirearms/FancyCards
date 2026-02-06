@@ -74,6 +74,20 @@ namespace FancyCards.Controls
 
 
 
+
+        public Brush ModalBackground
+        {
+            get { return (Brush)GetValue(ModalBackgroundProperty); }
+            set { SetValue(ModalBackgroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ModalBackground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ModalBackgroundProperty =
+            DependencyProperty.Register(nameof(ModalBackground), typeof(Brush), typeof(ModalBase), new PropertyMetadata((Brush)Application.Current.FindResource("MaterialDesign.Brush.Secondary.Light")));
+
+
+
+
         public ModalBase()
         {
             InitializeComponent();

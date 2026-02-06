@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:FancyCards.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="self"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -21,13 +22,13 @@
         <Border
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+            Background="{Binding ElementName=self, Path=ModalBackground}"
             CornerRadius="3"
             UseLayoutRounding="True">
             <ContentPresenter
                 x:Name="ContentPresenter"
                 Grid.Row="1"
-                Margin="-5"
+                Margin="5"
                 Content="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Content}" />
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" />

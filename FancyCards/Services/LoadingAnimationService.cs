@@ -88,14 +88,13 @@ namespace FancyCards.Services
             double main_top = 0;
             double main_width = 0;
             double main_height = 0;
+
              _mainWindow.Dispatcher.Invoke(() => 
             {
                 main_left = _mainWindow.Left;
                 main_top = _mainWindow.Top;
                 main_width = _mainWindow.Width;
                 main_height = _mainWindow.Height;
-
-                
             });
 
             var point = new Rect(main_left, main_top, main_width, main_height);

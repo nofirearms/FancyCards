@@ -19,7 +19,7 @@ namespace FancyCards.ViewModels.Modal
             _completionSource = new TaskCompletionSource<ModalResult<TResult>>(); 
         }
 
-        protected async Task Close(bool success = true, TResult data = default, string buttonTag = "Close")
+        protected async void Close(bool success = true, TResult data = default, string buttonTag = "Close")
         {
             
             _completionSource.TrySetResult(new ModalResult<TResult>
