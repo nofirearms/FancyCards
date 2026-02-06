@@ -21,6 +21,11 @@ namespace FancyCards.Models
         Create, Remove, Update
     }
 
+    public enum TrainingCardState
+    {
+        Queue, Retry, Success, Failed
+    }
+
     public struct Selection
     {
         public double Start { get; set; }

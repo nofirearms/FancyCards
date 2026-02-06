@@ -266,8 +266,7 @@ namespace FancyCards.Audio
 
         private TimeSpan GetDuration(byte[] bytes, WaveFormat waveFormat)
         {
-            //TODO разобраться почему в 2 раза меньше
-            var seconds = (double)bytes.Length * 2 / waveFormat.AverageBytesPerSecond ;
+            var seconds = (double)bytes.Length / waveFormat.AverageBytesPerSecond ;
 
             return TimeSpan.FromSeconds(seconds);
         }
