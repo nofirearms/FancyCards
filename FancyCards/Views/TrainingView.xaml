@@ -26,7 +26,10 @@
             IsChecked="{Binding CurrentCard.ShowBack, Mode=TwoWay}"
             Style="{StaticResource CustomRadioButton}" />
         <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
-            <TextBox IsHitTestVisible="False">
+            <TextBox
+                materialDesign:HintAssist.Hint=""
+                materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                IsHitTestVisible="False">
                 <interaction:Interaction.Triggers>
                     <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
                         <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
@@ -57,7 +60,10 @@
             </interaction:Interaction.Triggers>
         </TextBlock>
         <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
-            <TextBox Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                materialDesign:HintAssist.Hint=""
+                materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </controls:HintControl>
         <Button
             Width="40"

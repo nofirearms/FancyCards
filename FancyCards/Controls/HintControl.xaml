@@ -5,22 +5,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:FancyCards.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    x:Name="self"
+    x:Name="root"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
 
-        <ContentPresenter Content="{Binding ElementName=self, Path=Content}" />
+        <ContentPresenter Content="{Binding ElementName=root, Path=Content}" />
         <TextBlock
             x:Name="HintTextBlock"
             Margin="10,-5"
             Padding="3,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Background="{Binding ElementName=self, Path=HintBackground}"
+            Background="{Binding ElementName=root, Path=HintBackground}"
             FontSize="12"
             IsHitTestVisible="False"
-            Text="{Binding ElementName=self, Path=HintText}" />
+            Text="{Binding ElementName=root, Path=HintText}" />
     </Grid>
 </UserControl>

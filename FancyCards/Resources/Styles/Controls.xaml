@@ -8,7 +8,10 @@
     <Style BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
         <Setter Property="Padding" Value="10" />
         <Setter Property="Margin" Value="1,1" />
+        <!--<Setter Property="materialDesign:HintAssist.Hint" Value="" />
+        <Setter Property="materialDesign:HintAssist.HintPaddingBrush" Value="Transparent" />-->
     </Style>
+
 
     <Style
         x:Key="CustomRadioButton"

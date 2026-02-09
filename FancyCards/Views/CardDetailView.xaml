@@ -37,7 +37,10 @@
                     Grid.Column="0"
                     HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
                     HintText="Prefix">
-                    <TextBox Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    <TextBox
+                        materialDesign:HintAssist.Hint=""
+                        materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                        Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                 </controls:HintControl>
 
 
@@ -46,25 +49,40 @@
                     Grid.Column="1"
                     HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
                     HintText="Suffix">
-                    <TextBox Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    <TextBox
+                        materialDesign:HintAssist.Hint=""
+                        materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                        Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                 </controls:HintControl>
 
 
             </Grid>
             <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
-                <TextBox Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </controls:HintControl>
 
             <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
-                <TextBox Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </controls:HintControl>
 
             <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Comment">
-                <TextBox Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </controls:HintControl>
 
             <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Message">
-                <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </controls:HintControl>
 
 
@@ -80,6 +98,8 @@
                     <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="State">
                         <ComboBox
                             Padding="10"
+                            materialDesign:HintAssist.Hint=""
+                            materialDesign:HintAssist.HintPaddingBrush="Transparent"
                             ItemsSource="{Binding States}"
                             SelectedValue="{Binding SelectedState, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" />
@@ -93,6 +113,8 @@
                     <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Review date">
                         <DatePicker
                             Padding="10"
+                            materialDesign:HintAssist.Hint=""
+                            materialDesign:HintAssist.HintPaddingBrush="Transparent"
                             SelectedDate="{Binding NextReviewDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
                     </controls:HintControl>
@@ -103,6 +125,8 @@
                         HintText="Date created">
                         <DatePicker
                             Padding="10"
+                            materialDesign:HintAssist.Hint=""
+                            materialDesign:HintAssist.HintPaddingBrush="Transparent"
                             IsHitTestVisible="False"
                             SelectedDate="{Binding DateCreated}"
                             Style="{StaticResource MaterialDesignOutlinedDatePicker}" />

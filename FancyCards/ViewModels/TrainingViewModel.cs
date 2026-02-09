@@ -73,7 +73,7 @@ namespace FancyCards.ViewModels
             _audioEngine.StartPlayback(_currentCard.Card.Audio.StartPosition, _currentCard.Card.Audio.EndPosition, PlaybackSpeed.Full, (float)_currentCard.Card.Audio.Volume, (float)_currentCard.Card.Audio.Tempo);
         }
 
-
+        [RelayCommand]
         private void Accept()
         {
             ShowNextCard();
