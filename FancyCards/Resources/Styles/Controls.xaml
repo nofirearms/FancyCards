@@ -3,9 +3,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
+    <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
 
     <Style BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
         <Setter Property="Padding" Value="10" />
         <Setter Property="Margin" Value="1,1" />
+    </Style>
+
+    <Style
+        x:Key="CustomRadioButton"
+        BasedOn="{StaticResource MaterialDesignFlatButton}"
+        TargetType="RadioButton">
+        <Setter Property="Padding" Value="0,0,0,0" />
+        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
+        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource InactiveForeground}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

@@ -4,38 +4,69 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:FancyCards.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    Width="450"
     d:Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+    d:DataContext="{d:DesignInstance vm:TrainingViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="400"
     mc:Ignorable="d">
     <StackPanel Orientation="Vertical">
-        <Button
-            Width="40"
-            Height="40"
+        <RadioButton
+            Width="30"
+            Height="30"
             Padding="0"
-            Content="{materialDesign:PackIcon Kind=Eye}" />
+            HorizontalAlignment="Right"
+            Content="{materialDesign:PackIcon Kind=Eye}"
+            GroupName="1"
+            IsChecked="{Binding CurrentCard.ShowBack, Mode=TwoWay}"
+            Style="{StaticResource CustomRadioButton}" />
         <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
-            <TextBox IsHitTestVisible="False" />
+            <TextBox IsHitTestVisible="False">
+                <interaction:Interaction.Triggers>
+                    <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
+                        <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
+                    </interaction:DataTrigger>
+                    <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="false">
+                        <interaction:ChangePropertyAction PropertyName="Text" Value="" />
+                    </interaction:DataTrigger>
+                </interaction:Interaction.Triggers>
+            </TextBox>
         </controls:HintControl>
-        <TextBlock Text="Hint" />
-        <Button
-            Width="40"
-            Height="40"
+        <RadioButton
+            Width="30"
+            Height="30"
             Padding="0"
-            Content="{materialDesign:PackIcon Kind=Eye}" />
+            HorizontalAlignment="Right"
+            Content="{materialDesign:PackIcon Kind=Eye}"
+            GroupName="2"
+            IsChecked="{Binding CurrentCard.Hint, Mode=TwoWay}"
+            Style="{StaticResource CustomRadioButton}" />
+        <TextBlock Text="">
+            <interaction:Interaction.Triggers>
+                <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="true">
+                    <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.FrontText}" />
+                </interaction:DataTrigger>
+                <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="false">
+                    <interaction:ChangePropertyAction PropertyName="Text" Value="" />
+                </interaction:DataTrigger>
+            </interaction:Interaction.Triggers>
+        </TextBlock>
         <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
-            <TextBox />
+            <TextBox Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </controls:HintControl>
         <Button
             Width="40"
             Height="40"
             Padding="0"
-            Content="{materialDesign:PackIcon Kind=Check}" />
+            Command="{Binding AcceptCommand}"
+            Content="{materialDesign:PackIcon Kind=Check}"
+            IsEnabled="{Binding CurrentCard.Answer.Length}" />
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-
             <materialDesign:PackIcon
                 Width="30"
                 Height="30"
@@ -44,6 +75,7 @@
                 Width="40"
                 Height="40"
                 Padding="0"
+                Command="{Binding AudioPlaybackSelectedCommand}"
                 Content="{materialDesign:PackIcon Kind=Play}" />
             <Button
                 Width="40"

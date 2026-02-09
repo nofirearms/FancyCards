@@ -102,6 +102,8 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()
         {
+            _audioSamplerViewModel.StopPlaybackCommand.Execute(null);
+
             //create
             if(CardAction == CardAction.Create)
             {
@@ -164,7 +166,11 @@ namespace FancyCards.ViewModels
         private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) /*&& _audioSamplerViewModel.AudioDuration != TimeSpan.Zero*/;
 
 
-        private RelayCommand _cancelCommand;
-        public RelayCommand CancelCommand => _cancelCommand ??= new RelayCommand(Cancel);
+        [RelayCommand]
+        private new void Cancel()
+        {
+            _audioSamplerViewModel.StopPlaybackCommand.Execute(null);
+            base.Cancel();
+        }
     }
 }

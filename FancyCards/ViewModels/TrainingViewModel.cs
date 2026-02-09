@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FancyCards.Audio;
 using FancyCards.Services;
 using FancyCards.ViewModels.Modal;
 using System;
@@ -11,11 +13,17 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
+        private readonly AudioEngine _audioEngine;
+        private readonly TrainingCardListManager _cardManager;
 
-        public TrainingViewModel(MainWindowViewModel host, DataService dataService)
+        [ObservableProperty]
+        private TrainingCardViewModel _currentCard;
+
+        public TrainingViewModel(MainWindowViewModel host, DataService dataService, AudioEngine audioEngine )
         {
             _host = host;
             _dataService = dataService;
+            _audioEngine = audioEngine; 
 
             var random = new Random();
 
@@ -40,8 +48,36 @@ namespace FancyCards.ViewModels
                 .Select(c => new TrainingCardViewModel(c))
                 .ToList();
 
+            _cardManager = new TrainingCardListManager(training_cards);
+
+            ShowNextCard();
         }
 
+        private void ShowNextCard()
+        {
+            if (_cardManager.MoveToNextCard())
+            {
+                CurrentCard = _cardManager.CurrentCard;
+
+                _audioEngine.OpenAudioAsync(_currentCard.Card.Audio.Path);
+                AudioPlaybackSelected();
+            }
+        }
+
+        [RelayCommand]
+        private void AudioPlaybackSelected()
+        {
+            if (_currentCard is null) return;
+
+
+            _audioEngine.StartPlayback(_currentCard.Card.Audio.StartPosition, _currentCard.Card.Audio.EndPosition, PlaybackSpeed.Full, (float)_currentCard.Card.Audio.Volume, (float)_currentCard.Card.Audio.Tempo);
+        }
+
+
+        private void Accept()
+        {
+            ShowNextCard();
+        }
 
         [RelayCommand]
         private void CancelTraining() => Cancel();

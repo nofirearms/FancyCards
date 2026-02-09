@@ -33,11 +33,14 @@
                 </Grid.ColumnDefinitions>
 
                 <controls:HintControl
+                    x:Name="Prefix"
                     Grid.Column="0"
                     HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
                     HintText="Prefix">
                     <TextBox Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                 </controls:HintControl>
+
+
 
                 <controls:HintControl
                     Grid.Column="1"
