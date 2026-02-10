@@ -8,7 +8,7 @@ namespace FancyCards.Audio
     /// <summary>
     /// Класс который хранит состояния аудио для возможности Undo и Redo
     /// </summary>
-    public class AudioStateManager
+    public class AudioStateManager : IDisposable
     {
         private byte[] _currentData;
         private readonly WaveFormat _format;
@@ -137,7 +137,6 @@ namespace FancyCards.Audio
         }
 
 
-
         public void CreateDirectory(string path)
         {
             var directory = Path.GetDirectoryName(path);
@@ -146,5 +145,14 @@ namespace FancyCards.Audio
                 Directory.CreateDirectory(directory);
             }
         }
+
+        public void Dispose()
+        {
+            _currentData = null;
+            _undoStack.Clear();
+            _undoStack.Clear();
+        }
+
+
     }
 }

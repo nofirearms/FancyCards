@@ -2,22 +2,23 @@
 using NAudio.CoreAudioApi;
 using NAudio.Utils;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System.Linq;
 using System.Timers;
 
 
 namespace FancyCards.Audio
 {
-    public class AudioEngine
+    public class AudioEngine : IDisposable
     {
         private readonly AudioUtilities _utilities;
         private readonly AudioWaveform _audioWaveform;
 
         private readonly WaveOutEvent _outputDevice;
+        private readonly AudioPipeline _audioPipeline;
         private readonly MMDevice _captureDevice;
         private readonly WasapiCapture _captureSource;
         private AudioStateManager _audioStateManager;
-        private PlaybackSettings _playbackSettings;
 
         private List<byte[]> _audioChunks;
         private System.Timers.Timer _playbackPositionTimer; 
@@ -26,6 +27,7 @@ namespace FancyCards.Audio
         public event Action<double> GraphChanged;
         public event Action<TimeSpan> AudioDurationChanged;
         public event Action<PlaybackPositionArgs> PlaybackPositionChanged;
+        public event Action<double> MaxSampleVolume;
 
         private State _state = State.Initial;
 
@@ -45,6 +47,7 @@ namespace FancyCards.Audio
             _utilities = new AudioUtilities();
             _audioWaveform = new AudioWaveform();
             _outputDevice = new WaveOutEvent();
+            _audioPipeline = new AudioPipeline();
 
             _captureDevice = _utilities.GetDefaultOutputDevice();//_utilities.GetDeviceById(deviceId);
             _captureSource = _utilities.GetWasapiCaptureInstance(_captureDevice);
@@ -52,13 +55,14 @@ namespace FancyCards.Audio
             _audioStateManager = new AudioStateManager(_captureSource.WaveFormat);
 
             _outputDevice.PlaybackStopped += OnPlaybackStopped;
-
-            _playbackPositionTimer = new System.Timers.Timer(10)
+            _playbackPositionTimer = new System.Timers.Timer(50)
             {
                 AutoReset = true
             };
             _playbackPositionTimer.Elapsed += OnPlaybackPositionChanged;
+            _audioPipeline.StreamVolume += OnStreamVolume;
         }
+
 
 
         public async void OpenAudioAsync(string path)
@@ -77,8 +81,8 @@ namespace FancyCards.Audio
             return points;
         }
 
-        //--------------------------------------------------------------------------------------------------PLAYBACK-----------------------------------------------------
-
+        //-------------------------------------------------------------------------------------------------- PLAYBACK -----------------------------------------------------
+        #region PLAYBACK
         public void StartPlayback(double startPosition = 0, double endPosition = 1, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, float tempo = 1.0f, float targetRMS = 0.2f)
         {         
 
@@ -99,28 +103,23 @@ namespace FancyCards.Audio
             else if (State == State.Stopped)
             {
                 var source = _audioStateManager.CreateWaveProvider() as RawSourceWaveStream;
-                
+
                 var settings = new AudioSettings
                 {
                     Volume = volume,
                     SlowMotion = playbackSpeed == PlaybackSpeed.Half,
-                    StartTime = startPosition * source.TotalTime,
-                    EndTime = endPosition * source.TotalTime,
+                    StartPosition = startPosition,
+                    EndPosition = endPosition,
                     TargetRMS = targetRMS,
-                    Tempo = tempo
+                    Tempo = tempo,
+
                 };
 
-                var audio_pipeline = AudioPipeline.Create(source.ToSampleProvider(), settings);
+                var output = _audioPipeline.Build(source, settings);
 
-                _playbackSettings = new PlaybackSettings
-                {
-                    Speed = (double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1),
-                    TotalLength = source.Length / ((double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1)),
-                    StartPosition = (startPosition * source.Length) / ((double)tempo * ((playbackSpeed == PlaybackSpeed.Half) ? 0.5 : 1)),
-                };
                 _playbackPositionTimer.Start();
 
-                _outputDevice.Init(audio_pipeline); 
+                _outputDevice.Init(output); 
                 _outputDevice.Play();
 
                 State = State.Playing;
@@ -158,9 +157,8 @@ namespace FancyCards.Audio
             PlaybackPositionChanged?.Invoke(new PlaybackPositionArgs
             {
                 PositionTimeSpan = _outputDevice.GetPositionTimeSpan(),
-                PositionPercent = (double)(_outputDevice.GetPosition() + _playbackSettings.StartPosition) / _playbackSettings.TotalLength
-                
-            }); 
+                PositionPercent = (double)(_outputDevice.GetPosition() + _audioPipeline.PlaybackStartPosition) / _audioPipeline.PlaybackLength
+            });
         }
 
         private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
@@ -173,7 +171,16 @@ namespace FancyCards.Audio
             }
 
         }
-        //----------------------------------------------------------------------------------------------------RECORDING---------------------------------------------------
+
+        private void OnStreamVolume(StreamVolumeEventArgs args)
+        {
+            MaxSampleVolume?.Invoke(Math.Clamp(args.MaxSampleValues.Max(), 0, 1));
+        }
+
+        #endregion
+
+        // ---------------------------------------------------------------------------------------------------- RECORDING --------------------------------------------------
+        #region RECORDING
         public void StartRecording()
         {
             if (State == State.Playing)
@@ -237,6 +244,8 @@ namespace FancyCards.Audio
             //GraphChanged?.Invoke(this, new Point(-1, -1));
         }
 
+        #endregion
+
 
 
         public byte[] GetSoundData(List<byte[]> chunks)
@@ -274,6 +283,17 @@ namespace FancyCards.Audio
         public async Task RenderToMp3Async(string path, int bitRate = 128000)
         {
             await _audioStateManager.ExportToMp3Async(path, bitRate);
+        }
+
+        public void Dispose()
+        {
+            _outputDevice.PlaybackStopped -= OnPlaybackStopped;
+            _playbackPositionTimer.Elapsed -= OnPlaybackPositionChanged;
+            _playbackPositionTimer.Dispose();
+            _audioPipeline.StreamVolume -= OnStreamVolume;
+
+            _audioStateManager.Dispose();
+            _audioStateManager = null;
         }
     }
 

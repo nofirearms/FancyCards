@@ -10,103 +10,117 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Width="450"
+    Height="300"
     d:Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
     d:DataContext="{d:DesignInstance vm:TrainingViewModel}"
-    d:DesignHeight="450"
-    d:DesignWidth="400"
     mc:Ignorable="d">
-    <StackPanel Orientation="Vertical">
-        <RadioButton
-            Width="30"
-            Height="30"
-            Padding="0"
-            HorizontalAlignment="Right"
-            Content="{materialDesign:PackIcon Kind=Eye}"
-            GroupName="1"
-            IsChecked="{Binding CurrentCard.ShowBack, Mode=TwoWay}"
-            Style="{StaticResource CustomRadioButton}" />
-        <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
-            <TextBox
-                materialDesign:HintAssist.Hint=""
-                materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                IsHitTestVisible="False">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <RadioButton
+                Width="30"
+                Height="30"
+                Padding="0"
+                HorizontalAlignment="Right"
+                Content="{materialDesign:PackIcon Kind=Eye}"
+                GroupName="1"
+                IsChecked="{Binding CurrentCard.ShowBack, Mode=TwoWay}"
+                Style="{StaticResource CustomRadioButton}" />
+            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    IsHitTestVisible="False">
+                    <interaction:Interaction.Triggers>
+                        <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
+                            <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
+                        </interaction:DataTrigger>
+                        <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="false">
+                            <interaction:ChangePropertyAction PropertyName="Text" Value="" />
+                        </interaction:DataTrigger>
+                    </interaction:Interaction.Triggers>
+                </TextBox>
+            </controls:HintControl>
+            <RadioButton
+                Width="30"
+                Height="30"
+                Padding="0"
+                HorizontalAlignment="Right"
+                Content="{materialDesign:PackIcon Kind=Eye}"
+                GroupName="2"
+                IsChecked="{Binding CurrentCard.Hint, Mode=TwoWay}"
+                Style="{StaticResource CustomRadioButton}" />
+            <TextBlock Text="">
                 <interaction:Interaction.Triggers>
-                    <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
-                        <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
+                    <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="true">
+                        <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.FrontText}" />
                     </interaction:DataTrigger>
-                    <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="false">
+                    <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="false">
                         <interaction:ChangePropertyAction PropertyName="Text" Value="" />
                     </interaction:DataTrigger>
                 </interaction:Interaction.Triggers>
-            </TextBox>
-        </controls:HintControl>
-        <RadioButton
-            Width="30"
-            Height="30"
-            Padding="0"
-            HorizontalAlignment="Right"
-            Content="{materialDesign:PackIcon Kind=Eye}"
-            GroupName="2"
-            IsChecked="{Binding CurrentCard.Hint, Mode=TwoWay}"
-            Style="{StaticResource CustomRadioButton}" />
-        <TextBlock Text="">
-            <interaction:Interaction.Triggers>
-                <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="true">
-                    <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.FrontText}" />
-                </interaction:DataTrigger>
-                <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="false">
-                    <interaction:ChangePropertyAction PropertyName="Text" Value="" />
-                </interaction:DataTrigger>
-            </interaction:Interaction.Triggers>
-        </TextBlock>
-        <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
-            <TextBox
-                materialDesign:HintAssist.Hint=""
-                materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        </controls:HintControl>
-        <Button
-            Width="40"
-            Height="40"
-            Padding="0"
-            Command="{Binding AcceptCommand}"
-            Content="{materialDesign:PackIcon Kind=Check}"
-            IsEnabled="{Binding CurrentCard.Answer.Length}" />
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-            <materialDesign:PackIcon
-                Width="30"
-                Height="30"
-                Kind="Speakerphone" />
-            <Button
-                Width="40"
-                Height="40"
-                Padding="0"
-                Command="{Binding AudioPlaybackSelectedCommand}"
-                Content="{materialDesign:PackIcon Kind=Play}" />
-            <Button
-                Width="40"
-                Height="40"
-                Padding="0"
-                Content="{materialDesign:PackIcon Kind=PlaySpeed}" />
-            <Button
-                Width="40"
-                Height="40"
-                Padding="0"
-                Content="{materialDesign:PackIcon Kind=FractionOneHalf}" />
-            <Button
-                Width="40"
-                Height="40"
-                Padding="0"
-                Content="{materialDesign:PackIcon Kind=Stop}" />
+            </TextBlock>
+            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </controls:HintControl>
 
+            <StackPanel
+                Margin="5"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Width="40"
+                    Height="40"
+                    Margin="10,0,20,0"
+                    Padding="0"
+                    Command="{Binding AcceptCommand}"
+                    Content="{materialDesign:PackIcon Kind=ArrowRight}"
+                    IsEnabled="{Binding CurrentCard.Answer.Length}" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Padding="0"
+                    Command="{Binding AudioPlaybackSelectedCommand}"
+                    Content="{materialDesign:PackIcon Kind=play}" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Padding="0"
+                    Command="{Binding AudioPlaybackFullCommand}"
+                    Content="{materialDesign:PackIcon Kind=PlaySpeed}" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Padding="0"
+                    Command="{Binding AudioPlaybackSlowCommand}"
+                    Content="{materialDesign:PackIcon Kind=FractionOneHalf}" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Padding="0"
+                    Command="{Binding AudioStopPlaybackCommand}"
+                    Content="{materialDesign:PackIcon Kind=Stop}" />
+                <materialDesign:PackIcon
+                    Width="30"
+                    Height="30"
+                    Margin="5,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Kind="Speakerphone"
+                    Opacity="{Binding MaxSampleVolume}" />
+            </StackPanel>
         </StackPanel>
 
         <Button
             Width="40"
             Height="40"
             Padding="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
             Command="{Binding CancelTrainingCommand}"
-            Content="{materialDesign:PackIcon Kind=Cancel}" />
+            Content="{materialDesign:PackIcon Kind=Close}" />
+    </Grid>
 
-    </StackPanel>
 </UserControl>

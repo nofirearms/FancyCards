@@ -20,7 +20,7 @@
         <Setter Property="Padding" Value="0,0,0,0" />
         <Setter Property="ClickMode" Value="Press" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
+        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="False">

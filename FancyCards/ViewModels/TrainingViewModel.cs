@@ -19,11 +19,17 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private TrainingCardViewModel _currentCard;
 
+        [ObservableProperty]
+        private double _maxSampleVolume = 0;
+
         public TrainingViewModel(MainWindowViewModel host, DataService dataService, AudioEngine audioEngine )
         {
             _host = host;
             _dataService = dataService;
-            _audioEngine = audioEngine; 
+            _audioEngine = audioEngine;
+
+            _audioEngine.MaxSampleVolume += (v) => MaxSampleVolume = v;
+
 
             var random = new Random();
 
@@ -51,6 +57,7 @@ namespace FancyCards.ViewModels
             _cardManager = new TrainingCardListManager(training_cards);
 
             ShowNextCard();
+
         }
 
         private void ShowNextCard()
@@ -69,8 +76,31 @@ namespace FancyCards.ViewModels
         {
             if (_currentCard is null) return;
 
-
             _audioEngine.StartPlayback(_currentCard.Card.Audio.StartPosition, _currentCard.Card.Audio.EndPosition, PlaybackSpeed.Full, (float)_currentCard.Card.Audio.Volume, (float)_currentCard.Card.Audio.Tempo);
+        }
+
+        [RelayCommand]
+        private void AudioPlaybackFull()
+        {
+            if (_currentCard is null) return;
+
+            _audioEngine.StartPlayback(0, 1, PlaybackSpeed.Full, (float)_currentCard.Card.Audio.Volume, (float)_currentCard.Card.Audio.Tempo);
+        }
+
+        [RelayCommand]
+        private void AudioPlaybackSlow()
+        {
+            if (_currentCard is null) return;
+
+            _audioEngine.StartPlayback(_currentCard.Card.Audio.StartPosition, _currentCard.Card.Audio.EndPosition, PlaybackSpeed.Half, (float)_currentCard.Card.Audio.Volume, (float)_currentCard.Card.Audio.Tempo);
+        }
+
+        [RelayCommand]
+        private void AudioStopPlayback()
+        {
+            if (_currentCard is null) return;
+
+            _audioEngine.StopPlayback();
         }
 
         [RelayCommand]
@@ -80,6 +110,10 @@ namespace FancyCards.ViewModels
         }
 
         [RelayCommand]
-        private void CancelTraining() => Cancel();
+        private void CancelTraining()
+        {
+            _audioEngine.StopPlayback();
+            Cancel();
+        }
     }
 }
