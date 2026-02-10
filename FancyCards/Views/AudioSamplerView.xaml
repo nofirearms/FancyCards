@@ -8,6 +8,7 @@
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:FancyCards.Models"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     d:DataContext="{d:DesignInstance vm:AudioSamplerViewModel}"
     d:DesignHeight="450"
@@ -17,21 +18,81 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <Grid.Resources>
-            <Style
-                x:Key="SamplerButton"
-                BasedOn="{StaticResource MaterialDesignRaisedButton}"
-                TargetType="Button" />
-        </Grid.Resources>
+
         <DockPanel>
+
+            <StackPanel
+                Margin="0,5"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon
+                        Width="25"
+                        Height="25"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource MaterialDesign.Brush.Primary}"
+                        Kind="VolumeMedium" />
+                    <Slider
+                        x:Name="VolumeSlider"
+                        Width="100"
+                        VerticalAlignment="Center"
+                        IsSnapToTickEnabled="True"
+                        Maximum="1"
+                        Minimum="0"
+                        Style="{StaticResource MaterialDesignSlider}"
+                        TickFrequency="0.1"
+                        Value="{Binding Volume, Mode=TwoWay}" />
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource MaterialDesign.Brush.Primary}"
+                        Text="{Binding ElementName=VolumeSlider, Path=Value, StringFormat='f1'}" />
+                </StackPanel>
+
+                <StackPanel Margin="20,0,0,0" Orientation="Horizontal">
+                    <materialDesign:PackIcon
+                        Width="25"
+                        Height="20"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource MaterialDesign.Brush.Primary}"
+                        Kind="RunFast" />
+                    <Slider
+                        x:Name="TempoSlider"
+                        Width="100"
+                        VerticalAlignment="Center"
+                        IsSnapToTickEnabled="True"
+                        Maximum="2"
+                        Minimum="0.8"
+                        Style="{StaticResource MaterialDesignSlider}"
+                        TickFrequency="0.1"
+                        Value="{Binding Tempo, Mode=TwoWay}" />
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource MaterialDesign.Brush.Primary}"
+                        Text="{Binding ElementName=TempoSlider, Path=Value, StringFormat='f1'}" />
+                </StackPanel>
+
+            </StackPanel>
+
             <StackPanel
                 HorizontalAlignment="Center"
                 DockPanel.Dock="Bottom"
                 Orientation="Horizontal">
                 <Grid Margin="2,2">
-                    <Button Command="{Binding StopRecordingCommand}" Content="{materialDesign:PackIcon Kind=StopCircle}">
+                    <Button Command="{Binding StopRecordingCommand}">
+                        <Button.Content>
+                            <materialDesign:PackIcon
+                                Width="25"
+                                Height="25"
+                                Kind="StopCircle" />
+                        </Button.Content>
                         <Button.Style>
-                            <Style BasedOn="{StaticResource SamplerButton}" TargetType="Button">
+                            <Style BasedOn="{StaticResource TransparentSquareButton}" TargetType="Button">
                                 <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
                                     <!--  Переопределяем только для Recording  -->
@@ -42,12 +103,15 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    <Button
-                        Command="{Binding StartRecordingCommand}"
-                        Content="{materialDesign:PackIcon Kind=Record}"
-                        Foreground="Red">
+                    <Button Command="{Binding StartRecordingCommand}" Foreground="Red">
+                        <Button.Content>
+                            <materialDesign:PackIcon
+                                Width="25"
+                                Height="25"
+                                Kind="Record" />
+                        </Button.Content>
                         <Button.Style>
-                            <Style BasedOn="{StaticResource SamplerButton}" TargetType="Button">
+                            <Style BasedOn="{StaticResource TransparentSquareButton}" TargetType="Button">
                                 <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
                                     <!--  Переопределяем только для Recording  -->
@@ -63,17 +127,71 @@
                     <Button
                         Margin="2,2"
                         Command="{Binding StartPlaybackCommand}"
-                        Content="{materialDesign:PackIcon Kind=Play}" />
+                        CommandParameter="{x:Static model:PlaybackMode.Selected}"
+                        Style="{StaticResource TransparentSquareButton}">
+                        <Button.Content>
+                            <StackPanel>
+                                <materialDesign:PackIcon
+                                    Width="15"
+                                    Height="15"
+                                    HorizontalAlignment="Center"
+                                    Kind="Play" />
+                                <TextBlock FontSize="8" Text="SEL" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
                     <Button
                         Margin="2,2"
-                        Command="{Binding StartSlowMotionPlaybackCommand}"
-                        Content="{materialDesign:PackIcon Kind=FractionOneHalf}"
-                        Style="{StaticResource SamplerButton}" />
+                        Command="{Binding StartPlaybackCommand}"
+                        CommandParameter="{x:Static model:PlaybackMode.Full}"
+                        Style="{StaticResource TransparentSquareButton}">
+                        <Button.Content>
+                            <StackPanel>
+                                <materialDesign:PackIcon
+                                    Width="15"
+                                    Height="15"
+                                    HorizontalAlignment="Center"
+                                    Kind="Play" />
+                                <TextBlock FontSize="8" Text="FULL" />
+                            </StackPanel>
+
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        Margin="2,2"
+                        Command="{Binding StartPlaybackCommand}"
+                        CommandParameter="{x:Static model:PlaybackMode.SelectedSlow}"
+                        Style="{StaticResource TransparentSquareButton}">
+                        <Button.Content>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="15"
+                                        Height="15"
+                                        VerticalAlignment="Center"
+                                        Kind="Play" />
+                                    <materialDesign:PackIcon
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Kind="FractionOneHalf" />
+                                </StackPanel>
+
+                                <TextBlock FontSize="8" Text="SPEED" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
                     <Button
                         Margin="2,2"
                         Command="{Binding StopPlaybackCommand}"
-                        Content="{materialDesign:PackIcon Kind=Stop}"
-                        Style="{StaticResource SamplerButton}" />
+                        Style="{StaticResource TransparentSquareButton}">
+                        <Button.Content>
+                            <materialDesign:PackIcon
+                                Width="25"
+                                Height="25"
+                                Kind="Stop" />
+                        </Button.Content>
+                    </Button>
                 </StackPanel>
             </StackPanel>
 
@@ -85,21 +203,22 @@
                 CornerRadius="3">
 
                 <Grid>
-                    <!--  Фон с waveform  -->
                     <controls:AudioGraph
                         PlaybackCurrentPosition="{Binding PlaybackCurrentPosition}"
                         Points="{Binding Points}"
                         SamplerState="{Binding AudioSamplerState}"
                         Selection="{Binding Selection, Mode=TwoWay}"
                         StartPlaybackPosition="{Binding PlaybackStartPosition, Mode=TwoWay}" />
+                    <TextBlock
+                        Margin="6,-15"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        FontSize="11"
+                        IsHitTestVisible="False"
+                        Text="{Binding AudioDuration, StringFormat='{}{0:m\\:ss\\.fff}'}" />
                 </Grid>
             </Border>
         </DockPanel>
-        <TextBlock
-            Margin="6,3"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Text="{Binding AudioDuration, StringFormat='{}{0:m\\:ss\\.fff}'}" />
 
     </Grid>
 </UserControl>

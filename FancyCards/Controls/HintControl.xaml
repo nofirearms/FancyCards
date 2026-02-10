@@ -21,6 +21,19 @@
             Background="{Binding ElementName=root, Path=HintBackground}"
             FontSize="12"
             IsHitTestVisible="False"
-            Text="{Binding ElementName=root, Path=HintText}" />
+            Text="{Binding ElementName=root, Path=HintText}"
+            Visibility="Collapsed" />
+
+        <TextBlock
+            x:Name="SuffixTextBlock"
+            Margin="10,-5"
+            Padding="3,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="{Binding ElementName=root, Path=HintBackground}"
+            FontSize="12"
+            IsHitTestVisible="False"
+            Text="{Binding ElementName=root, Path=SuffixText}"
+            Visibility="Collapsed" />
     </Grid>
 </UserControl>

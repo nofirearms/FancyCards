@@ -26,6 +26,11 @@ namespace FancyCards.Models
         Queue, Retry, Success, Failed
     }
 
+    public enum PlaybackMode
+    {
+        Selected, Full, SelectedSlow
+    }
+
     public struct Selection
     {
         public double Start { get; set; }

@@ -67,6 +67,8 @@ namespace FancyCards.Audio
 
         public async void OpenAudioAsync(string path)
         {
+            StopPlayback();
+
             _audioStateManager.LoadFromAudioFile(path);
 
             var duration = GetDuration(_audioStateManager.CurrentData, _captureSource.WaveFormat);

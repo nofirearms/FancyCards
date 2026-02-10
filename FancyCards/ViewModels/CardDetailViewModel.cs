@@ -58,6 +58,7 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private DateTime _dateCreated;
 
+
         public CardAction CardAction { get; } = CardAction.Create;
 
         public CardDetailViewModel(DataService dataService, Card card)
@@ -117,8 +118,7 @@ namespace FancyCards.ViewModels
                     MessageText = MessageText,
                     DateCreated = DateTime.Now,
                     NextReviewDate = NextReviewDate.Date,
-                    State = SelectedState
-
+                    State = SelectedState,
                 };
                 var audio_source = new AudioSource
                 {

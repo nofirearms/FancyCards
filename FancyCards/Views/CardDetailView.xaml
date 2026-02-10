@@ -12,7 +12,7 @@
     d:Background="White"
     d:DataContext="{d:DesignInstance vm:CardDetailViewModel}"
     mc:Ignorable="d">
-    <Grid Width="400" Height="500">
+    <Grid Width="400" Height="auto">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -21,12 +21,13 @@
 
         <TextBlock
             Grid.Row="0"
+            Margin="0,0,0,5"
             HorizontalAlignment="Center"
             Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
             Text="{Binding Title}" />
 
         <StackPanel Grid.Row="1" Orientation="Vertical">
-            <Grid>
+            <Grid Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -36,11 +37,14 @@
                     x:Name="Prefix"
                     Grid.Column="0"
                     HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                    HintText="Prefix">
+                    HintText="Prefix"
+                    SuffixText="{Binding PrefixText.Length}">
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                        Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        AcceptsReturn="True"
+                        Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        TextWrapping="Wrap" />
                 </controls:HintControl>
 
 
@@ -48,41 +52,67 @@
                 <controls:HintControl
                     Grid.Column="1"
                     HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                    HintText="Suffix">
+                    HintText="Suffix"
+                    SuffixText="{Binding SuffixText.Length}">
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                        Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        AcceptsReturn="True"
+                        Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        TextWrapping="Wrap" />
                 </controls:HintControl>
-
-
             </Grid>
-            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
+
+            <controls:HintControl
+                Margin="0,0,0,5"
+                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                HintText="Front"
+                SuffixText="{Binding FrontText.Length}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    AcceptsReturn="True"
+                    Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
             </controls:HintControl>
 
-            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
+            <controls:HintControl
+                Margin="0,0,0,5"
+                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                HintText="Back"
+                SuffixText="{Binding BackText.Length}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    AcceptsReturn="True"
+                    Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
             </controls:HintControl>
 
-            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Comment">
+            <controls:HintControl
+                Margin="0,0,0,5"
+                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                HintText="Comment"
+                SuffixText="{Binding CommentText.Length}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    AcceptsReturn="True"
+                    Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
             </controls:HintControl>
 
-            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Message">
+            <controls:HintControl
+                Margin="0,0,0,5"
+                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                HintText="Message"
+                SuffixText="{Binding MessageText.Length}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    AcceptsReturn="True"
+                    Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
             </controls:HintControl>
 
 

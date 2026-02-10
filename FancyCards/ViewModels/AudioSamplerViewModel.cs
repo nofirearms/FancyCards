@@ -4,6 +4,7 @@ using FancyCards.Audio;
 using FancyCards.Audio.Common;
 using FancyCards.Helpers;
 using FancyCards.Models;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,7 +24,6 @@ namespace FancyCards.ViewModels
         [NotifyCanExecuteChangedFor(nameof(StopPlaybackCommand))]
         [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand))]
         [NotifyCanExecuteChangedFor(nameof(StopRecordingCommand))]
-        [NotifyCanExecuteChangedFor(nameof(StartSlowMotionPlaybackCommand))]
         private State _audioSamplerState;
 
         [ObservableProperty]
@@ -35,7 +35,7 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private double _tempo = 1d;
         [ObservableProperty]
-        private double _volume = 1d;
+        private double _volume = 0.4d;
 
         [ObservableProperty]
         private TimeSpan _audioDuration = TimeSpan.Zero;
@@ -65,6 +65,8 @@ namespace FancyCards.ViewModels
                 LoadGraph(card.Audio.Path);
                 Selection = new Selection(card.Audio.StartPosition, card.Audio.EndPosition);
                 PlaybackStartPosition = Selection.Start;
+                Volume = card.Audio.Volume;
+                Tempo = card.Audio.Tempo;
             }
             
         }
@@ -102,19 +104,22 @@ namespace FancyCards.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanStartPlayback))]
-        private void StartPlayback()
+        private void StartPlayback(PlaybackMode playbackMode)
         {
-            _audioEngine.StartPlayback(startPosition: PlaybackStartPosition, endPosition: Selection.End); 
+            if(playbackMode == PlaybackMode.Selected)
+            {
+                _audioEngine.StartPlayback(startPosition: PlaybackStartPosition, endPosition: Selection.End, tempo: (float)Tempo, volume: (float)Volume);
+            }
+            else if(playbackMode == PlaybackMode.Full)
+            {
+                _audioEngine.StartPlayback(tempo: (float)Tempo, volume: (float)Volume);
+            }
+            else if(playbackMode == PlaybackMode.SelectedSlow)
+            {
+                _audioEngine.StartPlayback(startPosition: PlaybackStartPosition, endPosition: Selection.End, PlaybackSpeed.Half, tempo: (float)Tempo, volume: (float)Volume);
+            }
         }
         private bool CanStartPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
-
-
-        [RelayCommand(CanExecute = nameof(CanStartSlowMotionPlayback))]
-        private void StartSlowMotionPlayback()
-        {
-            _audioEngine.StartPlayback(startPosition: PlaybackStartPosition, endPosition: Selection.End, playbackSpeed: PlaybackSpeed.Half);
-        }
-        private bool CanStartSlowMotionPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 
 
         [RelayCommand(CanExecute = nameof(CanStopPlayback))]

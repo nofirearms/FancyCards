@@ -41,24 +41,28 @@ namespace FancyCards.Controls
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
                 control.HintTextBlock.Foreground = brush;
+                control.SuffixTextBlock.Foreground = brush;
             };
 
             content.LostFocus += (_, _) =>
             {
                 var brush = new SolidColorBrush(Colors.Black);
                 control.HintTextBlock.Foreground = brush;
+                control.SuffixTextBlock.Foreground = brush;
             };
 
             content.GotKeyboardFocus += (_, _) =>
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
                 control.HintTextBlock.Foreground = brush;
+                control.SuffixTextBlock.Foreground = brush;
             };
 
             content.LostKeyboardFocus += (_, _) =>
             {
                 var brush = new SolidColorBrush(Colors.Black);
                 control.HintTextBlock.Foreground = brush;
+                control.SuffixTextBlock.Foreground = brush;
             };
 
             content.PreviewGotKeyboardFocus += (_, _) =>
@@ -80,9 +84,6 @@ namespace FancyCards.Controls
 
 
 
-
-
-
         public string HintText
         {
             get { return (string)GetValue(HintTextProperty); }
@@ -91,8 +92,47 @@ namespace FancyCards.Controls
 
         // Using a DependencyProperty as the backing store for HintText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HintTextProperty =
-            DependencyProperty.Register(nameof(HintText), typeof(string), typeof(HintControl), new PropertyMetadata(string.Empty));
+            DependencyProperty.Register(nameof(HintText), typeof(string), typeof(HintControl), new PropertyMetadata(string.Empty, OnHintTextChanged));
 
+        private static void OnHintTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (HintControl)d;
+            var hint = e.NewValue as string;
+
+            if (string.IsNullOrEmpty(hint) || hint == "0")
+            {
+                control.HintTextBlock.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                control.HintTextBlock.Visibility = Visibility.Visible;
+            }
+        }
+
+        public string SuffixText
+        {
+            get { return (string)GetValue(SuffixTextProperty); }
+            set { SetValue(SuffixTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SuffixText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SuffixTextProperty =
+            DependencyProperty.Register(nameof(SuffixText), typeof(string), typeof(HintControl), new PropertyMetadata(string.Empty, OnSuffixTextChanged));
+
+        private static void OnSuffixTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (HintControl)d;
+            var suffix = e.NewValue as string;
+
+            if (string.IsNullOrEmpty(suffix) || suffix == "0")
+            {
+                control.SuffixTextBlock.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                control.SuffixTextBlock.Visibility = Visibility.Visible;
+            }
+        }
 
         protected override void OnContentChanged(object oldContent, object newContent)
         {

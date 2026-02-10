@@ -14,6 +14,16 @@
 
 
     <Style
+        x:Key="TransparentSquareButton"
+        BasedOn="{StaticResource MaterialDesignFlatButton}"
+        TargetType="Button">
+        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Width" Value="35" />
+        <Setter Property="Height" Value="35" />
+    </Style>
+
+    <Style
         x:Key="CustomRadioButton"
         BasedOn="{StaticResource MaterialDesignFlatButton}"
         TargetType="RadioButton">
@@ -28,4 +38,60 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style
+        x:Key="CustomRadioButtonSolid"
+        BasedOn="{StaticResource MaterialDesignFlatButton}"
+        TargetType="RadioButton">
+        <Setter Property="Padding" Value="0,0,0,0" />
+        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
+        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+        <Setter Property="Background" Value="{DynamicResource MaterialDesign.Brush.Secondary.Light}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="2">
+
+                        <Grid>
+                            <Border
+                                x:Name="HoverBackground"
+                                Background="Transparent"
+                                Opacity="0.2" />
+
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                TextElement.Foreground="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!--  Unchecked  -->
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource InactiveForeground}" />
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
+                        </Trigger>
+
+                        <!--  Hover  -->
+                        <!--
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="HoverBackground" Property="Background" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>-->
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
 </ResourceDictionary>

@@ -16,50 +16,79 @@
     mc:Ignorable="d">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <RadioButton
-                Width="30"
-                Height="30"
-                Padding="0"
-                HorizontalAlignment="Right"
-                Content="{materialDesign:PackIcon Kind=Eye}"
-                GroupName="1"
-                IsChecked="{Binding CurrentCard.ShowBack, Mode=TwoWay}"
-                Style="{StaticResource CustomRadioButton}" />
-            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
-                <TextBox
-                    materialDesign:HintAssist.Hint=""
-                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    IsHitTestVisible="False">
-                    <interaction:Interaction.Triggers>
-                        <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
-                            <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
-                        </interaction:DataTrigger>
-                        <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="false">
-                            <interaction:ChangePropertyAction PropertyName="Text" Value="" />
-                        </interaction:DataTrigger>
-                    </interaction:Interaction.Triggers>
-                </TextBox>
-            </controls:HintControl>
-            <RadioButton
-                Width="30"
-                Height="30"
-                Padding="0"
-                HorizontalAlignment="Right"
-                Content="{materialDesign:PackIcon Kind=Eye}"
-                GroupName="2"
-                IsChecked="{Binding CurrentCard.Hint, Mode=TwoWay}"
-                Style="{StaticResource CustomRadioButton}" />
-            <TextBlock Text="">
-                <interaction:Interaction.Triggers>
-                    <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="true">
-                        <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.FrontText}" />
-                    </interaction:DataTrigger>
-                    <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="false">
-                        <interaction:ChangePropertyAction PropertyName="Text" Value="" />
-                    </interaction:DataTrigger>
-                </interaction:Interaction.Triggers>
-            </TextBlock>
-            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
+            <Grid Margin="0,10,0,0">
+
+                <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Back">
+                    <TextBox
+                        materialDesign:HintAssist.Hint=""
+                        materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                        IsHitTestVisible="False">
+                        <interaction:Interaction.Triggers>
+                            <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
+                                <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
+                            </interaction:DataTrigger>
+                            <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="false">
+                                <interaction:ChangePropertyAction PropertyName="Text" Value="" />
+                            </interaction:DataTrigger>
+                        </interaction:Interaction.Triggers>
+                    </TextBox>
+                </controls:HintControl>
+
+                <RadioButton
+                    Width="30"
+                    Height="18"
+                    Margin="10,-8,10,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    GroupName="1"
+                    IsChecked="{Binding CurrentCard.ShowBack, Mode=TwoWay}"
+                    Style="{StaticResource CustomRadioButtonSolid}">
+                    <materialDesign:PackIcon
+                        Width="20"
+                        Height="20"
+                        Kind="Eye" />
+                </RadioButton>
+            </Grid>
+
+
+
+            <Grid Margin="0,10">
+                <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Front">
+                    <TextBox
+                        materialDesign:HintAssist.Hint=""
+                        materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                        IsHitTestVisible="False">
+                        <interaction:Interaction.Triggers>
+                            <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="true">
+                                <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.FrontText}" />
+                            </interaction:DataTrigger>
+                            <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="false">
+                                <interaction:ChangePropertyAction PropertyName="Text" Value="" />
+                            </interaction:DataTrigger>
+                        </interaction:Interaction.Triggers>
+                    </TextBox>
+                </controls:HintControl>
+
+                <RadioButton
+                    Width="30"
+                    Height="20"
+                    Margin="10,-8,10,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    GroupName="2"
+                    IsChecked="{Binding CurrentCard.Hint, Mode=TwoWay}"
+                    Style="{StaticResource CustomRadioButtonSolid}">
+                    <materialDesign:PackIcon
+                        Width="20"
+                        Height="20"
+                        Kind="Eye" />
+                </RadioButton>
+            </Grid>
+
+
+            <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Answer">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
