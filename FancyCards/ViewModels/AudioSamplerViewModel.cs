@@ -17,6 +17,7 @@ namespace FancyCards.ViewModels
 {
     public partial class AudioSamplerViewModel : ObservableObject
     {
+        private readonly MainWindowViewModel _host;
         private readonly AudioEngine _audioEngine;
 
         [ObservableProperty]
@@ -51,8 +52,9 @@ namespace FancyCards.ViewModels
 
         public bool AudioSourceChanged { get; set; } = false;
 
-        public AudioSamplerViewModel(Card card)
+        public AudioSamplerViewModel(MainWindowViewModel host, Card card)
         {
+            _host = host;
             _audioEngine = new AudioEngine();
 
             _audioEngine.StateChanged += OnAudioEngineStateChanged;
@@ -145,6 +147,23 @@ namespace FancyCards.ViewModels
             _audioEngine.StopRecording();
         }
         private bool CanStopRecording() => AudioSamplerState == State.Recording;
+
+        [RelayCommand]
+        private void ResetSelection()
+        {
+            Selection = new Selection(0, 1);
+            PlaybackStartPosition = 0;
+        }
+
+        [RelayCommand]
+        private async void OpenAudioGraphContext()
+        {
+            var context_result = await _host.OpenContext(new AudioGraphContextViewModel());
+            if(context_result.ButtonTag == "ResetSelection")
+            {
+                ResetSelection();
+            }
+        }
 
         public async Task RenderAudioToMp3Async(string path, int bitrate = 128_000)
         {

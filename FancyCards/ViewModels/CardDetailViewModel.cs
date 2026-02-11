@@ -14,6 +14,7 @@ namespace FancyCards.ViewModels
 {
     public partial class CardDetailViewModel : BaseModalViewModel<Card>
     {
+        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private Card _card;
 
@@ -61,8 +62,9 @@ namespace FancyCards.ViewModels
 
         public CardAction CardAction { get; } = CardAction.Create;
 
-        public CardDetailViewModel(DataService dataService, Card card)
+        public CardDetailViewModel(MainWindowViewModel host, DataService dataService, Card card)
         {
+            _host = host;
             _dataService = dataService;
 
             CardAction = card.Id == default ? CardAction.Create : CardAction.Update;
@@ -88,7 +90,7 @@ namespace FancyCards.ViewModels
                 SelectedState = _card.State;
             }
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(_card);
+            _audioSamplerViewModel = new AudioSamplerViewModel(_host, _card);
             //_audioEngine.AudioDurationChanged += (_) =>
             //{
             //    App.Current.Dispatcher.Invoke(() =>

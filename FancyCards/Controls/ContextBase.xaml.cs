@@ -46,8 +46,18 @@ namespace FancyCards.Controls
             Canvas.SetTop(control.ImageGrid, point.Y);
             Canvas.SetLeft(control.ImageGrid, point.X);
 
-
+            //TODO переделать чтоб можно было выбирать в xaml
+            if(target is AudioGraph)
+            {
+                control.ImageGrid.Background = new SolidColorBrush(Colors.White);
+            }
+            else
+            {
+                control.ImageGrid.Background = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary.Light");
+            }
         }
+
+
 
         private bool _contextContentLoaded = false;
 

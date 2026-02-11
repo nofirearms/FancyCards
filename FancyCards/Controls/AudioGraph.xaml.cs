@@ -244,7 +244,23 @@ namespace FancyCards.Controls
             {
                 if(e.ClickCount > 1)
                 {
+                    //micro selection
 
+                    var mouse_canvas = point_canvas.X / InteractionCanvas.ActualWidth;
+                    var to_left_edge = Math.Abs(Selection.Start - mouse_canvas);
+                    var to_right_edge = Math.Abs(Selection.End - mouse_canvas);
+
+                    var x = Math.Clamp(mouse_canvas, 0, 1);
+
+                    if (to_left_edge < to_right_edge)
+                    {
+                        Selection = new Selection(x, Selection.End);
+                        StartPlaybackPosition = x;
+                    }
+                    else
+                    {
+                        Selection = new Selection(Selection.Start, x);
+                    }
                 }
                 else
                 {
@@ -253,30 +269,14 @@ namespace FancyCards.Controls
                     _isSelecting = true;
 
                     //start playback position
-                    var x = Math.Clamp(point_canvas.X / InteractionCanvas.ActualWidth, 0, 1);
+                    //var x = Math.Clamp(point_canvas.X / InteractionCanvas.ActualWidth, 0, 1);
 
-                    StartPlaybackPosition = x;
+                    //StartPlaybackPosition = x;
                 }
             }
             else if (e.ChangedButton == MouseButton.Right)
             {
-                //micro selection
 
-                var mouse_canvas = point_canvas.X / InteractionCanvas.ActualWidth;
-                var to_left_edge = Math.Abs(Selection.Start - mouse_canvas);
-                var to_right_edge = Math.Abs(Selection.End - mouse_canvas);
-
-                var x = Math.Clamp(mouse_canvas, 0, 1);
-
-                if (to_left_edge < to_right_edge)
-                {
-                    Selection = new Selection(x, Selection.End);
-                    StartPlaybackPosition = x;
-                }
-                else
-                {
-                    Selection = new Selection(Selection.Start, x);
-                }
             }
         }
 

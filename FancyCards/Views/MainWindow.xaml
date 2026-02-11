@@ -35,7 +35,7 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
                     <controls:ModalBase ModalBackground="PaleGreen">
-                        <local:MessageBoxView  />
+                        <local:MessageBoxView />
                     </controls:ModalBase>
                 </DataTemplate>
 
@@ -71,12 +71,15 @@
         <!--  Контекстное меню  -->
         <controls:ContextBase
             Panel.ZIndex="11"
-            d:Visibility="Collapsed"
+            d:Visibility="Collapsed" 
             Content="{Binding ContextMenu}"
             Visibility="{Binding ContextMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
             <controls:ContextBase.Resources>
                 <DataTemplate DataType="{x:Type vm:CardContextViewModel}">
                     <local:CardContextView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AudioGraphContextViewModel}">
+                    <local:AudioGraphContextView />
                 </DataTemplate>
             </controls:ContextBase.Resources>
         </controls:ContextBase>
