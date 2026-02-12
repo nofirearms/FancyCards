@@ -3,7 +3,9 @@ using NAudio.CoreAudioApi;
 using NAudio.Utils;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Timers;
 
 
@@ -42,6 +44,8 @@ namespace FancyCards.Audio
             }
         }
 
+        public TimeSpan Duration => GetDuration(_audioStateManager.CurrentData ?? Array.Empty<byte>(), _audioStateManager.Format);
+
         public AudioEngine()
         {
             _utilities = new AudioUtilities();
@@ -71,15 +75,18 @@ namespace FancyCards.Audio
 
             _audioStateManager.LoadFromAudioFile(path);
 
-            var duration = GetDuration(_audioStateManager.CurrentData, _captureSource.WaveFormat);
-            AudioDurationChanged?.Invoke(duration);
-
             State = State.Stopped;
         }
 
         public async Task<double[]> GetWaveformPoints(string path)
         {
             var points = _audioWaveform.GetPointsFromAudio(path);
+            return points;
+        }
+
+        public async Task<double[]> GetWaveformPoints()
+        {
+            var points = _audioWaveform.GetPointsFromBytes(_audioStateManager.CurrentData, _audioStateManager.Format);
             return points;
         }
 
@@ -266,6 +273,45 @@ namespace FancyCards.Audio
         }
 
 
+        public void Trim(double startPosition = 0, double endPosition = 1)
+        {
+            StopPlayback();
+
+            _audioStateManager.Trim(startPosition, endPosition);
+
+            State = State.Stopped;
+        }
+
+        public void Cut(double startPosition = 0, double endPosition = 1)
+        {
+            StopPlayback();
+
+            _audioStateManager.Cut(startPosition, endPosition);
+
+            State = State.Stopped;
+        }
+
+        public void Undo()
+        {
+            StopPlayback();
+
+            _audioStateManager.Undo();
+
+            State = State.Stopped;
+        }
+
+        public void Redo()
+        {
+            StopPlayback();
+
+            _audioStateManager.Redo();
+
+            var duration = GetDuration(_audioStateManager.CurrentData, _captureSource.WaveFormat);
+            AudioDurationChanged?.Invoke(duration);
+
+            State = State.Stopped;
+        }
+
         private TimeSpan GetDuration(List<byte[]> chunks, WaveFormat waveFormat)
         {
             var result = chunks.SelectMany(arr => arr).ToArray();
@@ -286,6 +332,8 @@ namespace FancyCards.Audio
         {
             await _audioStateManager.ExportToMp3Async(path, bitRate);
         }
+
+
 
         public void Dispose()
         {

@@ -32,7 +32,7 @@ namespace FancyCards.Audio
         public double[] GetPointsFromAudio(string path)
         {
             var points = new List<double>();
-
+            //todo если файл не существует
             using (var reader = new AudioFileReader(path))
             {
                 //TODO переделать под float
@@ -50,6 +50,32 @@ namespace FancyCards.Audio
             return points.ToArray();
         }
 
+
+        public double[] GetPointsFromBytes(byte[] source, WaveFormat waveFormat, int resolution = 256)
+        {
+            var result = new double[resolution];
+
+            int bytesPerSample = waveFormat.BlockAlign;
+            int totalBytes = source.Length;
+            int bytesPerPoint = totalBytes / resolution;
+
+            // Выравниваем по границе семпла
+            bytesPerPoint = bytesPerPoint - (bytesPerPoint % bytesPerSample);
+            if (bytesPerPoint < bytesPerSample) bytesPerPoint = bytesPerSample;
+
+            for (int i = 0; i < resolution; i++)
+            {
+                int offset = i * bytesPerPoint;
+                if (offset >= totalBytes) break;
+
+                //int length = Math.Min(bytesPerPoint, totalBytes - offset);
+                var chunk = source.Skip(offset).Take(bytesPerPoint).ToArray();
+
+                result[i] = GetAmplitude(chunk, chunk.Length);
+            }
+
+            return result;
+        }
 
 
         private double CalculateAmplitude(float[] samples, int start = 0, int end = -1)

@@ -91,13 +91,13 @@ namespace FancyCards.ViewModels
             }
 
             _audioSamplerViewModel = new AudioSamplerViewModel(_host, _card);
-            //_audioEngine.AudioDurationChanged += (_) =>
-            //{
-            //    App.Current.Dispatcher.Invoke(() =>
-            //    {
-            //        SaveCardCommand?.NotifyCanExecuteChanged();
-            //    });
-            //};
+            _audioSamplerViewModel.AudioDurationChanged += (_) =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    SaveCardCommand?.NotifyCanExecuteChanged();
+                });
+            };
         }
 
 
@@ -105,7 +105,15 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()
         {
-            _audioSamplerViewModel.StopPlaybackCommand.Execute(null);
+            if(_audioSamplerViewModel.AudioSamplerState == State.Playing)
+            {
+                _audioSamplerViewModel.StopPlaybackCommand.Execute(null);
+            }
+            if(_audioSamplerViewModel.AudioSamplerState == State.Recording)
+            {
+                _audioSamplerViewModel.StopRecordingCommand.Execute(null);
+            }
+            
 
             //create
             if(CardAction == CardAction.Create)
@@ -165,7 +173,7 @@ namespace FancyCards.ViewModels
             }
 
         }
-        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) /*&& _audioSamplerViewModel.AudioDuration != TimeSpan.Zero*/;
+        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) && _audioSamplerViewModel.AudioDuration != TimeSpan.Zero;
 
 
         [RelayCommand]

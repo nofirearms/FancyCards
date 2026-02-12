@@ -16,7 +16,9 @@ namespace FancyCards.Audio
         private readonly Stack<byte[]> _undoStack = new Stack<byte[]>();
         private readonly Stack<byte[]> _redoStack = new Stack<byte[]>();
 
-        public int MaxHistory = 25; // ограничение истории
+        private int MaxHistory = 25; // ограничение истории
+
+        public WaveFormat Format => _format;
 
         public AudioStateManager(WaveFormat format)
         {
@@ -31,11 +33,11 @@ namespace FancyCards.Audio
             return new RawSourceWaveStream(new MemoryStream(_currentData), _format);
         }
 
-        public TimeSpan GetDuration()
-        {
-            double seconds = (double)_currentData.Length / _format.AverageBytesPerSecond;
-            return TimeSpan.FromSeconds(seconds);
-        }
+        //public TimeSpan GetDuration()
+        //{
+        //    double seconds = (double)_currentData.Length / _format.AverageBytesPerSecond;
+        //    return TimeSpan.FromSeconds(seconds);
+        //}
 
         public byte[] GetDataCopy() => (byte[])_currentData?.Clone();
 
@@ -80,7 +82,7 @@ namespace FancyCards.Audio
         public void LoadFromAudioFile(string path, bool createUndoPoint = false)
         {
             if (!File.Exists(path))
-                throw new FileNotFoundException("Audio file not found", path);
+                return;
 
             using (var reader = new AudioFileReader(path))
             using (var ms = new MemoryStream())
@@ -120,22 +122,39 @@ namespace FancyCards.Audio
         #endregion
 
 
-        /// <summary>Обрезать по сэмплам</summary>
-        public void Trim(int startSample, int endSample)
+        /// <summary>Обрезать 0 - 1</summary>
+        public void Trim(double startPosition, double endPosition)
         {
+            int bytesPerSample = _format.BlockAlign;
+            int startByte = (int)(startPosition * _currentData.Length);
+            int endByte = (int)(endPosition * _currentData.Length);
+
+            startByte = startByte - (startByte % bytesPerSample);
+            endByte = endByte - (endByte % bytesPerSample);
+
             if (_currentData.Length == 0) return;
             SaveState();
-
-            int bytesPerSample = _format.BitsPerSample / 8 * _format.Channels;
-            int startByte = startSample * bytesPerSample;
-            int endByte = endSample * bytesPerSample;
-
-            startByte = Math.Clamp(startByte, 0, _currentData.Length);
-            endByte = Math.Clamp(endByte, startByte, _currentData.Length);
 
             _currentData = _currentData.Skip(startByte).Take(endByte - startByte).ToArray();
         }
 
+
+        public void Cut(double startPosition, double endPosition)
+        {
+            int bytesPerSample = _format.BlockAlign;
+            int startByte = (int)(startPosition * _currentData.Length);
+            int endByte = (int)(endPosition * _currentData.Length);
+
+            startByte = startByte - (startByte % bytesPerSample);
+            endByte = endByte - (endByte % bytesPerSample);
+
+            if (_currentData.Length == 0) return;
+            SaveState();
+
+            _currentData = _currentData.Take(startByte)
+                                       .Concat(_currentData.Skip(endByte))
+                                       .ToArray();
+        }
 
         public void CreateDirectory(string path)
         {

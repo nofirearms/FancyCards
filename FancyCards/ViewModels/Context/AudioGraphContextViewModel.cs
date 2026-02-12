@@ -8,5 +8,11 @@ namespace FancyCards.ViewModels
 
         [RelayCommand]
         private void ResetSelection() => Close(buttonTag: "ResetSelection");
+
+        [RelayCommand]
+        private void TrimSelection() => Close(buttonTag: "Trim");
+
+        [RelayCommand]
+        private void CutSelection() => Close(buttonTag: "Cut");
     }
 }

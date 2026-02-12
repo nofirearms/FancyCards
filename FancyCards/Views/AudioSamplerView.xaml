@@ -92,6 +92,7 @@
                     <Button
                         Grid.Column="2"
                         HorizontalAlignment="Right"
+                        Command="{Binding UndoAudioCommand}"
                         Style="{StaticResource TransparentSquareButton}">
                         <StackPanel Orientation="Vertical">
                             <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Undo" />

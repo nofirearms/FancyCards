@@ -13,8 +13,8 @@
     <Grid>
         <StackPanel>
             <Button Command="{Binding ResetSelectionCommand}" Content="Reset selection" />
-            <Button Content="Cut selection" />
-            <Button Content="Leave selection" />
+            <Button Command="{Binding TrimSelectionCommand}" Content="Trim selection" />
+            <Button Command="{Binding CutSelectionCommand}" Content="Cut selection" />
         </StackPanel>
     </Grid>
 </UserControl>

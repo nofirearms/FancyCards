@@ -20,6 +20,8 @@ namespace FancyCards.ViewModels
         private readonly MainWindowViewModel _host;
         private readonly AudioEngine _audioEngine;
 
+        public event Action<TimeSpan> AudioDurationChanged;
+
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(StartPlaybackCommand))]
         [NotifyCanExecuteChangedFor(nameof(StopPlaybackCommand))]
@@ -40,6 +42,10 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private TimeSpan _audioDuration = TimeSpan.Zero;
+        partial void OnAudioDurationChanged(TimeSpan value)
+        {
+            AudioDurationChanged?.Invoke(value);
+        }
 
         [ObservableProperty]
         private TimeSpan _playbackCurrentPositionTimeSpan;
@@ -69,6 +75,7 @@ namespace FancyCards.ViewModels
                 PlaybackStartPosition = Selection.Start;
                 Volume = card.Audio.Volume;
                 Tempo = card.Audio.Tempo;
+                AudioDuration = _audioEngine.Duration;
             }
             
         }
@@ -142,11 +149,17 @@ namespace FancyCards.ViewModels
         private bool CanStartRecording() => AudioSamplerState == State.Stopped || AudioSamplerState == State.Initial;
 
         [RelayCommand(CanExecute = nameof(CanStopRecording))]
-        private void StopRecording()
+        private async void StopRecording()
         {
             _audioEngine.StopRecording();
+
+            var points = await _audioEngine.GetWaveformPoints();
+            Points = new ObservableCollection<double>(points);
+            ResetSelection();
         }
         private bool CanStopRecording() => AudioSamplerState == State.Recording;
+
+
 
         [RelayCommand]
         private void ResetSelection()
@@ -156,12 +169,60 @@ namespace FancyCards.ViewModels
         }
 
         [RelayCommand]
+        private async void TrimAudio()
+        {
+            if (Selection.Start == 0 && Selection.End == 1) return;
+
+            _audioEngine.Trim(Selection.Start, Selection.End);
+
+            var points = await _audioEngine.GetWaveformPoints();
+            Points = new ObservableCollection<double>(points);
+            ResetSelection();
+            AudioDuration = _audioEngine.Duration;
+            AudioSourceChanged = true;
+        }
+
+        [RelayCommand]
+        private async void CutAudio()
+        {
+            if (Selection.Start == 0 && Selection.End == 1) return;
+
+            _audioEngine.Cut(Selection.Start, Selection.End);
+
+            var points = await _audioEngine.GetWaveformPoints();
+            Points = new ObservableCollection<double>(points);
+            ResetSelection();
+            AudioDuration = _audioEngine.Duration;
+            AudioSourceChanged = true;
+        }
+
+        [RelayCommand]
+        private async void UndoAudio()
+        {
+            _audioEngine.Undo();
+
+            var points = await _audioEngine.GetWaveformPoints();
+            Points = new ObservableCollection<double>(points);
+            ResetSelection();
+            AudioDuration = _audioEngine.Duration;
+            AudioSourceChanged = true;
+        }
+
+        [RelayCommand]
         private async void OpenAudioGraphContext()
         {
             var context_result = await _host.OpenContext(new AudioGraphContextViewModel());
             if(context_result.ButtonTag == "ResetSelection")
             {
                 ResetSelection();
+            }
+            else if(context_result.ButtonTag == "Trim")
+            {
+                TrimAudio();
+            }
+            else if(context_result.ButtonTag == "Cut")
+            {
+                CutAudio();
             }
         }
 
