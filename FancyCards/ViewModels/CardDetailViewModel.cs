@@ -184,6 +184,7 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private new void Cancel()
         {
+            _audioSamplerViewModel.Dispose();
             _audioEngine.Dispose();
 
             base.Cancel();

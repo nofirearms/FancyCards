@@ -21,7 +21,7 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly AudioEngine _audioEngine;
-        private readonly DispatcherTimer _recordingTimer;
+        private DispatcherTimer _recordingTimer;
         private Stopwatch _stopwatch;
 
         [ObservableProperty]
@@ -242,6 +242,9 @@ namespace FancyCards.ViewModels
         public void Dispose()
         {
             _recordingTimer.Stop();
+            _stopwatch.Stop();
+            _stopwatch = null;
+            _recordingTimer = null;
         }
     }
 }
