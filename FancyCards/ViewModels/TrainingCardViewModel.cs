@@ -42,6 +42,8 @@ namespace FancyCards.ViewModels
             SessionTimeSpent = SessionTimeSpent.Add(TimeSpan.FromSeconds(1));
         }
 
+
+
     }
 
 

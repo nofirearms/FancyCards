@@ -76,6 +76,8 @@ namespace FancyCards.ViewModels
 
         private void ShowNextCard()
         {
+            //if(CurrentCard.check)
+
             if (_cardManager.MoveToNextCard())
             {
                 CurrentCard = _cardManager.CurrentCard;

@@ -53,8 +53,6 @@ namespace FancyCards.Audio
             return new RawSourceWaveStream(new MemoryStream(CurrentData), _format);
         }
 
-
-
         public byte[] GetDataCopy() => (byte[])CurrentData?.Clone();
 
         public void SetData(byte[] newData, bool createUndoPoint = false)
@@ -95,62 +93,40 @@ namespace FancyCards.Audio
             CurrentData = _redoStack.Pop();
         }
 
-        public void LoadFromAudioFile(string path, bool createUndoPoint = false)
+        public bool LoadFromAudioFile(string path, bool createUndoPoint = false)
         {
-            if (!File.Exists(path))
-                return;
-
-            using (var reader = new AudioFileReader(path))
-            using (var ms = new MemoryStream())
+            try
             {
-                reader.CopyTo(ms);
-                byte[] allBytes = ms.ToArray();
-                CurrentData = allBytes;
+                if (!File.Exists(path))
+                    return false;
+
+                using (var reader = new AudioFileReader(path))
+                using (var ms = new MemoryStream())
+                {
+                    reader.CopyTo(ms);
+                    byte[] allBytes = ms.ToArray();
+                    CurrentData = allBytes;
+                }
+
+                if (createUndoPoint) SaveState();
+
+                // Очищаем Redo стек
+                _redoStack.Clear();
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
 
-            if (createUndoPoint) SaveState();
-
-            // Очищаем Redo стек
-            _redoStack.Clear();
         }
-        //--------------------------------------------------------- EXPORT ------------------------------------------
-        #region EXPORT
-
-        /// <summary>Экспорт текущего PCM в WAV файл</summary>
-        public void ExportToWav(string path)
-        {
-            using var writer = new WaveFileWriter(path, _format);
-            writer.Write(CurrentData, 0, CurrentData.Length);
-        }
-
-        public async Task ExportToMp3Async(string path, int bitRate)
-        {
-            await Task.Run(() =>
-            {
-                CreateDirectory(path);
-                using (var resampler = new MediaFoundationResampler(this.CreateWaveProvider(), _format))
-                {
-                    MediaFoundationEncoder.EncodeToMp3(resampler, path, bitRate);
-                }
-            });
-        }
-
-        #endregion
 
 
         public TimeSpan GetDuration()
         {   
             double seconds = (double)CurrentData.Length / _format.AverageBytesPerSecond;
             return TimeSpan.FromSeconds(seconds);
-        }
-
-        public void CreateDirectory(string path)
-        {
-            var directory = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
         }
 
         public void Dispose()

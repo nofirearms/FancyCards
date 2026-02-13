@@ -44,7 +44,7 @@ namespace FancyCards.Audio
 
 
         //------------------------------------------------------------------------------------------------------------------------------------------- AUDIO PROCESSING -------------------------
-
+        #region AUDIO PROCESSING
 
         /// <summary>Обрезать 0 - 1</summary>
         public byte[] Trim(byte[] data, double startPosition, double endPosition, WaveFormat format)
@@ -122,6 +122,51 @@ namespace FancyCards.Audio
         {
             var rms = GetRMS(reader);
             return 20 * Math.Log10(rms);
+        }
+
+        #endregion
+
+        //--------------------------------------------------------- EXPORT ------------------------------------------
+        #region EXPORT
+
+        /// <summary>Экспорт текущего PCM в WAV файл</summary>
+        public void ExportToWav(string path, byte[] data, WaveFormat format)
+        {
+            using var writer = new WaveFileWriter(path, format);
+            writer.Write(data, 0, data.Length);
+        }
+
+        public async Task<bool> ExportToMp3Async(string path, byte[] data, WaveFormat format, int bitRate = 128_000)
+        {
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    CreateDirectory(path);
+                    using (var resampler = new MediaFoundationResampler(new RawSourceWaveStream(new MemoryStream(data), format), bitRate))
+                    {
+                        MediaFoundationEncoder.EncodeToMp3(resampler, path, bitRate);
+                    }
+                    return true;
+                });
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        #endregion
+
+
+        public void CreateDirectory(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
         }
     }
 }

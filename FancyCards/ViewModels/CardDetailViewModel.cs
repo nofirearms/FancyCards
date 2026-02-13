@@ -92,7 +92,14 @@ namespace FancyCards.ViewModels
                 SelectedState = _card.State;
             }
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(_host, audioEngine, _card);
+
+
+            InitializeAsync();
+        }
+
+        private async void InitializeAsync()
+        {
+            _audioSamplerViewModel = new AudioSamplerViewModel(_host, _audioEngine, _card);
 
             _audioEngine.AudioSourceChanged += (source) =>
             {
@@ -109,8 +116,6 @@ namespace FancyCards.ViewModels
                 });
             };
         }
-
-
 
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()

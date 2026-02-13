@@ -76,15 +76,17 @@ namespace FancyCards.Audio
 
 
         //createUndoPoint = true, чтобы определять было ли изменение аудио, чтобы экспортировать
-        public async void OpenAudioAsync(string path, bool createUndoPoint = false)
+        public bool OpenAudioAsync(string path, bool createUndoPoint = false)
         {
             StopPlayback();
 
             //при открытии карточки будет до этого _audioStateManager.CurrentData = null и точка undo не создастся
             //а при открытии аудио из вне _audioStateManager.CurrentData != null
-            _audioStateManager.LoadFromAudioFile(path, _audioStateManager.CurrentData.Length != 0);
+            var result = _audioStateManager.LoadFromAudioFile(path, _audioStateManager.CurrentData.Length != 0);
 
             State = State.Stopped;
+
+            return result;
         }
 
 
@@ -351,7 +353,7 @@ namespace FancyCards.Audio
 
         public async Task RenderToMp3Async(string path, int bitRate = 128000)
         {
-            await _audioStateManager.ExportToMp3Async(path, bitRate);
+            await _utilities.ExportToMp3Async(path, _audioStateManager.CurrentData, _audioStateManager.Format, bitRate);
         }
 
 

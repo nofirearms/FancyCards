@@ -5,6 +5,10 @@
 
     <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
 
+    <Style BasedOn="{StaticResource MaterialDesignOutlinedButton}" TargetType="Button">
+        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+    </Style>
+
     <Style BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
         <Setter Property="Padding" Value="10" />
         <Setter Property="Margin" Value="1,1" />
