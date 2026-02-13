@@ -6,6 +6,8 @@ using FancyCards.ViewModels.Modal;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
+using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
 {
@@ -15,6 +17,8 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly TrainingCardListManager _cardManager;
+        private readonly DispatcherTimer _timer;
+
 
         [ObservableProperty]
         private TrainingCardViewModel _currentCard;
@@ -55,6 +59,16 @@ namespace FancyCards.ViewModels
                 .ToList();
 
             _cardManager = new TrainingCardListManager(training_cards);
+
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += (s, e) =>
+            {
+                if (_currentCard != null)
+                {
+                    _currentCard.OnTimerTick();
+                }
+            };
 
             ShowNextCard();
 

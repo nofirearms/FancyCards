@@ -5,6 +5,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Timers;
 
@@ -27,9 +28,9 @@ namespace FancyCards.Audio
 
         public event Action<State> StateChanged;
         public event Action<double> GraphChanged;
-        public event Action<TimeSpan> AudioDurationChanged;
         public event Action<PlaybackPositionArgs> PlaybackPositionChanged;
         public event Action<double> MaxSampleVolume;
+        public event Action<AudioSourceChangedArgs> AudioSourceChanged;
 
         private State _state = State.Initial;
 
@@ -44,7 +45,11 @@ namespace FancyCards.Audio
             }
         }
 
+
+
         public TimeSpan Duration => GetDuration(_audioStateManager.CurrentData ?? Array.Empty<byte>(), _audioStateManager.Format);
+
+        public bool AudioChanged => _audioStateManager.CanUndo;
 
         public AudioEngine()
         {
@@ -65,32 +70,26 @@ namespace FancyCards.Audio
             };
             _playbackPositionTimer.Elapsed += OnPlaybackPositionChanged;
             _audioPipeline.StreamVolume += OnStreamVolume;
+
+            _audioStateManager.SourceChanged += (source) => AudioSourceChanged?.Invoke(source);
         }
 
 
-
-        public async void OpenAudioAsync(string path)
+        //createUndoPoint = true, чтобы определять было ли изменение аудио, чтобы экспортировать
+        public async void OpenAudioAsync(string path, bool createUndoPoint = false)
         {
             StopPlayback();
 
-            _audioStateManager.LoadFromAudioFile(path);
+            //при открытии карточки будет до этого _audioStateManager.CurrentData = null и точка undo не создастся
+            //а при открытии аудио из вне _audioStateManager.CurrentData != null
+            _audioStateManager.LoadFromAudioFile(path, _audioStateManager.CurrentData.Length != 0);
 
             State = State.Stopped;
         }
 
-        public async Task<double[]> GetWaveformPoints(string path)
-        {
-            var points = _audioWaveform.GetPointsFromAudio(path);
-            return points;
-        }
 
-        public async Task<double[]> GetWaveformPoints()
-        {
-            var points = _audioWaveform.GetPointsFromBytes(_audioStateManager.CurrentData, _audioStateManager.Format);
-            return points;
-        }
 
-        //-------------------------------------------------------------------------------------------------- PLAYBACK -----------------------------------------------------
+        //----------------------------------------------------------------------------------------------------- PLAYBACK ---------------------------------------------------
         #region PLAYBACK
         public void StartPlayback(double startPosition = 0, double endPosition = 1, PlaybackSpeed playbackSpeed = PlaybackSpeed.Full, float volume = 0.4f, float tempo = 1.0f, float targetRMS = 0.2f)
         {         
@@ -190,7 +189,7 @@ namespace FancyCards.Audio
 
         // ---------------------------------------------------------------------------------------------------- RECORDING --------------------------------------------------
         #region RECORDING
-        public void StartRecording()
+        public async Task StartRecording()
         {
             if (State == State.Playing)
             {
@@ -235,8 +234,8 @@ namespace FancyCards.Audio
             GraphChanged?.Invoke(peak);
 
             //TODO возможно лучше переделать через таймер
-            var duration = GetDuration(_audioChunks, _captureSource.WaveFormat);
-            AudioDurationChanged?.Invoke(duration);
+            //var duration = GetDuration(_audioChunks, _captureSource.WaveFormat);
+            //AudioDurationChanged?.Invoke(duration);
 
             //var peak = _audioService.PeakSampleFromBuffer(e.Buffer, e.BytesRecorded);
             //GraphChanged?.Invoke(this, new Point((_writer as WaveFileWriterWithCounter).Counter, peak));
@@ -247,7 +246,12 @@ namespace FancyCards.Audio
             _captureSource.DataAvailable -= OnCaptureDataAvailable;
             _captureSource.RecordingStopped -= OnRecordingStopped;
 
-            _audioStateManager.SetData(GetSoundData(_audioChunks));
+            if (_audioStateManager is null) return;
+
+            //если _audioStateManager.CurrentData == null значит 
+            _audioStateManager.SetData(GetSoundData(_audioChunks), true);
+
+            //RecordingStopped?.Invoke(true);
 
             //добавляем точку чтобы знать где конец списка, для графа
             //GraphChanged?.Invoke(this, new Point(-1, -1));
@@ -255,7 +259,21 @@ namespace FancyCards.Audio
 
         #endregion
 
+        //------------------------------------------------------------------------------------------------------ GRAPH -----------------------------------------------------
+        #region Graph
+        public async Task<double[]> GetWaveformPoints(string path)
+        {
+            var points = _audioWaveform.GetPointsFromAudio(path);
+            return points;
+        }
 
+        public async Task<double[]> GetWaveformPoints()
+        {
+            var points = _audioWaveform.GetPointsFromBytes(_audioStateManager.CurrentData, _audioStateManager.Format);
+            return points;
+        }
+
+        #endregion
 
         public byte[] GetSoundData(List<byte[]> chunks)
         {
@@ -273,11 +291,15 @@ namespace FancyCards.Audio
         }
 
 
+
+
         public void Trim(double startPosition = 0, double endPosition = 1)
         {
             StopPlayback();
 
-            _audioStateManager.Trim(startPosition, endPosition);
+            var trim = _utilities.Trim(_audioStateManager.CurrentData, startPosition, endPosition, _audioStateManager.Format);
+
+            _audioStateManager.SetData(trim, true);
 
             State = State.Stopped;
         }
@@ -286,7 +308,9 @@ namespace FancyCards.Audio
         {
             StopPlayback();
 
-            _audioStateManager.Cut(startPosition, endPosition);
+            var cut = _utilities.Cut(_audioStateManager.CurrentData, startPosition, endPosition, _audioStateManager.Format);
+
+            _audioStateManager.SetData(cut, true);
 
             State = State.Stopped;
         }
@@ -305,9 +329,6 @@ namespace FancyCards.Audio
             StopPlayback();
 
             _audioStateManager.Redo();
-
-            var duration = GetDuration(_audioStateManager.CurrentData, _captureSource.WaveFormat);
-            AudioDurationChanged?.Invoke(duration);
 
             State = State.Stopped;
         }
@@ -337,6 +358,9 @@ namespace FancyCards.Audio
 
         public void Dispose()
         {
+            if (State == State.Recording) StopRecording();
+            else if (State == State.Playing) StopPlayback();
+
             _outputDevice.PlaybackStopped -= OnPlaybackStopped;
             _playbackPositionTimer.Elapsed -= OnPlaybackPositionChanged;
             _playbackPositionTimer.Dispose();

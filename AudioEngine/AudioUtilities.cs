@@ -7,7 +7,7 @@ namespace FancyCards.Audio
     public class AudioUtilities
     {
 
-        //----------------------------------------------------------------------------------------------------------------------------------------------------------------DEVICES---------------//
+        //------------------------------------------------------------------------------------------------------------------------------------------- DEVICES -----------------------------//
         #region DEVICES
         private MMDeviceEnumerator _deviceEnumerator = new MMDeviceEnumerator();
         /// <summary>
@@ -42,6 +42,47 @@ namespace FancyCards.Audio
         public WasapiCapture GetWasapiCaptureInstance(MMDevice device) => device.DataFlow == DataFlow.Capture ? new WasapiCapture(device) : new WasapiLoopbackCapture(device);
         #endregion
 
+
+        //------------------------------------------------------------------------------------------------------------------------------------------- AUDIO PROCESSING -------------------------
+
+
+        /// <summary>Обрезать 0 - 1</summary>
+        public byte[] Trim(byte[] data, double startPosition, double endPosition, WaveFormat format)
+        {
+            int bytesPerSample = format.BlockAlign;
+            int startByte = (int)(startPosition * data.Length);
+            int endByte = (int)(endPosition * data.Length);
+
+            startByte = startByte - (startByte % bytesPerSample);
+            endByte = endByte - (endByte % bytesPerSample);
+
+            if (data.Length == 0) return data;
+            //SaveState();
+
+            data = data.Skip(startByte).Take(endByte - startByte).ToArray();
+
+            return data;
+        }
+
+
+        public byte[] Cut(byte[] data, double startPosition, double endPosition, WaveFormat format)
+        {
+            int bytesPerSample = format.BlockAlign;
+            int startByte = (int)(startPosition * data.Length);
+            int endByte = (int)(endPosition * data.Length);
+
+            startByte = startByte - (startByte % bytesPerSample);
+            endByte = endByte - (endByte % bytesPerSample);
+
+            if (data.Length == 0) return data;
+            //SaveState();
+
+            data = data.Take(startByte)
+                                       .Concat(data.Skip(endByte))
+                                       .ToArray();
+
+            return data;
+        }
 
         /// <summary>
         /// Получаем RMS (float)

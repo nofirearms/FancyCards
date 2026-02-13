@@ -22,11 +22,24 @@ namespace FancyCards.ViewModels
         public Card Card => _card;
 
         [ObservableProperty]
+        private TimeSpan _totalTimeSpent;
+
+        [ObservableProperty]
+        private TimeSpan _sessionTimeSpent;
+
+        [ObservableProperty]
         private string _answer = string.Empty;
 
         public TrainingCardViewModel(Card card)
         {
             _card = card;
+
+        }
+
+        public void OnTimerTick()
+        {
+            TotalTimeSpent = TotalTimeSpent.Add(TimeSpan.FromSeconds(1));
+            SessionTimeSpent = SessionTimeSpent.Add(TimeSpan.FromSeconds(1));
         }
 
     }

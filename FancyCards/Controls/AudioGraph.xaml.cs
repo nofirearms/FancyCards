@@ -208,7 +208,7 @@ namespace FancyCards.Controls
 
             if (oldState == State.Recording && newState == State.Stopped)
             {
-                StretchGraphHorizontally();
+                //StretchGraphHorizontally();
                 OnRecodringStopped();
             }
         }
@@ -369,9 +369,9 @@ namespace FancyCards.Controls
 
         private void OnRecodringStopped()
         {
-            Selection = new Selection(0, 1);
+            //Selection = new Selection(0, 1);
             InteractionCanvas.IsHitTestVisible = true;
-            StretchGraphVertically();
+            //StretchGraphVertically();
         }
 
         private async void ResetGraphScale()

@@ -8,19 +8,21 @@ using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
 {
-    public partial class AudioSamplerViewModel : ObservableObject
+    public partial class AudioSamplerViewModel : ObservableObject, IDisposable
     {
         private readonly MainWindowViewModel _host;
         private readonly AudioEngine _audioEngine;
-
-        public event Action<TimeSpan> AudioDurationChanged;
+        private readonly DispatcherTimer _recordingTimer;
+        private Stopwatch _stopwatch;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(StartPlaybackCommand))]
@@ -44,7 +46,7 @@ namespace FancyCards.ViewModels
         private TimeSpan _audioDuration = TimeSpan.Zero;
         partial void OnAudioDurationChanged(TimeSpan value)
         {
-            AudioDurationChanged?.Invoke(value);
+            
         }
 
         [ObservableProperty]
@@ -56,34 +58,56 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private ObservableCollection<double> _points = [];
 
-        public bool AudioSourceChanged { get; set; } = false;
+        private bool _canUndo = false;
 
-        public AudioSamplerViewModel(MainWindowViewModel host, Card card)
+
+        public AudioSamplerViewModel(MainWindowViewModel host, AudioEngine audioEngine, Card card)
         {
             _host = host;
-            _audioEngine = new AudioEngine();
+            _audioEngine = audioEngine;
 
             _audioEngine.StateChanged += OnAudioEngineStateChanged;
             _audioEngine.GraphChanged += OnGraphChanged;
-            _audioEngine.AudioDurationChanged += OnDurationChanged;
             _audioEngine.PlaybackPositionChanged += OnPlaybackPositionChanged;
+            _audioEngine.AudioSourceChanged += OnAudioSourceChanged;
 
             if(card.Id != default)
             {
-                LoadGraph(card.Audio.Path);
+                _audioEngine.OpenAudioAsync(card.Audio.Path);
                 Selection = new Selection(card.Audio.StartPosition, card.Audio.EndPosition);
                 PlaybackStartPosition = Selection.Start;
                 Volume = card.Audio.Volume;
                 Tempo = card.Audio.Tempo;
                 AudioDuration = _audioEngine.Duration;
             }
-            
+
+            _stopwatch = new Stopwatch();
+            _recordingTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(50)
+            };
+            _recordingTimer.Tick += (s, a) =>
+            {
+                AudioDuration = _stopwatch.Elapsed;
+            };
         }
 
-        private async void LoadGraph(string path)
+        private async void OnAudioSourceChanged(AudioSourceChangedArgs args)
         {
-            _audioEngine.OpenAudioAsync(path);
-            var points = await _audioEngine.GetWaveformPoints(path);
+            BuildGraph();
+
+            AudioDuration = args.Duration;
+
+            _canUndo = args.CanUndo;
+            UndoAudioCommand?.NotifyCanExecuteChanged();
+
+            ResetSelection();
+        }
+
+
+        private async void BuildGraph()
+        {
+            var points = await _audioEngine.GetWaveformPoints();
             Points = new ObservableCollection<double>(points);
         }
 
@@ -93,10 +117,6 @@ namespace FancyCards.ViewModels
             PlaybackCurrentPosition = args.PositionPercent;
         }
 
-        private void OnDurationChanged(TimeSpan span)
-        {
-            AudioDuration = span;
-        }
 
         private void OnGraphChanged(double obj)
         {
@@ -131,6 +151,7 @@ namespace FancyCards.ViewModels
         private bool CanStartPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 
 
+
         [RelayCommand(CanExecute = nameof(CanStopPlayback))]
         private void StopPlayback()
         {
@@ -139,23 +160,30 @@ namespace FancyCards.ViewModels
         private bool CanStopPlayback() => AudioSamplerState == State.Playing || AudioSamplerState == State.Stopped;
 
 
+
         [RelayCommand(CanExecute = nameof(CanStartRecording))]
-        private void StartRecording()
+        private async void StartRecording()
         {
-            AudioSourceChanged = true;
             Points.Clear();
             _audioEngine.StartRecording();
+
+            _stopwatch.Reset();
+            _stopwatch.Start();
+            _recordingTimer.Start();
+            
         }
         private bool CanStartRecording() => AudioSamplerState == State.Stopped || AudioSamplerState == State.Initial;
+
+
 
         [RelayCommand(CanExecute = nameof(CanStopRecording))]
         private async void StopRecording()
         {
             _audioEngine.StopRecording();
 
-            var points = await _audioEngine.GetWaveformPoints();
-            Points = new ObservableCollection<double>(points);
-            ResetSelection();
+            _stopwatch.Stop();
+            _recordingTimer.Stop();
+            
         }
         private bool CanStopRecording() => AudioSamplerState == State.Recording;
 
@@ -174,12 +202,6 @@ namespace FancyCards.ViewModels
             if (Selection.Start == 0 && Selection.End == 1) return;
 
             _audioEngine.Trim(Selection.Start, Selection.End);
-
-            var points = await _audioEngine.GetWaveformPoints();
-            Points = new ObservableCollection<double>(points);
-            ResetSelection();
-            AudioDuration = _audioEngine.Duration;
-            AudioSourceChanged = true;
         }
 
         [RelayCommand]
@@ -188,25 +210,16 @@ namespace FancyCards.ViewModels
             if (Selection.Start == 0 && Selection.End == 1) return;
 
             _audioEngine.Cut(Selection.Start, Selection.End);
-
-            var points = await _audioEngine.GetWaveformPoints();
-            Points = new ObservableCollection<double>(points);
-            ResetSelection();
-            AudioDuration = _audioEngine.Duration;
-            AudioSourceChanged = true;
         }
 
-        [RelayCommand]
+
+        [RelayCommand(CanExecute = nameof(CanUndoAudio))]
         private async void UndoAudio()
         {
             _audioEngine.Undo();
-
-            var points = await _audioEngine.GetWaveformPoints();
-            Points = new ObservableCollection<double>(points);
-            ResetSelection();
-            AudioDuration = _audioEngine.Duration;
-            AudioSourceChanged = true;
         }
+        private bool CanUndoAudio() => _canUndo;
+
 
         [RelayCommand]
         private async void OpenAudioGraphContext()
@@ -226,9 +239,9 @@ namespace FancyCards.ViewModels
             }
         }
 
-        public async Task RenderAudioToMp3Async(string path, int bitrate = 128_000)
+        public void Dispose()
         {
-            await _audioEngine.RenderToMp3Async(path, bitrate);
+            _recordingTimer.Stop();
         }
     }
 }

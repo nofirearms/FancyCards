@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using FancyCards.Audio.Common;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,9 @@ namespace FancyCards.Audio
     /// </summary>
     public class AudioStateManager : IDisposable
     {
-        private byte[] _currentData;
+        public event Action<AudioSourceChangedArgs> SourceChanged;
+
+        
         private readonly WaveFormat _format;
 
         private readonly Stack<byte[]> _undoStack = new Stack<byte[]>();
@@ -18,41 +21,54 @@ namespace FancyCards.Audio
 
         private int MaxHistory = 25; // ограничение истории
 
-        public WaveFormat Format => _format;
+        public WaveFormat Format => _format; 
 
         public AudioStateManager(WaveFormat format)
         {
             _format = format ?? throw new ArgumentNullException(nameof(format));
-            _currentData = Array.Empty<byte>();
+            _currentData = Array.Empty<byte>(); 
         }
 
-        public byte[] CurrentData => _currentData;
+        private byte[] _currentData;
+        public byte[] CurrentData
+        {
+            get => _currentData;
+            set
+            {
+                _currentData = value;
+                if(_currentData != null)
+                {
+                    SourceChanged?.Invoke(new AudioSourceChangedArgs
+                    {
+                        CanUndo = CanUndo,
+                        Duration = GetDuration()
+                    });
+                }
+                
+            }
+        }
 
         public IWaveProvider CreateWaveProvider()
         {
-            return new RawSourceWaveStream(new MemoryStream(_currentData), _format);
+            return new RawSourceWaveStream(new MemoryStream(CurrentData), _format);
         }
 
-        //public TimeSpan GetDuration()
-        //{
-        //    double seconds = (double)_currentData.Length / _format.AverageBytesPerSecond;
-        //    return TimeSpan.FromSeconds(seconds);
-        //}
 
-        public byte[] GetDataCopy() => (byte[])_currentData?.Clone();
+
+        public byte[] GetDataCopy() => (byte[])CurrentData?.Clone();
 
         public void SetData(byte[] newData, bool createUndoPoint = false)
         {
             if (createUndoPoint) SaveState();
-            _currentData = newData ?? Array.Empty<byte>();
+            CurrentData = newData ?? Array.Empty<byte>();
             _redoStack.Clear();
         }
 
         public void SaveState()
         {
-            if (_currentData == null) return;
+            if (CurrentData == null) return;
 
-            _undoStack.Push((byte[])_currentData.Clone());
+            _undoStack.Push((byte[])CurrentData.Clone());
             if (_undoStack.Count > MaxHistory)
                 _undoStack.TrimExcess();
 
@@ -67,16 +83,16 @@ namespace FancyCards.Audio
         {
             if (!CanUndo) return;
 
-            _redoStack.Push((byte[])_currentData.Clone());
-            _currentData = _undoStack.Pop();
+            _redoStack.Push((byte[])CurrentData.Clone());
+            CurrentData = _undoStack.Pop();
         }
 
         public void Redo()
         {
             if (!CanRedo) return;
 
-            _undoStack.Push((byte[])_currentData.Clone());
-            _currentData = _redoStack.Pop();
+            _undoStack.Push((byte[])CurrentData.Clone());
+            CurrentData = _redoStack.Pop();
         }
 
         public void LoadFromAudioFile(string path, bool createUndoPoint = false)
@@ -89,7 +105,7 @@ namespace FancyCards.Audio
             {
                 reader.CopyTo(ms);
                 byte[] allBytes = ms.ToArray();
-                _currentData = allBytes;
+                CurrentData = allBytes;
             }
 
             if (createUndoPoint) SaveState();
@@ -104,7 +120,7 @@ namespace FancyCards.Audio
         public void ExportToWav(string path)
         {
             using var writer = new WaveFileWriter(path, _format);
-            writer.Write(_currentData, 0, _currentData.Length);
+            writer.Write(CurrentData, 0, CurrentData.Length);
         }
 
         public async Task ExportToMp3Async(string path, int bitRate)
@@ -122,38 +138,10 @@ namespace FancyCards.Audio
         #endregion
 
 
-        /// <summary>Обрезать 0 - 1</summary>
-        public void Trim(double startPosition, double endPosition)
-        {
-            int bytesPerSample = _format.BlockAlign;
-            int startByte = (int)(startPosition * _currentData.Length);
-            int endByte = (int)(endPosition * _currentData.Length);
-
-            startByte = startByte - (startByte % bytesPerSample);
-            endByte = endByte - (endByte % bytesPerSample);
-
-            if (_currentData.Length == 0) return;
-            SaveState();
-
-            _currentData = _currentData.Skip(startByte).Take(endByte - startByte).ToArray();
-        }
-
-
-        public void Cut(double startPosition, double endPosition)
-        {
-            int bytesPerSample = _format.BlockAlign;
-            int startByte = (int)(startPosition * _currentData.Length);
-            int endByte = (int)(endPosition * _currentData.Length);
-
-            startByte = startByte - (startByte % bytesPerSample);
-            endByte = endByte - (endByte % bytesPerSample);
-
-            if (_currentData.Length == 0) return;
-            SaveState();
-
-            _currentData = _currentData.Take(startByte)
-                                       .Concat(_currentData.Skip(endByte))
-                                       .ToArray();
+        public TimeSpan GetDuration()
+        {   
+            double seconds = (double)CurrentData.Length / _format.AverageBytesPerSecond;
+            return TimeSpan.FromSeconds(seconds);
         }
 
         public void CreateDirectory(string path)
@@ -167,7 +155,7 @@ namespace FancyCards.Audio
 
         public void Dispose()
         {
-            _currentData = null;
+            CurrentData = null;
             _undoStack.Clear();
             _undoStack.Clear();
         }

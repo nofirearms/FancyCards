@@ -16,6 +16,8 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
+        private readonly AudioEngine _audioEngine;
+
         private Card _card;
 
 
@@ -59,13 +61,13 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private DateTime _dateCreated;
 
-
         public CardAction CardAction { get; } = CardAction.Create;
 
-        public CardDetailViewModel(MainWindowViewModel host, DataService dataService, Card card)
+        public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, Card card)
         {
             _host = host;
             _dataService = dataService;
+            _audioEngine = audioEngine;
 
             CardAction = card.Id == default ? CardAction.Create : CardAction.Update;
 
@@ -90,8 +92,16 @@ namespace FancyCards.ViewModels
                 SelectedState = _card.State;
             }
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(_host, _card);
-            _audioSamplerViewModel.AudioDurationChanged += (_) =>
+            _audioSamplerViewModel = new AudioSamplerViewModel(_host, audioEngine, _card);
+
+            _audioEngine.AudioSourceChanged += (source) =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    SaveCardCommand?.NotifyCanExecuteChanged();
+                });
+            };
+            _audioEngine.StateChanged += (state) =>
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
@@ -105,18 +115,8 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanSaveCard))]
         private async void SaveCard()
         {
-            if(_audioSamplerViewModel.AudioSamplerState == State.Playing)
-            {
-                _audioSamplerViewModel.StopPlaybackCommand.Execute(null);
-            }
-            if(_audioSamplerViewModel.AudioSamplerState == State.Recording)
-            {
-                _audioSamplerViewModel.StopRecordingCommand.Execute(null);
-            }
-            
-
             //create
-            if(CardAction == CardAction.Create)
+            if (CardAction == CardAction.Create)
             {
                 var card = new Card
                 {
@@ -144,7 +144,7 @@ namespace FancyCards.ViewModels
                 _card = card;
 
                 await _dataService.CreateCardAsync(1, _card);
-                await _audioSamplerViewModel.RenderAudioToMp3Async(_card.Audio.Path);
+                await _audioEngine.RenderToMp3Async(_card.Audio.Path);
 
                 Close(true, _card);
             }
@@ -164,22 +164,28 @@ namespace FancyCards.ViewModels
 
                 await _dataService.UpdateCardAsync(1, _card);
 
-                if (_audioSamplerViewModel.AudioSourceChanged)
+                if (_audioEngine.AudioChanged)
                 {
-                    await _audioSamplerViewModel.RenderAudioToMp3Async(_card.Audio.Path);
+                    await _audioEngine.RenderToMp3Async(_card.Audio.Path);
                 }
 
                 Close(true, _card);
             }
 
+            _audioEngine.Dispose();
+
         }
-        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText) && !string.IsNullOrEmpty(BackText) && _audioSamplerViewModel.AudioDuration != TimeSpan.Zero;
+        private bool CanSaveCard() => !string.IsNullOrEmpty(FrontText)
+            && !string.IsNullOrEmpty(BackText)
+            && _audioSamplerViewModel.AudioDuration != TimeSpan.Zero
+            && _audioSamplerViewModel.AudioSamplerState != State.Initial && _audioSamplerViewModel.AudioSamplerState != State.Recording;
 
 
         [RelayCommand]
         private new void Cancel()
         {
-            _audioSamplerViewModel.StopPlaybackCommand.Execute(null);
+            _audioEngine.Dispose();
+
             base.Cancel();
         }
     }
