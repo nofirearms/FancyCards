@@ -3,6 +3,7 @@ using FancyCards.Helpers;
 using FancyCards.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace FancyCards.Services
@@ -11,6 +12,7 @@ namespace FancyCards.Services
     {
         public event Action<DeckEventArgs> DeckEvent;
         public event Action<CardsEventArgs> CardEvent;
+        public event Action<TextReplacementRuleEventArgs> TextReplacementRuleEvent;
 
         private readonly Repository _repository;
 
@@ -63,6 +65,36 @@ namespace FancyCards.Services
             CardEvent?.Invoke(new CardsEventArgs([card], CardAction.Remove));
             return result;
         }
+
+
+        //--------------------------------------------------------------------------------- REPLACEMENT TEXT RULES -------------------------------------------------------
+
+        public async Task<TextReplacementRule> CreateTextReplacementRuleAsync(TextReplacementRule rule)
+        {
+            await _repository.AddTextReplacementRuleAsync(rule);
+
+            TextReplacementRuleEvent?.Invoke(new TextReplacementRuleEventArgs([rule], CardAction.Create));
+
+            return rule;
+        }
+
+        public async Task<TextReplacementRule> UpdateTextReplacementRuleAsync(TextReplacementRule rule)
+        {
+            await _repository.UpdateTextReplacementRuleAsync(rule);
+
+            TextReplacementRuleEvent?.Invoke(new TextReplacementRuleEventArgs([rule], CardAction.Update));
+
+            return rule;
+        }
+
+        public async Task<TextReplacementRule> RemoveTextReplacementRuleAsync(TextReplacementRule rule)
+        {
+            await _repository.RemoveTextReplacementRuleAsync(rule);
+
+            TextReplacementRuleEvent?.Invoke(new TextReplacementRuleEventArgs([rule], CardAction.Remove));
+            return rule;
+        }
+
 
         public Deck GetDeckById(int id) => _decks.FirstOrDefault(d => d.Id == id);
         public IEnumerable<Card> GetCards(int deckId) => GetDeckById(deckId).Cards;

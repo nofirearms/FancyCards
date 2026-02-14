@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
+using FancyCards.Models;
 using FancyCards.Services;
 using FancyCards.ViewModels.Modal;
 using System;
@@ -70,7 +71,13 @@ namespace FancyCards.ViewModels
                 }
             };
 
-            ShowNextCard();
+
+            //чтоб аудио воспроизводилось только после загрузки 
+            App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, async () =>
+            {
+                ShowNextCard();
+            });
+            
 
         }
 
@@ -82,7 +89,7 @@ namespace FancyCards.ViewModels
             {
                 CurrentCard = _cardManager.CurrentCard;
 
-                _audioEngine.OpenAudioAsync(_currentCard.Card.Audio.Path);
+                _audioEngine.OpenAudioAsync(_currentCard.Card.Audio.Path, false, true);
                 AudioPlaybackSelected();
             }
         }

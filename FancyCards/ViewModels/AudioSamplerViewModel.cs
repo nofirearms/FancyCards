@@ -72,11 +72,6 @@ namespace FancyCards.ViewModels
             _audioEngine.AudioSourceChanged += OnAudioSourceChanged;
 
 
-            InitializeAsync(card);
-        }
-
-        private async void InitializeAsync(Card card)
-        {
             _stopwatch = new Stopwatch();
             _recordingTimer = new DispatcherTimer()
             {
@@ -89,20 +84,16 @@ namespace FancyCards.ViewModels
 
             if (card.Id != default)
             {
-
+                _audioEngine.OpenAudioAsync(card.Audio.Path, false, true);
                 Selection = new Selection(card.Audio.StartPosition, card.Audio.EndPosition);
                 PlaybackStartPosition = Selection.Start;
                 Volume = card.Audio.Volume;
                 Tempo = card.Audio.Tempo;
                 AudioDuration = _audioEngine.Duration;
-                if (!_audioEngine.OpenAudioAsync(card.Audio.Path))
-                {
-                    await _host.OpenMessageBox("Audio file not found", ["OK"]);
-                }
             }
-
-
         }
+
+
 
         private async void OnAudioSourceChanged(AudioSourceChangedArgs args)
         {

@@ -27,4 +27,16 @@ namespace FancyCards.Models
             Action = cardAction;
         }
     }
+
+    public class TextReplacementRuleEventArgs
+    {
+        public IEnumerable<TextReplacementRule> Rules { get; set; }
+        public CardAction Action { get; set; }
+
+        public TextReplacementRuleEventArgs(IEnumerable<TextReplacementRule> rules, CardAction action)
+        {
+            Rules = rules;
+            Action = action;
+        }
+    }
 }

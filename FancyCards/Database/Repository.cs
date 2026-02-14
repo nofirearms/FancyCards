@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Controls;
@@ -91,7 +92,6 @@ namespace FancyCards.Database
 
         }
 
-
         public async Task RemoveDeckAsync(int id)
         {
             var entity = await _context.Decks.FirstOrDefaultAsync(d => d.Id == id);
@@ -101,7 +101,70 @@ namespace FancyCards.Database
             await _context.SaveChangesAsync();
         }
 
-        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+        
+        //------------------------------------------------------------------------- TEXT REPLACEMENT RULES --------------------------------------------------------------------------
+
+        public TextReplacementRule GetTextReplacementRule(int id) => _context.TextReplacementRules.FirstOrDefault(r => r.Id == id);
+
+        public IEnumerable<TextReplacementRule> GetTextReplacementRules() => _context.TextReplacementRules;
+
+        public async Task<bool> AddTextReplacementRuleAsync(TextReplacementRule rule)
+        {
+            try
+            {
+                _context.TextReplacementRules.Add(rule);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+
+        }
+
+        public async Task<bool> UpdateTextReplacementRuleAsync(TextReplacementRule rule)
+        {
+            try
+            {
+                var db_rule = _context.TextReplacementRules.FirstOrDefault(r => r.Id == rule.Id);
+                if (db_rule != null)
+                {
+                    UpdateValues(db_rule, rule);
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+
+
+        }
+
+        public async Task<bool> RemoveTextReplacementRuleAsync(TextReplacementRule rule)
+        {
+            try
+            {
+                var db_rule = _context.TextReplacementRules.FirstOrDefault(r => r.Id == rule.Id);
+                _context.TextReplacementRules.Remove(db_rule);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+
+        }
+
 
         #region obsolete
         //public T Get<T>(int id) where T : EntityBase
@@ -206,6 +269,8 @@ namespace FancyCards.Database
         //    await _context.SaveChangesAsync();
         //}
         #endregion
+
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
         private void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
         {

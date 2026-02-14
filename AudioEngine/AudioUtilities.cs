@@ -142,8 +142,8 @@ namespace FancyCards.Audio
             {
                 return await Task.Run(() =>
                 {
-                    CreateDirectory(path);
-                    using (var resampler = new MediaFoundationResampler(new RawSourceWaveStream(new MemoryStream(data), format), bitRate))
+                    CreateDirectory(path); 
+                    using (var resampler = new MediaFoundationResampler(new RawSourceWaveStream(new MemoryStream(data), format), format))
                     {
                         MediaFoundationEncoder.EncodeToMp3(resampler, path, bitRate);
                     }

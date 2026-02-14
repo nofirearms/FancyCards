@@ -93,25 +93,27 @@ namespace FancyCards.Audio
             CurrentData = _redoStack.Pop();
         }
 
-        public bool LoadFromAudioFile(string path, bool createUndoPoint = false)
+        public bool LoadFromAudioFile(string path, bool createUndoPoint = false, bool clearHistory = false)
         {
             try
             {
                 if (!File.Exists(path))
+                {
+                    CurrentData = Array.Empty<byte>();
                     return false;
+                }
+                    
 
                 using (var reader = new AudioFileReader(path))
                 using (var ms = new MemoryStream())
                 {
                     reader.CopyTo(ms);
                     byte[] allBytes = ms.ToArray();
-                    CurrentData = allBytes;
+
+                    if (clearHistory) _undoStack.Clear();
+
+                    SetData(allBytes, createUndoPoint);
                 }
-
-                if (createUndoPoint) SaveState();
-
-                // Очищаем Redo стек
-                _redoStack.Clear();
 
                 return true;
             }

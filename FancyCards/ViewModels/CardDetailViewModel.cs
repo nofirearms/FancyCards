@@ -92,13 +92,6 @@ namespace FancyCards.ViewModels
                 SelectedState = _card.State;
             }
 
-
-
-            InitializeAsync();
-        }
-
-        private async void InitializeAsync()
-        {
             _audioSamplerViewModel = new AudioSamplerViewModel(_host, _audioEngine, _card);
 
             _audioEngine.AudioSourceChanged += (source) =>
@@ -115,6 +108,21 @@ namespace FancyCards.ViewModels
                     SaveCardCommand?.NotifyCanExecuteChanged();
                 });
             };
+
+
+            //чтобы message box открылся после загрузки
+            App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, async () =>
+            {
+                if(_audioEngine.Duration == TimeSpan.Zero && CardAction == CardAction.Update)
+                {
+                    await _host.OpenMessageBox("Audio file not found", ["OK"]);
+                }
+            });
+        }
+
+        private async void InitializeAsync()
+        {
+
         }
 
         [RelayCommand(CanExecute = nameof(CanSaveCard))]

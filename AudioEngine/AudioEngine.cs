@@ -76,13 +76,11 @@ namespace FancyCards.Audio
 
 
         //createUndoPoint = true, чтобы определять было ли изменение аудио, чтобы экспортировать
-        public bool OpenAudioAsync(string path, bool createUndoPoint = false)
+        public bool OpenAudioAsync(string path, bool createUndoPoint = false, bool clearHistory = false)
         {
             StopPlayback();
 
-            //при открытии карточки будет до этого _audioStateManager.CurrentData = null и точка undo не создастся
-            //а при открытии аудио из вне _audioStateManager.CurrentData != null
-            var result = _audioStateManager.LoadFromAudioFile(path, _audioStateManager.CurrentData.Length != 0);
+            var result = _audioStateManager.LoadFromAudioFile(path, createUndoPoint, clearHistory);
 
             State = State.Stopped;
 
