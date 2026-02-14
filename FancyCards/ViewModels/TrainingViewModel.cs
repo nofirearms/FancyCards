@@ -17,6 +17,7 @@ namespace FancyCards.ViewModels
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
+        private readonly TextReplacementService _textService;
         private readonly TrainingCardListManager _cardManager;
         private readonly DispatcherTimer _timer;
 
@@ -27,11 +28,12 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private double _maxSampleVolume = 0;
 
-        public TrainingViewModel(MainWindowViewModel host, DataService dataService, AudioEngine audioEngine )
+        public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine )
         {
             _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
+            _textService = textService;
 
             _audioEngine.MaxSampleVolume += (v) => MaxSampleVolume = v;
 
@@ -73,7 +75,7 @@ namespace FancyCards.ViewModels
 
 
             //чтоб аудио воспроизводилось только после загрузки 
-            App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, async () =>
+            App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, async () =>
             {
                 ShowNextCard();
             });
@@ -81,19 +83,33 @@ namespace FancyCards.ViewModels
 
         }
 
-        private void ShowNextCard()
+        private async void ShowNextCard()
         {
-            //if(CurrentCard.check)
+            
 
             if (_cardManager.MoveToNextCard())
             {
                 CurrentCard = _cardManager.CurrentCard;
 
-                _audioEngine.OpenAudioAsync(_currentCard.Card.Audio.Path, false, true);
-                AudioPlaybackSelected();
+                CurrentCard.ShowCount++;
+
+                if(_audioEngine.OpenAudioAsync(_currentCard.Card.Audio.Path, false, true))
+                {
+
+                    AudioPlaybackSelected();
+                }
+                else
+                {
+                    await _host.OpenMessageBox("Audio file not found\nCard will be removed from list", ["Ok"]);
+                    ShowNextCard();
+                }
+                    
             }
         }
 
+
+        //---------------------------------------------------------------------- AUDIO ----------------------------------------------------------------
+        #region AUDIO
         [RelayCommand]
         private void AudioPlaybackSelected()
         {
@@ -125,10 +141,42 @@ namespace FancyCards.ViewModels
 
             _audioEngine.StopPlayback();
         }
+        #endregion
 
         [RelayCommand]
-        private void Accept()
+        private async void Accept()
         {
+            var answer_result = _textService.ProcessAndCompare(CurrentCard.Answer, CurrentCard.Card.FrontText);
+
+            if (answer_result)
+            {
+                CurrentCard.CardStatus = TrainingCardState.Success;
+            }
+            else
+            {
+                //из сновного списка
+                if(CurrentCard.ShowCount == 1)
+                {
+                    _cardManager.AddCard(CurrentCard);
+                }
+                //из списка на повтор
+                else
+                {
+                    if(CurrentCard.Card.State == CardState.Reviewing)
+                    {
+                        //messagebox с правильным ответом, result = failed
+                        CurrentCard.CardStatus = TrainingCardState.Failed;
+                        await _host.OpenFailedAnswer(CurrentCard.Answer, CurrentCard.Card.FrontText);
+                    }
+                    else if(CurrentCard.Card.State == CardState.Learning)
+                    {
+                        //добавляем ещё раз в список пока нет правильного ответа
+                        _cardManager.AddCard(CurrentCard);
+
+                    }
+                }
+            }
+
             ShowNextCard();
         }
 

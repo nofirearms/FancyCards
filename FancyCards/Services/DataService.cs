@@ -25,10 +25,17 @@ namespace FancyCards.Services
             LoadData();
         }
 
+
         private async void LoadData()
         {
             _decks = [.. await _repository.GetAllDecksAsync()];
         }
+
+
+        public Deck GetDeckById(int id) => _decks.FirstOrDefault(d => d.Id == id);
+
+        //-------------------------------------------------------------------------------------------------- CARDS ----------------------------------------------------------
+        public IEnumerable<Card> GetCards(int deckId) => GetDeckById(deckId).Cards;
 
         public async Task<Card> CreateCardAsync(int deckId, Card card)
         {
@@ -96,7 +103,10 @@ namespace FancyCards.Services
         }
 
 
-        public Deck GetDeckById(int id) => _decks.FirstOrDefault(d => d.Id == id);
-        public IEnumerable<Card> GetCards(int deckId) => GetDeckById(deckId).Cards;
+        public IEnumerable<TextReplacementRule> GetTextReplacementRules() => _repository.GetTextReplacementRules().ToList();
+
+        //-----------------------------------
+
+
     }
 }

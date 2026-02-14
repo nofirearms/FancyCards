@@ -25,6 +25,11 @@ namespace FancyCards.Services
             _sessionCards.Add(card);
         }
 
+        public void RemoveCard(TrainingCardViewModel card)
+        {
+            _sessionCards.Remove(card);
+        }
+
         public bool MoveToNextCard()
         {
             if (_currentIndex + 1 >= _sessionCards.Count)
@@ -33,6 +38,8 @@ namespace FancyCards.Services
             _currentIndex++;
             return true;
         }
+
+
         public IEnumerable<TrainingCardViewModel> BaseCards => _baseCards;
         public bool HasMoreCards => _currentIndex + 1 < _sessionCards.Count;
         public int TotalCards => _sessionCards.Count;

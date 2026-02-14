@@ -14,6 +14,9 @@ namespace FancyCards.ViewModels
         private TrainingCardState _cardStatus = TrainingCardState.Queue;
 
         [ObservableProperty]
+        private int _showCount = 0;
+
+        [ObservableProperty]
         private bool _hint = false;
 
         [ObservableProperty]

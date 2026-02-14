@@ -42,10 +42,12 @@ namespace FancyCards
             services.AddSingleton<DataService>();
             services.AddSingleton<ModalService>();
             services.AddSingleton<LoadingAnimationService>();
-            
+            services.AddSingleton<TextReplacementService>();
+
             services.AddSingleton<ViewModelFactory>();
 
             services.AddTransient<AudioEngine>();
+            
 
 
             return services.BuildServiceProvider();
