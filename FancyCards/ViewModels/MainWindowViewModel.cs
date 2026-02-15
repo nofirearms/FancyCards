@@ -129,7 +129,7 @@ namespace FancyCards.ViewModels
 
         public async Task<ModalResult<object>> OpenFailedAnswer(string answer, string correct)
         {
-            var result = await _modalService.ShowModalAsync(new FailedAnswerViewModel(answer, correct));
+            var result = await _modalService.ShowModalAsync(new TrainingFailedAnswerViewModel(answer, correct));
             return result;
         }
 

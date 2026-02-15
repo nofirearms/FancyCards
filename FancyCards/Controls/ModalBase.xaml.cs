@@ -47,8 +47,6 @@ namespace FancyCards.Controls
         }
 
 
-
-
         public ICommand ContentLoaded
         {
             get { return (ICommand)GetValue(ContentLoadedProperty); }
@@ -73,8 +71,6 @@ namespace FancyCards.Controls
 
 
 
-
-
         public Brush ModalBackground
         {
             get { return (Brush)GetValue(ModalBackgroundProperty); }
@@ -88,10 +84,36 @@ namespace FancyCards.Controls
 
 
 
+
+
+
+        public Color Backdrop
+        {
+            get { return (Color)GetValue(BackdropProperty); }
+            set { SetValue(BackdropProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Backdrop.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BackdropProperty =
+            DependencyProperty.Register(nameof(Backdrop), typeof(Color), typeof(ModalBase), new PropertyMetadata(Colors.Black));
+
+
+
+
+
+
+
         public ModalBase()
         {
             InitializeComponent();
+
+            //Loaded += ModalBase_Loaded;
+            
         }
 
+        //private void ModalBase_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    ContentLoaded?.Execute(null);
+        //}
     }
 }

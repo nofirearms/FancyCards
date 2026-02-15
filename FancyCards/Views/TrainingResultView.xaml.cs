@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace FancyCards.Views
 {
     /// <summary>
-    /// Interaction logic for FailedAnswerView.xaml
+    /// Interaction logic for TrainingResultView.xaml
     /// </summary>
-    public partial class FailedAnswerView : UserControl
+    public partial class TrainingResultView : UserControl
     {
-        public FailedAnswerView()
+        public TrainingResultView()
         {
             InitializeComponent();
         }

@@ -6,7 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:FancyCards.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
     x:Name="self"
+    d:DataContext="{d:DesignInstance vm:BaseModalViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -15,7 +17,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.Background>
-            <SolidColorBrush Opacity="0.5" Color="Black" />
+            <SolidColorBrush Opacity="0.5" Color="{Binding ElementName=self, Path=Backdrop}" />
         </Grid.Background>
 
 
