@@ -10,13 +10,13 @@ namespace FancyCards.ViewModels
         public string Message { get; }
         public string[] Buttons { get; }
 
-        public MessageBoxViewModel(string header, string message, string[] buttons)
+        public MessageBoxViewModel(string header, string message, string[] buttons, Brush background = null)
         {
             Header = header;
             Message = message;
             Buttons = buttons;
 
-            Background = new SolidColorBrush(Colors.PaleGreen);
+            Background = background is null ? new SolidColorBrush(Colors.PaleGreen) : background;
         }
 
         [RelayCommand]

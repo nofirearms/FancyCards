@@ -4,6 +4,7 @@ using FancyCards.Audio;
 using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -153,8 +154,12 @@ namespace FancyCards.ViewModels
 
                 _card = card;
 
+                await _host.StartLoading(false);
+
                 await _dataService.CreateCardAsync(1, _card);
                 await _audioEngine.RenderToMp3Async(_card.Audio.Path);
+
+                _host.StopLoading();
 
                 Close(true, _card);
             }
@@ -167,10 +172,15 @@ namespace FancyCards.ViewModels
                 _card.SuffixText = SuffixText;
                 _card.CommentText = CommentText;
                 _card.MessageText = MessageText;
+                _card.NextReviewDate = NextReviewDate.Date;
+                _card.State = SelectedState;
+
                 _card.Audio.Volume = _audioSamplerViewModel.Volume;
                 _card.Audio.StartPosition = _audioSamplerViewModel.Selection.Start;
                 _card.Audio.EndPosition = _audioSamplerViewModel.Selection.End;
                 _card.Audio.Tempo = _audioSamplerViewModel.Tempo;
+
+                await _host.StartLoading(false);
 
                 await _dataService.UpdateCardAsync(1, _card);
 
@@ -178,6 +188,8 @@ namespace FancyCards.ViewModels
                 {
                     await _audioEngine.RenderToMp3Async(_card.Audio.Path);
                 }
+
+                _host.StopLoading();
 
                 Close(true, _card);
             }

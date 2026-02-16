@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <Grid>
         <Border>
-            <Grid MinWidth="200">
+            <Grid MinWidth="300">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition />
@@ -23,7 +23,7 @@
                     Margin="0,0,0,5"
                     HorizontalAlignment="Center"
                     FontSize="18"
-                    Text="{Binding Header}"
+                    Text="Incorrect"
                     TextWrapping="Wrap" />
                 <StackPanel Grid.Row="1" Orientation="Vertical">
 
@@ -53,11 +53,12 @@
                 </StackPanel>
 
                 <Button
+                    Grid.Row="2"
                     Width="60"
                     Height="30"
                     Margin="5,0,0,0"
                     Padding="0"
-                    Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ButtonClickCommand}"
+                    Command="{Binding OkCommand}"
                     Content="Ok" />
             </Grid>
         </Border>

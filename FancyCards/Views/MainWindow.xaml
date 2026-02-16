@@ -15,10 +15,12 @@
     Width="500"
     Height="700"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
+    IsHitTestVisible="{Binding Loading, Converter={StaticResource ReverseBoolConverter}}"
     Style="{StaticResource MaterialDesignWindow}"
     mc:Ignorable="d">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
     </Window.Resources>
     <Grid>
         <!--  Модальные окна  -->
@@ -27,7 +29,7 @@
                 <DataTemplate DataType="{x:Type vm:CardDetailViewModel}">
                     <ContentControl Content="{StaticResource CardDetailView}" />
                 </DataTemplate>
-                
+
                 <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
                     <local:MessageBoxView />
                 </DataTemplate>
@@ -40,13 +42,21 @@
                     <local:TrainingStartView />
                 </DataTemplate>
 
+                <DataTemplate DataType="{x:Type vm:TrainingResultViewModel}">
+                    <local:TrainingResultView />
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type vm:TrainingFailedAnswerViewModel}">
+                    <local:TrainingFailedAnswerView />
+                </DataTemplate>
+
             </ItemsControl.Resources>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <controls:ModalBase
                         Content="{Binding}"
-                        ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadedCommand}"
-                        ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadingCommand}" />
+                        ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.StopLoadingCommand}"
+                        ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.StartLoadingCommand}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
 
@@ -89,7 +99,10 @@
         </DockPanel>
 
 
-        <Grid d:Visibility="Collapsed" Visibility="{Binding Loading, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Grid
+            Panel.ZIndex="12"
+            d:Visibility="Collapsed"
+            Visibility="{Binding ShowLoadingBackground, Converter={StaticResource BoolToVisibilityConverter}}">
             <!--<ProgressBar IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
             <TextBlock
                 HorizontalAlignment="Center"

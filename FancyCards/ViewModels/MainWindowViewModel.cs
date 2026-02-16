@@ -6,6 +6,7 @@ using FancyCards.Services;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace FancyCards.ViewModels
 {
@@ -34,6 +35,10 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private bool _loading = false;
+
+
+        [ObservableProperty]
+        private bool _showLoadingBackground = false;
 
         public bool ContextMenuOpen => _contextMenu != null;
 
@@ -91,7 +96,7 @@ namespace FancyCards.ViewModels
             var start_view_result = await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingStartViewModel>());
             if(start_view_result.ButtonTag == "StartTraining")
             {
-                await ModalLoading();
+                await StartLoading();
                 await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingViewModel>());
             }
         }
@@ -99,7 +104,7 @@ namespace FancyCards.ViewModels
 
         public async Task<ModalResult<Card>> OpenCardModal(Card card)
         {
-            await ModalLoading();
+            await StartLoading();
             try
             {
                 var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
@@ -113,9 +118,9 @@ namespace FancyCards.ViewModels
 
         }
 
-        public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!")
+        public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!", Brush background = null)
         {
-            var result = await _modalService.ShowModalAsync(new MessageBoxViewModel(header, message, buttons));
+            var result = await _modalService.ShowModalAsync(new MessageBoxViewModel(header, message, buttons, background));
             return result;
         }
 
@@ -126,17 +131,20 @@ namespace FancyCards.ViewModels
         }
 
         [RelayCommand]
-        private async Task ModalLoading()
+        public async Task StartLoading(bool showBackground = true)
         {
             Loading = true;
-            
+            ShowLoadingBackground = showBackground;
+
             await Task.Delay(20);
             ChangeCursor(Cursors.Wait);
         }
         [RelayCommand]
-        private void ModalLoaded()
+        public void StopLoading()
         {
             Loading = false;
+            ShowLoadingBackground = false;
+
             ChangeCursor();
         }
 

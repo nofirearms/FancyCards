@@ -81,7 +81,9 @@ namespace FancyCards.ViewModels
                     var mb_result = await _host.OpenMessageBox("Remove selected card?", ["Yes", "No"]);
                     if(mb_result.ButtonTag == "Yes")
                     {
+                        await _host.StartLoading(false);
                         var remove_result = await _dataService.RemoveCardAsync(1, card);
+                        _host.StopLoading();
                         if (!remove_result)
                         {
                             await _host.OpenMessageBox("Failed to remove the file", ["OK"]);
