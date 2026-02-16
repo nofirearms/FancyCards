@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using FancyCards.Models;
+using System.Windows.Media;
 
 
-namespace FancyCards.ViewModels.Modal
+namespace FancyCards.ViewModels
 {
     public abstract class BaseModalViewModel : ObservableObject
     {
@@ -10,6 +11,11 @@ namespace FancyCards.ViewModels.Modal
     }
     public abstract partial class BaseModalViewModel<TResult> : BaseModalViewModel
     {
+        public Brush Background { get; set; } = (Brush)App.Current.FindResource("MaterialDesign.Brush.Secondary.Light");
+
+        public Brush Backdrop { get; set; } = new SolidColorBrush(Colors.Black);
+
+
         private TaskCompletionSource<ModalResult<TResult>> _completionSource;
 
         public Task<ModalResult<TResult>> Task => _completionSource.Task;

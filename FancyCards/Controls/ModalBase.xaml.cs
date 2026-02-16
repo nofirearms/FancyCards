@@ -28,23 +28,9 @@ namespace FancyCards.Controls
 
         // Using a DependencyProperty as the backing store for Content.  This enables animation, styling, binding, etc...
         public new static readonly DependencyProperty ContentProperty =
-            DependencyProperty.Register("Content", typeof(object), typeof(ModalBase), new PropertyMetadata(null, OnNewContentChanged));
-
-        private static void OnNewContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (ModalBase)d;
-            var content = e.NewValue as FrameworkElement;
-            if (content is null) return;
-
-            //doesn't work
-            control.ContentLoading?.Execute(null);
+            DependencyProperty.Register("Content", typeof(object), typeof(ModalBase), new PropertyMetadata(null));
 
 
-            content.Loaded += (_, _) =>
-            {
-                control.ContentLoaded?.Execute(null);
-            };
-        }
 
 
         public ICommand ContentLoaded
@@ -71,31 +57,28 @@ namespace FancyCards.Controls
 
 
 
-        public Brush ModalBackground
-        {
-            get { return (Brush)GetValue(ModalBackgroundProperty); }
-            set { SetValue(ModalBackgroundProperty, value); }
-        }
+        //public Brush ModalBackground
+        //{
+        //    get { return (Brush)GetValue(ModalBackgroundProperty); }
+        //    set { SetValue(ModalBackgroundProperty, value); }
+        //}
 
-        // Using a DependencyProperty as the backing store for ModalBackground.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ModalBackgroundProperty =
-            DependencyProperty.Register(nameof(ModalBackground), typeof(Brush), typeof(ModalBase), new PropertyMetadata((Brush)Application.Current.FindResource("MaterialDesign.Brush.Secondary.Light")));
-
-
+        //// Using a DependencyProperty as the backing store for ModalBackground.  This enables animation, styling, binding, etc...
+        //public static readonly DependencyProperty ModalBackgroundProperty =
+        //    DependencyProperty.Register(nameof(ModalBackground), typeof(Brush), typeof(ModalBase), new PropertyMetadata((Brush)Application.Current.FindResource("MaterialDesign.Brush.Secondary.Light")));
 
 
 
 
+        //public Color Backdrop
+        //{
+        //    get { return (Color)GetValue(BackdropProperty); }
+        //    set { SetValue(BackdropProperty, value); }
+        //}
 
-        public Color Backdrop
-        {
-            get { return (Color)GetValue(BackdropProperty); }
-            set { SetValue(BackdropProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Backdrop.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty BackdropProperty =
-            DependencyProperty.Register(nameof(Backdrop), typeof(Color), typeof(ModalBase), new PropertyMetadata(Colors.Black));
+        //// Using a DependencyProperty as the backing store for Backdrop.  This enables animation, styling, binding, etc...
+        //public static readonly DependencyProperty BackdropProperty =
+        //    DependencyProperty.Register(nameof(Backdrop), typeof(Color), typeof(ModalBase), new PropertyMetadata(Colors.Black));
 
 
 
@@ -107,13 +90,18 @@ namespace FancyCards.Controls
         {
             InitializeComponent();
 
-            //Loaded += ModalBase_Loaded;
-            
+            Loaded += ModalBase_Loaded;
         }
 
-        //private void ModalBase_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    ContentLoaded?.Execute(null);
-        //}
+        public override void OnApplyTemplate()
+        {
+            ContentLoading?.Execute(null);
+            base.OnApplyTemplate();
+        }
+
+        private void ModalBase_Loaded(object sender, RoutedEventArgs e)
+        {
+            ContentLoaded?.Execute(null);
+        }
     }
 }

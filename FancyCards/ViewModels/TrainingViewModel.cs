@@ -3,11 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
-using FancyCards.ViewModels.Modal;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Timers;
 using System.Windows.Threading;
 
 namespace FancyCards.ViewModels

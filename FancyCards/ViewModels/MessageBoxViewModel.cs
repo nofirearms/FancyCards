@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using FancyCards.ViewModels.Modal;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Windows.Media;
+
 
 namespace FancyCards.ViewModels
 {
@@ -17,6 +15,8 @@ namespace FancyCards.ViewModels
             Header = header;
             Message = message;
             Buttons = buttons;
+
+            Background = new SolidColorBrush(Colors.PaleGreen);
         }
 
         [RelayCommand]

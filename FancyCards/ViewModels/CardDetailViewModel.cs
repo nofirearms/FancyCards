@@ -4,10 +4,7 @@ using FancyCards.Audio;
 using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
-using FancyCards.ViewModels.Modal;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace FancyCards.ViewModels

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -41,7 +42,6 @@ namespace FancyCards
             services.AddSingleton<Repository>();
             services.AddSingleton<DataService>();
             services.AddSingleton<ModalService>();
-            services.AddSingleton<LoadingAnimationService>();
             services.AddSingleton<TextReplacementService>();
 
             services.AddSingleton<ViewModelFactory>();
@@ -59,6 +59,16 @@ namespace FancyCards
 
             var window = new MainWindow();
             window.Loaded += OnWindowLoaded;
+
+
+            // Принудительная загрузка контрола из ресурсов
+            var control = (UserControl)Resources["CardDetailView"];
+
+            // Триггерим инициализацию
+            control.Measure(new Size(0, 0));
+            control.Arrange(new Rect(0, 0, 0, 0));
+
+
 
             MainWindow = window;
             MainWindow.Show();

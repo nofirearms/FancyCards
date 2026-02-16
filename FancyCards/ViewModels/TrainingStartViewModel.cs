@@ -1,8 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using FancyCards.ViewModels.Modal;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FancyCards.ViewModels
 {

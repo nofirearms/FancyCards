@@ -1,10 +1,6 @@
 ﻿using FancyCards.Models;
 using FancyCards.ViewModels;
-using FancyCards.ViewModels.Modal;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace FancyCards.Services
 {

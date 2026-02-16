@@ -17,14 +17,14 @@
     </UserControl.Resources>
     <Grid>
         <Grid.Background>
-            <SolidColorBrush Opacity="0.5" Color="{Binding ElementName=self, Path=Backdrop}" />
+            <SolidColorBrush Opacity="0.5" Color="{Binding Backdrop.Color}" />
         </Grid.Background>
 
 
         <Border
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Background="{Binding ElementName=self, Path=ModalBackground}"
+            Background="{Binding Background}"
             CornerRadius="3"
             UseLayoutRounding="True">
             <ContentPresenter

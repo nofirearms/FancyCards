@@ -1,17 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DynamicData;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
-using FancyCards.ViewModels.Modal;
-using NAudio.Wave.Compression;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Text;
-using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace FancyCards.ViewModels
 {
@@ -21,7 +15,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly ViewModelFactory _viewModelFactory;
-        private readonly LoadingAnimationService _loadingAnimationService;
+
 
         public string Title => "Fancy Cards";
 
@@ -43,15 +37,13 @@ namespace FancyCards.ViewModels
 
         public bool ContextMenuOpen => _contextMenu != null;
 
-        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine, LoadingAnimationService loadingAnimationService)
+        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine)
         {
             _modalService = modalService;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _viewModelFactory = viewModelFactory;
-            _loadingAnimationService = loadingAnimationService;
-
-            
+           
 
             _decks = new ObservableCollection<Deck>(dataService.Decks);
 
@@ -136,15 +128,21 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async Task ModalLoading()
         {
-            _loadingAnimationService.StartLoadingAniamtion();
             Loading = true;
-            await Task.Delay(30);
+            
+            await Task.Delay(20);
+            ChangeCursor(Cursors.Wait);
         }
         [RelayCommand]
         private void ModalLoaded()
         {
             Loading = false;
-            _loadingAnimationService.StopLoadingAniamtion() ;
+            ChangeCursor();
+        }
+
+        public void ChangeCursor(Cursor cursor = null)
+        {
+            Mouse.OverrideCursor = cursor;
         }
     }
 }

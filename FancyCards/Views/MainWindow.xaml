@@ -25,41 +25,30 @@
         <ItemsControl Panel.ZIndex="10" ItemsSource="{Binding ActiveModals}">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type vm:CardDetailViewModel}">
-                    <controls:ModalBase
-                        Margin="0"
-                        ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadedCommand}"
-                        ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadingCommand}">
-                        <local:CardDetailView />
-                    </controls:ModalBase>
-
+                    <ContentControl Content="{StaticResource CardDetailView}" />
                 </DataTemplate>
+                
                 <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
-                    <controls:ModalBase ModalBackground="PaleGreen">
-                        <local:MessageBoxView />
-                    </controls:ModalBase>
+                    <local:MessageBoxView />
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type vm:TrainingViewModel}">
-                    <controls:ModalBase ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadedCommand}">
-                        <local:TrainingView />
-                    </controls:ModalBase>
+                    <local:TrainingView />
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type vm:TrainingStartViewModel}">
-                    <controls:ModalBase>
-                        <local:TrainingStartView />
-                    </controls:ModalBase>
+                    <local:TrainingStartView />
                 </DataTemplate>
 
             </ItemsControl.Resources>
-            <!--<ItemsControl.ItemTemplate>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <controls:ModalBase
                         Content="{Binding}"
                         ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadedCommand}"
                         ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.ModalLoadingCommand}" />
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>-->
+            </ItemsControl.ItemTemplate>
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -71,7 +60,7 @@
         <!--  Контекстное меню  -->
         <controls:ContextBase
             Panel.ZIndex="11"
-            d:Visibility="Collapsed" 
+            d:Visibility="Collapsed"
             Content="{Binding ContextMenu}"
             Visibility="{Binding ContextMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
             <controls:ContextBase.Resources>
