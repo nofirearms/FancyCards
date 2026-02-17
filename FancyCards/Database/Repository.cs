@@ -19,7 +19,8 @@ namespace FancyCards.Database
             _context = appDbContext;
         }
 
-        public async Task<Deck> GetDeckByIdAsync(int id)
+
+        public async Task<Deck> GetDeckAsync(int id)
         {
             return await _context.Set<Deck>()
                 .Include(d => d.Cards)
@@ -39,80 +40,17 @@ namespace FancyCards.Database
                 .ToListAsync();
         }
 
-        public async Task AddCardToDeckAsync(int deckId, Card card)
-        {
-            var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId);
-            if (deck != null)
-            {
-                deck.Cards.Add(card);
-                await _context.SaveChangesAsync();
-            }
-        }
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public async Task<bool> UpdateCardAsync(Card card)
+        public Task<T> GetAsync<T>(int id) where T : EntityBase => _context.Set<T>().FirstOrDefaultAsync(o => o.Id == id);
+        public async Task<IEnumerable<T>> GetAllAsync<T>() where T : EntityBase => await _context.Set<T>().ToListAsync();
+
+
+        public async Task<bool> AddAsync<T>(T entity) where T : EntityBase
         {
             try
             {
-                var db_card = _context.Cards.FirstOrDefault(c => c.Id == card.Id);
-                if (db_card != null)
-                {
-                    UpdateValues(db_card, card);
-                }
-
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return false;
-            }
-
-
-        }
-
-        public async Task<bool> RemoveCardFromDeckAsync(int deckId, int cardId)
-        {
-            try
-            {
-                var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId);
-                var card = deck?.Cards.FirstOrDefault(c => c.Id == cardId);
-                if (card != null)
-                {
-                    deck.Cards.Remove(card);
-                    await _context.SaveChangesAsync();
-                }
-                return true;
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return false;
-            }
-
-        }
-
-        public async Task RemoveDeckAsync(int id)
-        {
-            var entity = await _context.Decks.FirstOrDefaultAsync(d => d.Id == id);
-            if (entity != null)
-                _context.Decks.Remove(entity);
-
-            await _context.SaveChangesAsync();
-        }
-
-        
-        //------------------------------------------------------------------------- TEXT REPLACEMENT RULES --------------------------------------------------------------------------
-
-        public TextReplacementRule GetTextReplacementRule(int id) => _context.TextReplacementRules.FirstOrDefault(r => r.Id == id);
-
-        public IEnumerable<TextReplacementRule> GetTextReplacementRules() => _context.TextReplacementRules;
-
-        public async Task<bool> AddTextReplacementRuleAsync(TextReplacementRule rule)
-        {
-            try
-            {
-                _context.TextReplacementRules.Add(rule);
+                _context.Set<T>().Add(entity);
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -122,17 +60,16 @@ namespace FancyCards.Database
                 Debug.WriteLine(ex.Message);
                 return false;
             }
-
         }
 
-        public async Task<bool> UpdateTextReplacementRuleAsync(TextReplacementRule rule)
+        public async Task<bool> UpdateAsync<T>(T entity) where T : EntityBase
         {
             try
             {
-                var db_rule = _context.TextReplacementRules.FirstOrDefault(r => r.Id == rule.Id);
-                if (db_rule != null)
+                var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
+                if (db_entity != null)
                 {
-                    UpdateValues(db_rule, rule);
+                    UpdateValues(db_entity, entity);
                 }
 
                 await _context.SaveChangesAsync();
@@ -143,16 +80,14 @@ namespace FancyCards.Database
                 Debug.WriteLine(ex.Message);
                 return false;
             }
-
-
         }
 
-        public async Task<bool> RemoveTextReplacementRuleAsync(TextReplacementRule rule)
+        public async Task<bool> RemoveAsync<T>(T entity) where T : EntityBase
         {
             try
             {
-                var db_rule = _context.TextReplacementRules.FirstOrDefault(r => r.Id == rule.Id);
-                _context.TextReplacementRules.Remove(db_rule);
+                var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
+                _context.Set<T>().Remove(db_entity);
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -162,117 +97,13 @@ namespace FancyCards.Database
                 Debug.WriteLine(ex.Message);
                 return false;
             }
-
         }
 
-
-        #region obsolete
-        //public T Get<T>(int id) where T : EntityBase
-        //{
-        //    return _context.Set<T>().FirstOrDefault(o => o.Id == id);
-        //}
-
-        //public ICollection<T> GetAll<T>() where T : EntityBase
-        //{
-        //    return _context.Set<T>().ToList() ?? new List<T>();
-        //}
-
-        //public async Task<T> Save<T>(T entity, bool saveChanges = true) where T : EntityBase, new()
-        //{
-        //    try
-        //    {
-        //        var ent = _context.Find<T>(entity.Id);
-
-        //        if (ent is null)
-        //        {
-        //            _context.Set<T>().Add(entity);
-        //        }
-        //        else
-        //        {
-        //            //this.UpdateValues(ent, entity);
-        //            _context.Set<T>().Update(ent);
-        //        }
-
-        //        if (saveChanges) await _context.SaveChangesAsync();
-
-        //        return entity;
-
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e.Message);
-        //        return null;
-        //    }
-        //}
-
-        //public async Task Save<T>(IEnumerable<T> entities, bool saveChanges = true) where T : EntityBase
-        //{
-        //    try
-        //    {
-        //        foreach (var entity in entities)
-        //        {
-        //            var ent = _context.Find<T>(entity.Id);
-        //            if (ent is null)
-        //            {
-        //                _context.Set<T>().Add(entity);
-        //            }
-        //            else
-        //            {
-        //                //_context.Set<T>().Entry(ent).CurrentValues.SetValues(entity);
-        //                //this.UpdateValues(ent, entity);
-        //                _context.Set<T>().Update(ent);
-        //            }
-
-        //        }
-        //        if (saveChanges) await _context.SaveChangesAsync();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e.Message);
-        //    }
-        //}
-
-        //public async Task Remove<T>(T entity, bool saveChanges = true) where T : EntityBase, new()
-        //{
-        //    try
-        //    {
-        //        _context.Set<T>().Remove(entity);
-
-        //        if (saveChanges) await _context.SaveChangesAsync();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e.Message);
-        //    }
-
-        //}
-
-        //public async Task Remove<T>(IEnumerable<T> entities, bool saveChanges = true) where T : EntityBase, new()
-        //{
-        //    try
-        //    {
-        //        foreach (var entity in entities)
-        //        {
-        //            _context.Set<T>().Remove(entity);
-        //        }
-
-        //        if (saveChanges) await _context.SaveChangesAsync();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e.Message);
-        //    }
-        //}
-
-        //public async Task SaveChangesAsync()
-        //{
-        //    await _context.SaveChangesAsync();
-        //}
-        #endregion
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
-        private void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
+        public void UpdateValues<T>(T entity, T changedEntity) where T : EntityBase
         {
             var entry = _context.Entry(entity);
 
@@ -291,5 +122,8 @@ namespace FancyCards.Database
                 entry.Reference(navigation.Name).TargetEntry.CurrentValues.SetValues(navigation.GetGetter().GetClrValue(changedEntity));
             }
         }
+
+
+
     }
 }

@@ -9,6 +9,9 @@ namespace FancyCards.Database
         public DbSet<Deck> Decks { get; set; }
         public DbSet<Card> Cards { get; set; }
         public DbSet<TextReplacementRule> TextReplacementRules { get; set; }
+        public DbSet<TrainingSession> TrainingSessions { get; set; }
+        public DbSet<TrainingSessionCard> TrainingSessionCards { get; set; }
+
 
         public AppDbContext()
         {
