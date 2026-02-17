@@ -24,9 +24,9 @@ namespace FancyCards.Database
         {
             return await _context.Set<Deck>()
                 .Include(d => d.Cards)
-                    .ThenInclude(c => c.Scores)
-                .Include(d => d.Cards)
-                    .ThenInclude(c => c.Audio)
+                //    .ThenInclude(c => c.Scores)
+                //.Include(d => d.Cards)
+                //    .ThenInclude(c => c.Audio)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 

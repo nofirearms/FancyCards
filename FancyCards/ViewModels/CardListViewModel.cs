@@ -24,16 +24,26 @@ namespace FancyCards.ViewModels
         {
             _dataService = dataService;
             _host = host;
+
+            
+            _dataService.CardEvent += OnCardEvent;
+
+            InitializeAsync();
+        }
+
+        private async void InitializeAsync()
+        {
+
             //_cards = new ObservableCollection<Card>(_decks.First().Cards ?? new List<Card>());
             _sourceCache = new SourceCache<Card, int>(o => o.Id);
-            _sourceCache.AddOrUpdate(_dataService.GetCards(1) ?? new List<Card>());
+
+            var cards = await _dataService.GetCardsAsync(1);
+            _sourceCache.AddOrUpdate(cards ?? new List<Card>());
 
             _sourceCache.Connect()
             .Filter(CreateFilter())
             .Bind(out _cards)
             .Subscribe();
-            
-            _dataService.CardEvent += OnCardEvent; 
         }
 
         private void OnCardEvent(CardsEventArgs args)

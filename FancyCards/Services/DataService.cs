@@ -16,26 +16,25 @@ namespace FancyCards.Services
 
         private readonly Repository _repository;
 
-        private List<Deck> _decks = [];
-        public List<Deck> Decks => _decks;
         public DataService(Repository repository)
         {
             _repository = repository;
-
-            LoadData();
         }
 
 
-        private async void LoadData()
-        {
-            _decks = [.. await _repository.GetAllDecksAsync()];
-        }
+        public async Task<IEnumerable<Deck>> GetDecksAsync() => await _repository.GetAllDecksAsync();
 
+        //---------------------------------------------------------------------------------- DECKS -------------------------------------------------------------------------
 
-        public Deck GetDeckById(int id) => _decks.FirstOrDefault(d => d.Id == id);
+        #region DECKS
+        public async Task<Deck> GetDeckByIdAsync(int id) => await _repository.GetDeckAsync(id);
 
-        //-------------------------------------------------------------------------------------------------- CARDS ----------------------------------------------------------
-        public IEnumerable<Card> GetCards(int deckId) => GetDeckById(deckId).Cards;
+        #endregion
+
+        //---------------------------------------------------------------------------------- CARDS -------------------------------------------------------------------------
+
+        #region CARDS
+        public async Task<IEnumerable<Card>> GetCardsAsync(int deckId) => (await GetDeckByIdAsync(deckId)).Cards;
 
         public async Task<Card> CreateCardAsync(int deckId, Card card)
         {
@@ -74,8 +73,11 @@ namespace FancyCards.Services
             return result;
         }
 
+        #endregion
 
-        //--------------------------------------------------------------------------------- REPLACEMENT TEXT RULES -------------------------------------------------------
+        //--------------------------------------------------------------------------------- REPLACEMENT TEXT RULES ---------------------------------------------------------
+
+        #region REPLACEMENT TEXT RULES
 
         public async Task<TextReplacementRule> CreateTextReplacementRuleAsync(TextReplacementRule rule)
         {
@@ -103,10 +105,13 @@ namespace FancyCards.Services
             return rule;
         }
 
-
         public async Task<IEnumerable<TextReplacementRule>> GetTextReplacementRules() => await _repository.GetAllAsync<TextReplacementRule>();
 
-        //-------------------------------------------------------------------------------- TRAINING SESSIONS -------------------------------------------
+        #endregion
+
+        //-------------------------------------------------------------------------------- TRAINING SESSIONS ---------------------------------------------------------------
+
+        #region TRAINING SESSIONS
 
         public async Task<IEnumerable<TrainingSession>> GetTrainingSessionsAsync() => await _repository.GetAllAsync<TrainingSession>();
 
@@ -117,7 +122,11 @@ namespace FancyCards.Services
             return session;
         }
 
-        //----------------------------------------------------------------------------- TRAINING SESSION CARDS -------------------------------------------
+        #endregion
+
+        //----------------------------------------------------------------------------- TRAINING SESSION CARDS -------------------------------------------------------------
+
+        #region TRAINING SESSION CARDS
 
         public async Task<IEnumerable<TrainingSessionCard>> GetTrainingSessionCardsAsync() => await _repository.GetAllAsync<TrainingSessionCard>();
 
@@ -127,5 +136,7 @@ namespace FancyCards.Services
 
             return trainingCard;
         }
+
+        #endregion
     }
 }

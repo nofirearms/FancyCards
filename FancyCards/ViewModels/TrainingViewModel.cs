@@ -35,7 +35,8 @@ namespace FancyCards.ViewModels
 
             var random = new Random();
 
-            var cards = _dataService.GetCards(1)
+            //TODO переделать
+            var cards = _dataService.GetCardsAsync(1).Result
                 .Where(c => c.NextReviewDate.Date <= DateTime.Now)
                 .Where(c => c.State == Models.CardState.Learning || c.State == Models.CardState.Reviewing)
                 .OrderBy(c => random.NextDouble())

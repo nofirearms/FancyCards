@@ -20,9 +20,6 @@ namespace FancyCards.ViewModels
 
         public string Title => "Fancy Cards";
 
-        [ObservableProperty]
-        private ObservableCollection<Deck> _decks = [];
-
         public CardListViewModel CardListViewModel { get; set; }
 
         public IReadOnlyList<BaseModalViewModel> ActiveModals => _modalService.ActiveModals;
@@ -49,9 +46,6 @@ namespace FancyCards.ViewModels
             _audioEngine = audioEngine;
             _viewModelFactory = viewModelFactory;
            
-
-            _decks = new ObservableCollection<Deck>(dataService.Decks);
-
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this);
 
 
