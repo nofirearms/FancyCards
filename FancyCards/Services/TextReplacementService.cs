@@ -14,9 +14,9 @@ namespace FancyCards.Services
             _dataService = dataService;
         }
 
-        public string ReplaceWithReplacementRules(string text)
+        public async Task<string> ReplaceWithReplacementRules(string text)
         {
-            var rules = _dataService.GetTextReplacementRules();
+            var rules = await _dataService.GetTextReplacementRules();
 
             var result = text;
 
@@ -33,10 +33,10 @@ namespace FancyCards.Services
             return text.Replace(" ", "");
         }
 
-        public bool ProcessAndCompare(string text1, string text2)
+        public async Task<bool> ProcessAndCompareAsync(string text1, string text2)
         {
-            var processed_text1 = RemoveSpaces(ReplaceWithReplacementRules(text1.ToLower()));
-            var processed_text2 = RemoveSpaces(ReplaceWithReplacementRules(text2.ToLower()));
+            var processed_text1 = RemoveSpaces(await ReplaceWithReplacementRules(text1.ToLower()));
+            var processed_text2 = RemoveSpaces(await ReplaceWithReplacementRules(text2.ToLower()));
 
             return string.Equals(processed_text1, processed_text2);
         }

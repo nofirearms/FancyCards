@@ -141,7 +141,7 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void Accept()
         {
-            var answer_result = _textService.ProcessAndCompare(CurrentCard.Answer, CurrentCard.Card.FrontText);
+            var answer_result = await _textService.ProcessAndCompareAsync(CurrentCard.Answer, CurrentCard.Card.FrontText);
 
             if (answer_result)
             {

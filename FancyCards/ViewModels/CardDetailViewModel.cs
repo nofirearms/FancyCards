@@ -182,7 +182,7 @@ namespace FancyCards.ViewModels
 
                 await _host.StartLoading(false);
 
-                await _dataService.UpdateCardAsync(1, _card);
+                await _dataService.UpdateCardAsync(_card);
 
                 if (_audioEngine.AudioChanged)
                 {

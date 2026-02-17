@@ -82,7 +82,7 @@ namespace FancyCards.ViewModels
                     if(mb_result.ButtonTag == "Yes")
                     {
                         await _host.StartLoading(false);
-                        var remove_result = await _dataService.RemoveCardAsync(1, card);
+                        var remove_result = await _dataService.RemoveCardAsync(card);
                         _host.StopLoading();
                         if (!remove_result)
                         {
