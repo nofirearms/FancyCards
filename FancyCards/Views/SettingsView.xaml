@@ -20,13 +20,13 @@
             DefaultValue="10"
             Frequency="1"
             MaxValue="100"
-            MinValue="1"
-            Value="{Binding TrainingMaxLearnCards, Mode=TwoWay}">
+            MinValue="0"
+            Value="{Binding TrainingLearnCards, Mode=TwoWay}">
             <controls:CustomNumericControl.ContentTemplate>
                 <DataTemplate>
                     <Border BorderThickness="1" CornerRadius="3">
                         <TextBlock>
-                            <Run Text="Training max learn cards:" />
+                            <Run Text="Training learn cards:" />
                             <Run Text="{Binding Path=.}" />
                         </TextBlock>
                     </Border>
@@ -39,13 +39,13 @@
             DefaultValue="10"
             Frequency="1"
             MaxValue="100"
-            MinValue="1"
-            Value="{Binding TrainingMaxReviewCards, Mode=TwoWay}">
+            MinValue="0"
+            Value="{Binding TrainingReviewCards, Mode=TwoWay}">
             <controls:CustomNumericControl.ContentTemplate>
                 <DataTemplate>
                     <Border BorderThickness="1" CornerRadius="3">
                         <TextBlock>
-                            <Run Text="Training max review cards:" />
+                            <Run Text="Training review cards:" />
                             <Run Text="{Binding Path=.}" />
                         </TextBlock>
                     </Border>

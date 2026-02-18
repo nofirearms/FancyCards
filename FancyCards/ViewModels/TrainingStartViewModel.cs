@@ -13,48 +13,76 @@ namespace FancyCards.ViewModels
     public partial class TrainingStartViewModel : BaseModalViewModel<IEnumerable<Card>>
     {
         private readonly DataService _dataService;
+        private readonly SettingsService _settingsService;
         private readonly MainWindowViewModel _host;
 
-        [ObservableProperty]
-        private int _learnCards = 0;
+        private IEnumerable<Card> _dbCardsOnDate;
 
         [ObservableProperty]
-        private int _reviewCards = 0;
-
-        [ObservableProperty]
-        private int _maxLearnCards = 0;
-
-        [ObservableProperty]
-        private int _maxReviewCards = 0;
-
-        public TrainingStartViewModel(MainWindowViewModel host, DataService dataService)
+        private int _learnCardsCount = 0;
+        partial void OnLearnCardsCountChanged(int value)
         {
-            _dataService = dataService;
+            StartTrainingCommand?.NotifyCanExecuteChanged();
+        }
+
+        [ObservableProperty]
+        private int _reviewCardsCount = 0;
+        partial void OnReviewCardsCountChanged(int value)
+        {
+            StartTrainingCommand?.NotifyCanExecuteChanged();
+        }
+
+        //максимум карт возможных на текущую дату
+        [ObservableProperty]
+        private int _maxLearnCardsCount = 0;
+
+        //максимум карт возможных на текущую дату
+        [ObservableProperty]
+        private int _maxReviewCardsCount = 0;
+
+
+        public TrainingStartViewModel(MainWindowViewModel host, DataService dataService, SettingsService settingsService)
+        {
             _host = host;
+
+            _dataService = dataService;
+            _settingsService = settingsService;
+
+           
 
             InitializeAsync();
         }
 
         private async void InitializeAsync()
         {
-            var db_cards = await _dataService.GetCardsAsync(1);
+            _dbCardsOnDate = (await _dataService.GetCardsAsync(1)).Where(c => c.NextReviewDate.Date <= DateTime.Now);
 
+            MaxReviewCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Reviewing).Count();
+            MaxLearnCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Learning).Count();
+
+            ReviewCardsCount = Math.Min(_settingsService.TrainingReviewCards, MaxReviewCardsCount);
+            LearnCardsCount = Math.Min(_settingsService.TrainingLearnCards, MaxLearnCardsCount);
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStartTraining))]
+
+        private async void StartTraining()
+        {
             var random = new Random();
 
-            var cards = db_cards
-                .Where(c => c.NextReviewDate.Date <= DateTime.Now)
-                .Where(c => c.State == CardState.Learning || c.State == Models.CardState.Reviewing)
+            var cards = _dbCardsOnDate
+                .Where(c => c.State == CardState.Learning || c.State == CardState.Reviewing)
                 .OrderBy(c => random.NextDouble())
                 .ToArray();
 
             var learning_cards = cards
                 .Where(c => c.State == CardState.Learning)
-                .Take(5)
+                .Take(LearnCardsCount)
                 .ToArray();
 
             var reviewing_cards = cards
                 .Where(c => c.State == CardState.Reviewing)
-                .Take(5)
+                .Take(ReviewCardsCount)
                 .ToArray();
 
             var training_cards = learning_cards
@@ -72,10 +100,11 @@ namespace FancyCards.ViewModels
                 });
 
             }
-        }
 
-        [RelayCommand]
-        private void StartTraining() => Close(buttonTag: "StartTraining");
+            Close(buttonTag: "StartTraining", data: training_cards);
+        }
+        private bool CanStartTraining() => ReviewCardsCount > 0 || LearnCardsCount > 0;
+
 
         [RelayCommand]
         private void CancelTraining() => Cancel();

@@ -18,20 +18,20 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
 
 
-        private int _trainingMaxLearnCards = 5;
+        private int _trainingLearnCards = 5;
         [Setting]
-        public int TrainingMaxLearnCards
+        public int TrainingLearnCards
         {
-            get => _trainingMaxLearnCards;
-            set => SetProperty(ref _trainingMaxLearnCards, value);
+            get => _trainingLearnCards;
+            set => SetProperty(ref _trainingLearnCards, value);
         }
 
-        private int _trainingMaxReviewCards = 5;
+        private int _trainingReviewCards = 5;
         [Setting]
-        public int TrainingMaxReviewCards
+        public int TrainingReviewCards
         {
-            get => _trainingMaxReviewCards;
-            set => SetProperty(ref _trainingMaxReviewCards, value);
+            get => _trainingReviewCards;
+            set => SetProperty(ref _trainingReviewCards, value);
         }
 
         public SettingsViewModel(MainWindowViewModel host, SettingsService settingsService)

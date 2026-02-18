@@ -88,11 +88,12 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void StartTraining()
         {
+            await StartLoading();
             var start_view_result = await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingStartViewModel>());
             if(start_view_result.ButtonTag == "StartTraining")
             {
                 await StartLoading();
-                await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingViewModel>());
+                await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingViewModel>(start_view_result.Data));
             }
         }
 
@@ -133,6 +134,7 @@ namespace FancyCards.ViewModels
 
         public async Task<ModalResult<object>> OpenSettingsModal()
         {
+            await StartLoading();
             var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<SettingsViewModel>());
             return result;
         }

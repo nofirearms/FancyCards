@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace FancyCards.Controls
 {
@@ -23,6 +24,19 @@ namespace FancyCards.Controls
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(CustomNumericControl), new PropertyMetadata(default(CornerRadius)));
 
+
+
+
+
+        public Brush MouseOverOverlay
+        {
+            get { return (Brush)GetValue(MouseOverOverlayProperty); }
+            set { SetValue(MouseOverOverlayProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MouseOverOverlay.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MouseOverOverlayProperty =
+            DependencyProperty.Register(nameof(MouseOverOverlay), typeof(Brush), typeof(CustomNumericControl), new PropertyMetadata((Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary")));
 
 
 
@@ -236,7 +250,8 @@ namespace FancyCards.Controls
 
         private int GetValue(int parameter)
         {
-            return (int)Math.Max(MinValue, Math.Min(parameter, MaxValue));
+            return Math.Clamp(parameter, MinValue, MaxValue);
+            //return (int)Math.Max(MinValue, Math.Min(parameter, MaxValue));
         }
 
     }

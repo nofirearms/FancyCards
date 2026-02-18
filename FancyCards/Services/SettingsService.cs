@@ -10,8 +10,8 @@ namespace FancyCards.Services
     {
         private readonly DataService _dataService;
 
-        public int TrainingMaxLearnCards { get; set; } = 10;
-        public int TrainingMaxReviewCards { get; set; } = 15;
+        public int TrainingLearnCards { get; set; } = 10;
+        public int TrainingReviewCards { get; set; } = 15;
 
         public SettingsService(DataService dataService)
         {

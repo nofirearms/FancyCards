@@ -32,10 +32,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseCaptured" Value="True">
-                            <Setter TargetName="MouseOverBorder" Property="Background" Value="White" />
+                            <Setter TargetName="MouseOverBorder" Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=MouseOverOverlay}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="MouseOverBorder" Property="Background" Value="White" />
+                            <Setter TargetName="MouseOverBorder" Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=MouseOverOverlay}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
