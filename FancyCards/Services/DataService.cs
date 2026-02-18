@@ -4,6 +4,7 @@ using FancyCards.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Security.Policy;
 using System.Text;
 
 namespace FancyCards.Services
@@ -23,6 +24,44 @@ namespace FancyCards.Services
 
 
         public async Task<IEnumerable<Deck>> GetDecksAsync() => await _repository.GetAllDecksAsync();
+
+        //-------------------------------------------------------------------------------- SETTINGS ------------------------------------------------------------------------
+
+        #region SETTINGS
+
+        public async Task<IEnumerable<Setting>> GetSettingsAsync() => await _repository.GetAllAsync<Setting>();
+
+        public async Task<bool> SaveSettingsAsync(IEnumerable<Setting> settings)
+        {
+            try
+            {
+                var db_settings = await GetSettingsAsync();
+                foreach (var setting in settings)
+                {
+                    var db_setting = db_settings.FirstOrDefault(s => s.Key == setting.Key);
+                    if (db_setting is null)
+                    {
+
+                    }
+                    else
+                    {
+                        setting.Id = db_setting.Id;
+                    }
+                }
+
+                await _repository.AddOrUpdateAsync(settings);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+
+
+        }
+
+        #endregion
 
         //---------------------------------------------------------------------------------- DECKS -------------------------------------------------------------------------
 

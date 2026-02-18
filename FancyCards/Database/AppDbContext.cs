@@ -11,6 +11,7 @@ namespace FancyCards.Database
         public DbSet<TextReplacementRule> TextReplacementRules { get; set; }
         public DbSet<TrainingSession> TrainingSessions { get; set; }
         public DbSet<TrainingSessionCard> TrainingSessionCards { get; set; }
+        public DbSet<Setting> Settings { get; set; }
 
 
         public AppDbContext()

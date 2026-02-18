@@ -16,7 +16,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly ViewModelFactory _viewModelFactory;
-
+        private readonly SettingsService _settingsService;
 
         public string Title => "Fancy Cards";
 
@@ -39,12 +39,13 @@ namespace FancyCards.ViewModels
 
         public bool ContextMenuOpen => _contextMenu != null;
 
-        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine)
+        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine, SettingsService settingsService)
         {
             _modalService = modalService;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _viewModelFactory = viewModelFactory;
+            _settingsService = settingsService;
            
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this);
 
@@ -95,6 +96,12 @@ namespace FancyCards.ViewModels
             }
         }
 
+        [RelayCommand]
+        private async void OpenSettings()
+        {
+            await OpenSettingsModal();
+        }
+
 
         public async Task<ModalResult<Card>> OpenCardModal(Card card)
         {
@@ -123,6 +130,13 @@ namespace FancyCards.ViewModels
             var result = await _modalService.ShowModalAsync(new TrainingFailedAnswerViewModel(answer, correct));
             return result;
         }
+
+        public async Task<ModalResult<object>> OpenSettingsModal()
+        {
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<SettingsViewModel>());
+            return result;
+        }
+
 
         [RelayCommand]
         public async Task StartLoading(bool showBackground = true)

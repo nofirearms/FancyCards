@@ -82,6 +82,33 @@ namespace FancyCards.Database
             }
         }
 
+        public async Task<bool> AddOrUpdateAsync<T>(IEnumerable<T> entities) where T : EntityBase
+        {
+            try
+            {
+                foreach(var entity in entities)
+                {
+                    var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
+                    if (db_entity == null)
+                    {
+                        _context.Set<T>().Add(entity);
+                    }
+                    else
+                    {
+                        UpdateValues(db_entity, entity);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
         public async Task<bool> RemoveAsync<T>(T entity) where T : EntityBase
         {
             try

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
@@ -13,8 +14,8 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly TextReplacementService _textService;
-        private readonly TrainingCardListManager _cardManager;
-        private readonly DispatcherTimer _timer;
+        private TrainingCardListManager _cardManager;
+        private DispatcherTimer _timer;
 
 
         [ObservableProperty]
@@ -23,7 +24,7 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private double _maxSampleVolume = 0;
 
-        public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine )
+        public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine, IEnumerable<Card> cards )
         {
             _host = host;
             _dataService = dataService;
@@ -32,32 +33,7 @@ namespace FancyCards.ViewModels
 
             _audioEngine.MaxSampleVolume += (v) => MaxSampleVolume = v;
 
-
-            var random = new Random();
-
-            //TODO переделать
-            var cards = _dataService.GetCardsAsync(1).Result
-                .Where(c => c.NextReviewDate.Date <= DateTime.Now)
-                .Where(c => c.State == Models.CardState.Learning || c.State == Models.CardState.Reviewing)
-                .OrderBy(c => random.NextDouble())
-                .ToArray();
-
-            var learning_cards = cards
-                .Where(c => c.State == Models.CardState.Learning)
-                .Take(5)
-                .ToArray();
-
-            var reviewing_cards = cards
-                .Where(c => c.State == Models.CardState.Reviewing)               
-                .Take(5)
-                .ToArray();
-
-            var training_cards = learning_cards
-                .Concat(reviewing_cards)
-                .Select(c => new TrainingCardViewModel(c))
-                .ToList();
-
-            _cardManager = new TrainingCardListManager(training_cards);
+            _cardManager = new TrainingCardListManager(cards.Select(c => new TrainingCardViewModel(c)));
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
@@ -69,14 +45,18 @@ namespace FancyCards.ViewModels
                 }
             };
 
-
             //чтоб аудио воспроизводилось только после загрузки 
             App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, async () =>
             {
                 ShowNextCard();
             });
-            
 
+            InitializeAsync();
+        }
+
+        private async void InitializeAsync()
+        {
+            
         }
 
         private async void ShowNextCard()
@@ -101,6 +81,11 @@ namespace FancyCards.ViewModels
                 }
                     
             }
+            else
+            {
+                FinishTraining();
+            }
+
         }
 
 
@@ -175,6 +160,12 @@ namespace FancyCards.ViewModels
 
             ShowNextCard();
         }
+
+        private void FinishTraining()
+        {
+
+        }
+
 
         [RelayCommand]
         private void CancelTraining()

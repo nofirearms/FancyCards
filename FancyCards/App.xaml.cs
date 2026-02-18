@@ -42,6 +42,7 @@ namespace FancyCards
             services.AddSingleton<Repository>();
             services.AddSingleton<DataService>();
             services.AddSingleton<ModalService>();
+            services.AddSingleton<SettingsService>();
             services.AddSingleton<TextReplacementService>();
 
             services.AddSingleton<ViewModelFactory>();
