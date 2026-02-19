@@ -98,4 +98,21 @@
 
     </Style>
 
+    <Style
+        x:Key="CustomCheckBox"
+        BasedOn="{StaticResource MaterialDesignFlatButton}"
+        TargetType="CheckBox">
+        <Setter Property="Padding" Value="0,0,0,0" />
+        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
+        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource InactiveForeground}" />
+            </Trigger>
+        </Style.Triggers>
+
+    </Style>
+
 </ResourceDictionary>

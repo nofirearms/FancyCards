@@ -29,13 +29,13 @@ namespace FancyCards.Services
 
         #region SETTINGS
 
-        public async Task<IEnumerable<Setting>> GetSettingsAsync() => await _repository.GetAllAsync<Setting>();
+        public async Task<IEnumerable<Setting>> GetSettingsAsync(int deckId) => (await _repository.GetAllAsync<Setting>()).Where(s => s.DeckId == deckId);
 
-        public async Task<bool> SaveSettingsAsync(IEnumerable<Setting> settings)
+        public async Task<bool> SaveSettingsAsync(IEnumerable<Setting> settings, int deckId)
         {
             try
             {
-                var db_settings = await GetSettingsAsync();
+                var db_settings = await GetSettingsAsync(deckId);
                 foreach (var setting in settings)
                 {
                     var db_setting = db_settings.FirstOrDefault(s => s.Key == setting.Key);
@@ -92,6 +92,15 @@ namespace FancyCards.Services
             CardEvent?.Invoke(new CardsEventArgs([card], CardAction.Update));
 
             return card;
+        }
+
+        public async Task<IEnumerable<Card>> UpdateCardsAsync(IEnumerable<Card> cards)
+        {
+            await _repository.AddOrUpdateAsync(cards);
+
+            CardEvent?.Invoke(new CardsEventArgs(cards, CardAction.Update));
+
+            return cards;
         }
 
         public async Task<bool> RemoveCardAsync(Card card)
@@ -168,6 +177,8 @@ namespace FancyCards.Services
         #region TRAINING SESSION CARDS
 
         public async Task<IEnumerable<TrainingSessionCard>> GetTrainingSessionCardsAsync() => await _repository.GetAllAsync<TrainingSessionCard>();
+
+        public async Task<IEnumerable<TrainingSessionCard>> GetTrainingSessionCardsAsync(IEnumerable<int> cardIds) => (await _repository.GetAllAsync<TrainingSessionCard>()).Where(c => cardIds.Contains(c.CardId));
 
         public async Task<TrainingSessionCard> CreateTrainingSessionCardAsync(TrainingSessionCard trainingCard)
         {

@@ -34,16 +34,36 @@ namespace FancyCards.ViewModels
             set => SetProperty(ref _trainingReviewCards, value);
         }
 
+        private int _correctAnswersToFinishLearning = 2;
+        [Setting]
+        public int СorrectAnswersToFinishLearning
+        {
+            get => _correctAnswersToFinishLearning;
+            set => SetProperty(ref _correctAnswersToFinishLearning, value);
+        }
+
+        //private int _correctAnswersToFinishReviewing = 10;
+        //[Setting]
+        //public int СorrectAnswersToFinishReviewing
+        //{
+        //    get => _correctAnswersToFinishReviewing;
+        //    set => SetProperty(ref _correctAnswersToFinishReviewing, value);
+        //}
+
+
         public SettingsViewModel(MainWindowViewModel host, SettingsService settingsService)
         {
             _host = host;
             _settingsService = settingsService;
 
-            LoadSettings();
+            var _ = LoadSettings();
         }
 
-        private void LoadSettings()
+        private async Task LoadSettings()
         {
+            //TODO selected deck
+            await _settingsService.LoadSettingsAsync(1);
+
             var properties = this.GetType().GetProperties().Where(p => p.GetCustomAttribute<SettingAttribute>() != null);
 
             foreach (var property in properties)

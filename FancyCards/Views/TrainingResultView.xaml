@@ -7,10 +7,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     d:DataContext="{d:DesignInstance vm:TrainingResultViewModel}"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    Height="150"
+    Width="150"
     mc:Ignorable="d">
-    <Grid>
+    <StackPanel>
         <TextBlock FontSize="22" Text="RESULT!" />
-    </Grid>
+        <Button
+            Grid.Row="2"
+            Width="60"
+            Height="30"
+            Margin="5,0,0,0"
+            Padding="0"
+            Command="{Binding OkCommand}"
+            Content="Ok" />
+    </StackPanel>
 </UserControl>

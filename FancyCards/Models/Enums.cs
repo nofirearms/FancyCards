@@ -26,6 +26,10 @@ namespace FancyCards.Models
         Queue, Success, Failed
     }
 
+    public enum TrainingCardResult
+    {
+        Success, Failed
+    }
 
     public enum PlaybackMode
     {

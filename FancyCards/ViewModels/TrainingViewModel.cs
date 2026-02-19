@@ -1,8 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
+using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
+using NAudio.Wave;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -14,6 +17,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly TextReplacementService _textService;
+        private readonly SettingsService _settingsService;
         private TrainingCardListManager _cardManager;
         private DispatcherTimer _timer;
 
@@ -22,14 +26,18 @@ namespace FancyCards.ViewModels
         private TrainingCardViewModel _currentCard;
 
         [ObservableProperty]
+        private TimeSpan _trainingTime = TimeSpan.Zero;
+
+        [ObservableProperty]
         private double _maxSampleVolume = 0;
 
-        public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine, IEnumerable<Card> cards )
+        public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine, SettingsService settingsService, IEnumerable<Card> cards )
         {
             _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _textService = textService;
+            _settingsService = settingsService;
 
             _audioEngine.MaxSampleVolume += (v) => MaxSampleVolume = v;
 
@@ -42,6 +50,7 @@ namespace FancyCards.ViewModels
                 if (_currentCard != null)
                 {
                     _currentCard.OnTimerTick();
+                    TrainingTime = TrainingTime.Add(TimeSpan.FromSeconds(1));
                 }
             };
 
@@ -49,6 +58,7 @@ namespace FancyCards.ViewModels
             App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, async () =>
             {
                 ShowNextCard();
+                _timer.Start();
             });
 
             InitializeAsync();
@@ -83,7 +93,7 @@ namespace FancyCards.ViewModels
             }
             else
             {
-                FinishTraining();
+                await FinishTraining();
             }
 
         }
@@ -131,7 +141,14 @@ namespace FancyCards.ViewModels
 
             if (answer_result)
             {
-                CurrentCard.CardStatus = TrainingCardState.Success;
+                if (!CurrentCard.Hint)
+                {
+                    CurrentCard.CardStatus = TrainingCardState.Success;
+                }
+                else
+                {
+                    CurrentCard.CardStatus = TrainingCardState.Failed;
+                }
             }
             else
             {
@@ -143,27 +160,150 @@ namespace FancyCards.ViewModels
                 //из списка на повтор
                 else
                 {
-                    if(CurrentCard.Card.State == CardState.Reviewing)
-                    {
-                        //messagebox с правильным ответом, result = failed
-                        CurrentCard.CardStatus = TrainingCardState.Failed;
-                        await _host.OpenFailedAnswer(CurrentCard.Answer, CurrentCard.Card.FrontText);
-                    }
-                    else if(CurrentCard.Card.State == CardState.Learning)
-                    {
-                        //добавляем ещё раз в список пока нет правильного ответа
-                        _cardManager.AddCard(CurrentCard);
+                    CurrentCard.CardStatus = TrainingCardState.Failed;
+                    await _host.OpenFailedAnswer(CurrentCard.Answer, CurrentCard.Card.FrontText);
+                    //if(CurrentCard.Card.State == CardState.Reviewing)
+                    //{
+                    //    //messagebox с правильным ответом, result = failed
+                    //    CurrentCard.CardStatus = TrainingCardState.Failed;
+                    //    await _host.OpenFailedAnswer(CurrentCard.Answer, CurrentCard.Card.FrontText);
+                    //}
+                    //else if(CurrentCard.Card.State == CardState.Learning)
+                    //{
+                    //    //добавляем ещё раз в список пока нет правильного ответа
+                    //    _cardManager.AddCard(CurrentCard);
 
-                    }
+                    //}
                 }
             }
 
             ShowNextCard();
         }
 
-        private void FinishTraining()
+        private async Task FinishTraining()
         {
+            await _host.OpenTrainingResult();
 
+            var result_cards = _cardManager.BaseCards;
+
+            //todo deck id
+            await _settingsService.LoadSettingsAsync(1);
+
+
+            var session_cards = new List<TrainingSessionCard>();
+
+            //var card_trainings = await _dataService.GetTrainingSessionCardsAsync(result_cards.Select(o => o.Card.Id));
+
+            foreach (var card in result_cards)
+            {
+                card.Card.Scores.TotalCount++;
+                card.Card.LastReviewDate = DateTime.Now;
+                card.Card.TimeSpent = card.TotalTimeSpent;
+
+                if (card.CardStatus == TrainingCardState.Success)
+                {
+                    card.Card.Scores.CorrectCount++;
+                    card.Q = card.IsHard ? 3 : 5;
+
+                    if (card.Card.State == CardState.Learning)
+                    {
+                        if (card.Card.Scores.CorrectCount >= _settingsService.СorrectAnswersToFinishLearning)
+                        {
+                            card.Card.State = CardState.Reviewing;
+                            ProcessScore(card);
+                            card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
+                        }
+                        else
+                        {
+                            card.Card.NextReviewDate = DateTime.Now.Date;
+                        }
+                    }
+                    else if (card.Card.State == CardState.Reviewing)
+                    {
+                        ProcessScore(card);
+                        card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
+                    }
+                }
+                else if (card.CardStatus == TrainingCardState.Failed)
+                {
+                    card.Q = 0;
+
+                    if (card.Card.State == CardState.Learning)
+                    {
+
+                    }
+                    else if (card.Card.State == CardState.Reviewing)
+                    {
+                        ProcessScore(card);
+                        card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
+                    }
+                }
+
+                session_cards.Add(new TrainingSessionCard()
+                {
+                    CardId = card.Card.Id,
+                    CardState = card.InitialState,
+                    Date = DateTime.Now,
+                    Q = card.Q,
+                    Result = card.CardStatus == TrainingCardState.Success ? TrainingCardResult.Success : TrainingCardResult.Failed,
+                    TimeSpent = card.SessionTimeSpent,
+                });
+
+            }
+
+            var training_session = new TrainingSession
+            {
+                Cards = session_cards,
+                Date = DateTime.Now,
+                TimeSpent = TrainingTime
+            };
+
+            await _host.StartLoading(false);
+
+            await _dataService.CreateTrainingSessionAsync(training_session);
+
+            await _dataService.UpdateCardsAsync(result_cards.Select(r => r.Card));
+
+            _host.StopLoading();
+
+            Close();
+
+        }
+
+        private void ProcessScore(TrainingCardViewModel card)
+        {
+            if(card.Q == 0)
+            {
+                card.Card.Scores.Reps = 0;
+                card.Card.Scores.I = 1;
+
+                card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.2, 1.3, 2.8);
+            }
+            else
+            {
+                if(card.Q == 3)
+                {
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.1, 1.3, 2.8);
+                }
+                else if(card.Q == 5)
+                {
+                    //не меняется
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF, 1.3, 2.8);
+                }
+
+                if (card.Card.Scores.Reps == 0)
+                {
+                    card.Card.Scores.I = 1;
+                }
+                else if (card.Card.Scores.Reps == 1)
+                {
+                    card.Card.Scores.I = 6;
+                }
+                else if (card.Card.Scores.Reps >= 2)
+                {
+                    card.Card.Scores.I = (int)Math.Round(card.Card.Scores.I * card.Card.Scores.EF, MidpointRounding.AwayFromZero);
+                }
+            }
         }
 
 
@@ -171,6 +311,7 @@ namespace FancyCards.ViewModels
         private void CancelTraining()
         {
             _audioEngine.StopPlayback();
+            _timer.Stop();
             Cancel();
         }
     }

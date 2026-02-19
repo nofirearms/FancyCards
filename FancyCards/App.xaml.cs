@@ -48,7 +48,8 @@ namespace FancyCards
             services.AddSingleton<ViewModelFactory>();
 
             services.AddTransient<AudioEngine>();
-            
+            services.AddTransient<ReviewIntervalEngine>();
+
 
 
             return services.BuildServiceProvider();

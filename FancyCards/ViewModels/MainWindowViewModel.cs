@@ -132,6 +132,12 @@ namespace FancyCards.ViewModels
             return result;
         }
 
+        public async Task<ModalResult<object>> OpenTrainingResult()
+        {
+            var result = await _modalService.ShowModalAsync(new TrainingResultViewModel());
+            return result;
+        }
+
         public async Task<ModalResult<object>> OpenSettingsModal()
         {
             await StartLoading();

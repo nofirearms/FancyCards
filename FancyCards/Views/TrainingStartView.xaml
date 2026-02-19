@@ -10,6 +10,7 @@
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Width="200"
     Height="200"
+    d:Background="Wheat"
     d:DataContext="{d:DesignInstance vm:TrainingStartViewModel}"
     mc:Ignorable="d">
     <StackPanel>

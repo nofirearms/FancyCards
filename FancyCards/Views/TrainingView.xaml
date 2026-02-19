@@ -99,6 +99,13 @@
                 Margin="5"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
+                <CheckBox
+                    Width="30"
+                    Height="30"
+                    IsChecked="{Binding CurrentCard.IsHard, Mode=TwoWay}"
+                    Style="{StaticResource CustomCheckBox}">
+                    <materialDesign:PackIcon Kind="SkullCrossbones" />
+                </CheckBox>
                 <Button
                     Width="40"
                     Height="40"

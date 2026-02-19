@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -167,8 +168,17 @@ namespace FancyCards.Controls
             this.PreviewMouseDown += OnMouseDown;
             this.PreviewMouseDoubleClick += OnMouseDoubleClick;
             this.PreviewMouseWheel += OnMouseWheel;
-            App.Current.MainWindow.KeyUp += OnKeyUp;
-            App.Current.MainWindow.KeyDown += OnKeyDown;
+
+
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                // Выполняется только во время реальной работы приложения, не в дизайнере
+                if (Application.Current != null && Application.Current.MainWindow != null)
+                {
+                    App.Current.MainWindow.KeyUp += OnKeyUp;
+                    App.Current.MainWindow.KeyDown += OnKeyDown;
+                }
+            }
         }
 
         

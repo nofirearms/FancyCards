@@ -15,7 +15,7 @@ namespace FancyCards.Services
         public TrainingCardListManager(IEnumerable<TrainingCardViewModel> cards) 
         {
             _baseCards = cards?.ToList() ?? new List<TrainingCardViewModel>();
-            _sessionCards = cards?.ToList() ?? new List<TrainingCardViewModel>();
+            _sessionCards = new List<TrainingCardViewModel>(_baseCards);
 
             _currentIndex = -1;
         }
