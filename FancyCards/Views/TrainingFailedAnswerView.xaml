@@ -18,13 +18,6 @@
                     <RowDefinition />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
-                <TextBlock
-                    Grid.Row="0"
-                    Margin="0,0,0,5"
-                    HorizontalAlignment="Center"
-                    FontSize="18"
-                    Text="Incorrect"
-                    TextWrapping="Wrap" />
                 <StackPanel Grid.Row="1" Orientation="Vertical">
 
                     <TextBlock

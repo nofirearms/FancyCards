@@ -118,13 +118,6 @@
                 Margin="5"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
-                <!--<CheckBox
-                    Width="30"
-                    Height="30"
-                    IsChecked="{Binding CurrentCard.IsHard, Mode=TwoWay}"
-                    Style="{StaticResource CustomCheckBox}">
-                    <materialDesign:PackIcon Kind="SkullCrossbones" />
-                </CheckBox>-->
                 <ListView
                     Margin="2"
                     Cursor="Hand"
@@ -146,7 +139,7 @@
                                             Background="Transparent"
                                             BorderBrush="Transparent"
                                             BorderThickness="1"
-                                            CornerRadius="2" 
+                                            CornerRadius="2"
                                             ToolTip="{Binding}">
                                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>

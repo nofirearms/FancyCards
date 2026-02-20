@@ -5,6 +5,11 @@
 
     <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
 
+
+    <Style x:Key="ModalHeader" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+
     <Style BasedOn="{StaticResource MaterialDesignOutlinedButton}" TargetType="Button">
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />

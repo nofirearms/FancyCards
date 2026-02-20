@@ -11,6 +11,9 @@ namespace FancyCards.ViewModels
     }
     public abstract partial class BaseModalViewModel<TResult> : BaseModalViewModel
     {
+        [ObservableProperty]
+        private string _header = "";
+
         public Brush Background { get; set; } = (Brush)App.Current.FindResource("MaterialDesign.Brush.Secondary.Light");
 
         public Brush Backdrop { get; set; } = new SolidColorBrush(Colors.Black);

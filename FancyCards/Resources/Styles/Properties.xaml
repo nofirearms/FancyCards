@@ -5,4 +5,61 @@
 
 
 
+    <DrawingBrush
+        x:Key="CustomBrush"
+        Stretch="UniformToFill"
+        TileMode="Tile"
+        Viewport="0,0,30,30"
+        ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Brush>
+                            <SolidColorBrush Color="Transparent" />
+                        </GeometryDrawing.Brush>
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup FillRule="Nonzero">
+                                <PathGeometry>
+                                    <PathFigure StartPoint="0,0">
+                                        <LineSegment Point="100,0" />
+                                        <LineSegment Point="100,100" />
+                                        <LineSegment Point="0,100" />
+                                    </PathFigure>
+                                </PathGeometry>
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Brush>
+                            <SolidColorBrush Opacity="0.3" Color="white" />
+                        </GeometryDrawing.Brush>
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup FillRule="Nonzero">
+                                <PathGeometry>
+                                    <PathFigure StartPoint="0,0">
+                                        <LineSegment Point="25,0" />
+                                        <LineSegment Point="100,75" />
+                                        <LineSegment Point="100,100" />
+                                        <LineSegment Point="75,100" />
+                                        <LineSegment Point="0,25" />
+                                        <LineSegment Point="0,0" />
+                                    </PathFigure>
+                                    <PathFigure StartPoint="75,0">
+                                        <LineSegment Point="100,25" />
+                                        <LineSegment Point="100,0" />
+                                    </PathFigure>
+                                    <PathFigure StartPoint="0,75">
+                                        <LineSegment Point="25,100" />
+                                        <LineSegment Point="0,100" />
+                                    </PathFigure>
+                                </PathGeometry>
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
 </ResourceDictionary>

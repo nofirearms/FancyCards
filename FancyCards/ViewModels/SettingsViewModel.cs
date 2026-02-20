@@ -56,6 +56,8 @@ namespace FancyCards.ViewModels
             _host = host;
             _settingsService = settingsService;
 
+            Header = "Settings";
+
             var _ = LoadSettings();
         }
 

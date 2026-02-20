@@ -8,7 +8,7 @@ namespace FancyCards.ViewModels
 
         public TrainingResultViewModel()
         {
-            
+            Header = "Result";
         }
 
 

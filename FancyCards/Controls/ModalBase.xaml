@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:FancyCards.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
@@ -19,19 +20,41 @@
         <Grid.Background>
             <SolidColorBrush Opacity="0.5" Color="{Binding Backdrop.Color}" />
         </Grid.Background>
-
-
         <Border
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Background="{Binding Background}"
             CornerRadius="3"
             UseLayoutRounding="True">
-            <ContentPresenter
-                x:Name="ContentPresenter"
-                Grid.Row="1"
-                Margin="5"
-                Content="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Content}" />
+            <Grid Margin="5,3,5,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Border
+                    Margin="0,0,0,5"
+                    Padding="2"
+                    Background="{StaticResource CustomBrush}"
+                    CornerRadius="3">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ModalHeader}"
+                        Text="{Binding Header}">
+                        <interaction:Interaction.Triggers>
+                            <interaction:DataTrigger Binding="{Binding Header}" Value="">
+                                <interaction:ChangePropertyAction PropertyName="Visibility" Value="Collapsed" />
+                            </interaction:DataTrigger>
+                        </interaction:Interaction.Triggers>
+                    </TextBlock>
+                </Border>
+
+                <ContentPresenter
+                    x:Name="ContentPresenter"
+                    Grid.Row="1"
+                    Content="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Content}" />
+            </Grid>
+
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" />
             </Border.Effect>

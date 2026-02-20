@@ -48,7 +48,7 @@ namespace FancyCards.ViewModels
             _dataService = dataService;
             _settingsService = settingsService;
 
-           
+            Header = "Start Training";
 
             InitializeAsync();
         }

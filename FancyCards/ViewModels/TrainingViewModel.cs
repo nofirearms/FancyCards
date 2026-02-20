@@ -41,6 +41,8 @@ namespace FancyCards.ViewModels
             _textService = textService;
             _settingsService = settingsService;
 
+            Header = "Training";
+
             _audioEngine.MaxSampleVolume += (v) => MaxSampleVolume = v;
 
             _cardManager = new TrainingCardListManager(cards.Select(c => new TrainingCardViewModel(c)));

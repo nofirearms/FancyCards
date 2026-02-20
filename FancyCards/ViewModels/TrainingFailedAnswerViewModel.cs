@@ -12,7 +12,9 @@ namespace FancyCards.ViewModels
         public TrainingFailedAnswerViewModel(string answer, string frontText)
         {
             Answer = answer;
-            FrontText = frontText;  
+            FrontText = frontText;
+
+            Header = "Incorrect";
 
             Background = new SolidColorBrush(Colors.LightPink);
         }

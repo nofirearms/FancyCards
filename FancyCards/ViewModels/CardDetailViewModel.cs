@@ -18,10 +18,6 @@ namespace FancyCards.ViewModels
 
         private Card _card;
 
-
-        [ObservableProperty]
-        private string _title = "Card";
-
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SaveCardCommand))] 
         private string _frontText;
@@ -71,12 +67,12 @@ namespace FancyCards.ViewModels
 
              if (CardAction == CardAction.Create)
             {
-                Title = "Create Card";
+                Header = "Create Card";
                 _card = card;
             }
             else
             {
-                Title = "Edit Card";
+                Header = "Edit Card";
                 _card = card.Clone();
 
                 FrontText = _card.FrontText;

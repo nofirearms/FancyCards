@@ -6,7 +6,6 @@ namespace FancyCards.ViewModels
 {
     public partial class MessageBoxViewModel : BaseModalViewModel<object>
     {
-        public string Header { get; }
         public string Message { get; }
         public string[] Buttons { get; }
 
@@ -17,6 +16,7 @@ namespace FancyCards.ViewModels
             Buttons = buttons;
 
             Background = background is null ? new SolidColorBrush(Colors.PaleGreen) : background;
+            Header = header;
         }
 
         [RelayCommand]

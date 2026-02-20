@@ -6,12 +6,11 @@
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
-    d:DataContext="{d:DesignInstance vm:TrainingResultViewModel}"
-    Height="150"
     Width="150"
+    Height="150"
+    d:DataContext="{d:DesignInstance vm:TrainingResultViewModel}"
     mc:Ignorable="d">
     <StackPanel>
-        <TextBlock FontSize="22" Text="RESULT!" />
         <Button
             Grid.Row="2"
             Width="60"
