@@ -31,6 +31,8 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private double _maxSampleVolume = 0;
 
+        public IEnumerable<Difficulty> Difficulties => Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>();
+
         public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine, SettingsService settingsService, IEnumerable<Card> cards )
         {
             _host = host;
@@ -199,11 +201,11 @@ namespace FancyCards.ViewModels
                 card.Card.Scores.TotalCount++;
                 card.Card.LastReviewDate = DateTime.Now;
                 card.Card.TimeSpent = card.TotalTimeSpent;
+                card.Card.Difficulty = card.Difficulty;
 
                 if (card.CardStatus == TrainingCardState.Success)
                 {
                     card.Card.Scores.CorrectCount++;
-                    card.Q = card.IsHard ? 3 : 5;
 
                     if (card.Card.State == CardState.Learning)
                     {
@@ -226,7 +228,6 @@ namespace FancyCards.ViewModels
                 }
                 else if (card.CardStatus == TrainingCardState.Failed)
                 {
-                    card.Q = 0;
 
                     if (card.Card.State == CardState.Learning)
                     {
@@ -244,7 +245,7 @@ namespace FancyCards.ViewModels
                     CardId = card.Card.Id,
                     CardState = card.InitialState,
                     Date = DateTime.Now,
-                    Q = card.Q,
+                    Difficulty = card.Difficulty,
                     Result = card.CardStatus == TrainingCardState.Success ? TrainingCardResult.Success : TrainingCardResult.Failed,
                     TimeSpent = card.SessionTimeSpent,
                 });
@@ -272,23 +273,26 @@ namespace FancyCards.ViewModels
 
         private void ProcessScore(TrainingCardViewModel card)
         {
-            if(card.Q == 0)
+            if(card.CardStatus == TrainingCardState.Failed)
             {
                 card.Card.Scores.Reps = 0;
                 card.Card.Scores.I = 1;
 
-                card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.2, 1.3, 2.8);
+                card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.25, 1.3, 2.8);
             }
             else
             {
-                if(card.Q == 3)
+                if(card.Difficulty == Difficulty.Hard)
                 {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.1, 1.3, 2.8);
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.15, 1.3, 2.8);
                 }
-                else if(card.Q == 5)
+                else if(card.Difficulty == Difficulty.Normal)
                 {
-                    //не меняется
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF, 1.3, 2.8);
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.05 , 1.3, 2.8);
+                }
+                else if (card.Difficulty == Difficulty.Easy)
+                {
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + 0.08, 1.3, 2.8);
                 }
 
                 if (card.Card.Scores.Reps == 0)

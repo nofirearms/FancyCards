@@ -13,7 +13,8 @@ namespace FancyCards.Models
         public string SuffixText { get; set; }
         public string CommentText { get; set; }
         public string MessageText { get; set; }
-        public CardState State { get; set; }
+        public CardState State { get; set; } = CardState.Learning;
+        public Difficulty Difficulty { get; set; } = Difficulty.Normal;
         public CardScores Scores { get; set; } = new();
         public AudioSource Audio { get; set; }
         public DateTime DateCreated { get; set; }
@@ -21,5 +22,7 @@ namespace FancyCards.Models
         public DateTime LastReviewDate { get; set; }
         public TimeSpan TimeSpent { get; set; }
         public int DeckId { get; set; }
+
+
     }
 }

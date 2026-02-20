@@ -2,4 +2,7 @@
 
 
     <SolidColorBrush x:Key="InactiveForeground" Color="Gray" />
+
+
+
 </ResourceDictionary>

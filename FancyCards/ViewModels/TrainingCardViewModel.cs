@@ -34,14 +34,8 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private string _answer = string.Empty;
 
-        /// <summary>
-        /// оценка, 0 - неудача, 3 - сложно, 5 - нормально
-        /// </summary>
         [ObservableProperty]
-        private int _q = 0;
-
-        [ObservableProperty]
-        private bool _isHard = false;
+        private Difficulty _difficulty;
 
         public CardState InitialState { get; }
 
@@ -51,6 +45,7 @@ namespace FancyCards.ViewModels
 
             _totalTimeSpent = _card.TimeSpent;
             InitialState = _card.State;
+            Difficulty = _card.Difficulty;
         }
 
         public void OnTimerTick()

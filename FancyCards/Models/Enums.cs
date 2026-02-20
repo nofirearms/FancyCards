@@ -11,6 +11,11 @@ namespace FancyCards.Models
         Mastered    // Выучена
     }
 
+    public enum Difficulty
+    {
+        Easy, Normal, Hard
+    }
+
     public enum DeckAction
     {
         Create, Remove, Update
