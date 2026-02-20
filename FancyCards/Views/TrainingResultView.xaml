@@ -7,10 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Width="150"
-    Height="150"
+    Height="auto"
     d:DataContext="{d:DesignInstance vm:TrainingResultViewModel}"
     mc:Ignorable="d">
     <StackPanel>
+        <TextBlock>
+            <Run Text="Time spent:" />
+            <Run Text="{Binding TimeSpent}" />
+        </TextBlock>
         <Button
             Grid.Row="2"
             Width="60"

@@ -8,11 +8,11 @@ namespace FancyCards.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var date = (DateTime?)value;
+            var date = (DateTime)value;
 
-            if (date is null || date == default) return "never";
+            if (date == default) return "never";
 
-            var days_ago = Math.Floor((DateTime.Now - (DateTime)date).TotalDays);
+            var days_ago = Math.Floor((DateTime.Today - date.Date).TotalDays);
 
             switch (days_ago)
             {

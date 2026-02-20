@@ -77,6 +77,8 @@
                                 FontWeight="Bold"
                                 Foreground="{StaticResource MaterialDesign.Brush.Primary}"
                                 Text="{Binding CurrentCard.Card.LastReviewDate, Converter={StaticResource DateToDaysPassedStringConverter}}" />
+                            <Run Text=" | " />
+                            <Run Text="{Binding CurrentCard.Card.LastReviewDate, StringFormat='\{0:dd.MM.yyyy}'}" />
                         </TextBlock>
 
                     </StackPanel>

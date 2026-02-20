@@ -198,8 +198,6 @@ namespace FancyCards.ViewModels
         {
             StopTraining();
 
-            await _host.OpenTrainingResult();
-
             var result_cards = _cardManager.BaseCards;
 
             //todo deck id
@@ -280,6 +278,8 @@ namespace FancyCards.ViewModels
             await _dataService.UpdateCardsAsync(result_cards.Select(r => r.Card));
 
             _host.StopLoading();
+
+            await _host.OpenTrainingResult(result_cards);
 
             Close();
 
