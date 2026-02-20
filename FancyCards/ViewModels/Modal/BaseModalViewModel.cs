@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using FancyCards.Models;
 using System.Windows.Media;
 
@@ -40,7 +41,7 @@ namespace FancyCards.ViewModels
             
         }
 
-        protected void Cancel()
+        protected virtual void Cancel()
         {
             _completionSource.TrySetResult(new ModalResult<TResult>
             {
@@ -54,5 +55,8 @@ namespace FancyCards.ViewModels
         {
             Cancel();
         }
+
+        [RelayCommand]
+        private void CloseModal() => Cancel();
     }
 }

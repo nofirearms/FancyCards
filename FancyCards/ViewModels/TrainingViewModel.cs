@@ -5,6 +5,7 @@ using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
 using NAudio.Wave;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -20,6 +21,12 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
         private TrainingCardListManager _cardManager;
         private DispatcherTimer _timer;
+
+        [ObservableProperty]
+        private int _totalCards;
+
+        [ObservableProperty]
+        private int _currentCardIndex;
 
 
         [ObservableProperty]
@@ -82,6 +89,9 @@ namespace FancyCards.ViewModels
                 CurrentCard = _cardManager.CurrentCard;
 
                 CurrentCard.ShowCount++;
+
+                CurrentCardIndex = _cardManager.CardsShown;
+                TotalCards = _cardManager.TotalCards;
 
                 if(_audioEngine.OpenAudioAsync(_currentCard.Card.Audio.Path, false, true))
                 {
@@ -186,6 +196,8 @@ namespace FancyCards.ViewModels
 
         private async Task FinishTraining()
         {
+            StopTraining();
+
             await _host.OpenTrainingResult();
 
             var result_cards = _cardManager.BaseCards;
@@ -313,12 +325,21 @@ namespace FancyCards.ViewModels
         }
 
 
-        [RelayCommand]
-        private void CancelTraining()
+
+        protected override async void Cancel()
+        {
+            var result = await _host.OpenMessageBox("Exit training? Progress won't be saved.", ["Yes", "No"]);
+            if(result.ButtonTag == "Yes")
+            {
+                StopTraining();
+                base.Cancel();
+            }
+        }
+
+        private void StopTraining()
         {
             _audioEngine.StopPlayback();
             _timer.Stop();
-            Cancel();
         }
     }
 }

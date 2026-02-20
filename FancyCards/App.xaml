@@ -18,6 +18,7 @@
                 <ResourceDictionary Source="Resources/Styles/Properties.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <views:CardDetailView x:Key="CardDetailView" />
+
             <converters:ReverseBoolConverter x:Key="ReverseBoolConverter" />
         </ResourceDictionary>
 

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     x:Name="self"
@@ -36,17 +37,31 @@
                     Padding="2"
                     Background="{StaticResource CustomBrush}"
                     CornerRadius="3">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Style="{StaticResource ModalHeader}"
-                        Text="{Binding Header}">
-                        <interaction:Interaction.Triggers>
-                            <interaction:DataTrigger Binding="{Binding Header}" Value="">
-                                <interaction:ChangePropertyAction PropertyName="Visibility" Value="Collapsed" />
-                            </interaction:DataTrigger>
-                        </interaction:Interaction.Triggers>
-                    </TextBlock>
+                    <Grid Margin="0,2">
+
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource ModalHeader}"
+                            Text="{Binding Header}">
+                            <interaction:Interaction.Triggers>
+                                <interaction:DataTrigger Binding="{Binding Header}" Value="">
+                                    <interaction:ChangePropertyAction PropertyName="Visibility" Value="Collapsed" />
+                                </interaction:DataTrigger>
+                            </interaction:Interaction.Triggers>
+                        </TextBlock>
+
+                        <Button
+                            Width="25"
+                            Height="25"
+                            HorizontalAlignment="Right"
+                            Background="{Binding Background}"
+                            Command="{Binding CloseModalCommand}"
+                            Style="{StaticResource CloseButtonStyle}">
+                            <materialDesign:PackIcon Kind="Close" />
+                        </Button>
+                    </Grid>
+
                 </Border>
 
                 <ContentPresenter
