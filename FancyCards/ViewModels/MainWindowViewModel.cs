@@ -89,7 +89,7 @@ namespace FancyCards.ViewModels
                 .Bind(out _decks)
                 .Subscribe();
 
-            var selected_deck = _decks.FirstOrDefault();
+            var selected_deck = Decks.FirstOrDefault();
             if (selected_deck != null)
             {
                 SelectedDeck = selected_deck;
@@ -115,14 +115,14 @@ namespace FancyCards.ViewModels
                 {
                     var d = new DeckSummaryViewModel(deck);
                     _sourceCache.AddOrUpdate(d);
-                    _selectedDeck = d;
+                    SelectedDeck = d;
                 }
             }
             else if (args.Action == DeckAction.Remove)
             {
                 foreach (var deck in decks)
                 {
-                    var d = _decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
+                    var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
                     if(d != null)
                     {
                         _sourceCache.Remove(d);
@@ -134,7 +134,7 @@ namespace FancyCards.ViewModels
             {
                 foreach (var deck in decks)
                 {
-                    var d = _decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
+                    var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
                     if (d != null)
                     {
                         _sourceCache.AddOrUpdate(d);

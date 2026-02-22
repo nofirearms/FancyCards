@@ -28,10 +28,10 @@ namespace FancyCards.Database
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Deck>().HasData(
-            [
-                new Deck(){ Cards = new List<Card>(), DateCreated = DateTime.Now, Name = "Test Deck", Description = "Test Description", Id = 1 }
-            ]);
+            //modelBuilder.Entity<Deck>().HasData(
+            //[
+            //    new Deck(){ Cards = new List<Card>(), DateCreated = DateTime.Now, Name = "Test Deck", Description = "Test Description", Id = 1 }
+            //]);
 
             modelBuilder.Entity<TextReplacementRule>().HasData(
             [

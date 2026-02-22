@@ -8,15 +8,16 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
-    Width="auto"
-    Height="auto"
+    Width="200"
+    Height="150"
     d:DataContext="{d:DesignInstance vm:DeckDetailViewModel}"
     mc:Ignorable="d">
     <Grid>
-        <StackPanel
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Orientation="Vertical">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <StackPanel VerticalAlignment="Top" Orientation="Vertical">
             <controls:HintControl
                 Margin="0,0,0,5"
                 HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
@@ -30,7 +31,7 @@
             <controls:HintControl
                 Margin="0,0,0,5"
                 HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                HintText="Name">
+                HintText="Description">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
@@ -41,9 +42,21 @@
 
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding SaveCommand}" Content="Save" />
-            <Button Command="{Binding CloseModalCommand}" Content="Cancel" />
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                Width="60"
+                Padding="0"
+                Command="{Binding SaveCommand}"
+                Content="Save" />
+            <Button
+                Width="60"
+                Margin="3,0,0,0"
+                Padding="0"
+                Command="{Binding CloseModalCommand}"
+                Content="Cancel" />
         </StackPanel>
     </Grid>
 

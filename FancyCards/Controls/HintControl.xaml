@@ -13,7 +13,21 @@
 
         <ContentPresenter Content="{Binding ElementName=root, Path=Content}" />
 
-        <TextBlock
+        <Border
+            Margin="10,-5"
+            Padding="3,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="{Binding ElementName=root, Path=HintBackground}"
+            CornerRadius="3">
+            <TextBlock
+                x:Name="HintTextBlock"
+                FontSize="12"
+                IsHitTestVisible="False"
+                Text="{Binding ElementName=root, Path=HintText}"
+                Visibility="Collapsed" />
+        </Border>
+        <!--<TextBlock
             x:Name="HintTextBlock"
             Margin="10,-5"
             Padding="3,0"
@@ -23,9 +37,24 @@
             FontSize="12"
             IsHitTestVisible="False"
             Text="{Binding ElementName=root, Path=HintText}"
-            Visibility="Collapsed" />
+            Visibility="Collapsed" />-->
 
-        <TextBlock
+        <Border
+            Margin="10,-5"
+            Padding="3,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="{Binding ElementName=root, Path=HintBackground}"
+            CornerRadius="3">
+            <TextBlock
+                x:Name="SuffixTextBlock"
+                FontSize="12"
+                IsHitTestVisible="False"
+                Text="{Binding ElementName=root, Path=SuffixText}"
+                Visibility="Collapsed" />
+        </Border>
+
+        <!--<TextBlock
             x:Name="SuffixTextBlock"
             Margin="10,-5"
             Padding="3,0"
@@ -35,6 +64,6 @@
             FontSize="12"
             IsHitTestVisible="False"
             Text="{Binding ElementName=root, Path=SuffixText}"
-            Visibility="Collapsed" />
+            Visibility="Collapsed" />-->
     </Grid>
 </UserControl>

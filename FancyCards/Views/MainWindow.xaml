@@ -21,6 +21,8 @@
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
+
+
     </Window.Resources>
     <Grid>
         <!--  Модальные окна  -->
@@ -52,6 +54,10 @@
 
                 <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                     <local:SettingsView />
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type vm:DeckDetailViewModel}">
+                    <local:DeckDetailView />
                 </DataTemplate>
 
             </ItemsControl.Resources>
@@ -137,9 +143,10 @@
                 HintBackground="{Binding ElementName=root, Path=Background}"
                 HintText="Cards">
                 <Border
-                    BorderBrush="Black"
-                    BorderThickness="1"
-                    CornerRadius="3">
+                  
+                    
+                    Style="{StaticResource CustomBorderStyle}">
+
                     <local:CardListView DataContext="{Binding CardListViewModel}" />
                 </Border>
 

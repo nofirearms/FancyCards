@@ -66,9 +66,17 @@ namespace FancyCards.ViewModels
 
             _deck.Name = Name;
             _deck.Description = Description;
+            _deck.Cards = new List<Card>();
+
+            await _host.StartLoading(false);
 
             await _dataService.AddOrUpdateDecks([_deck], DeckAction);
+
+            Close(true, _deck, "Save");
+
+            _host.StopLoading();
+            
         }
-        private bool CanSave() => !string.IsNullOrEmpty(_deck.Name);
+        private bool CanSave() => !string.IsNullOrEmpty(_name);
     }
 }

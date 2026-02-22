@@ -13,6 +13,29 @@
         <Setter Property="FontSize" Value="18" />
     </Style>
 
+    <Style x:Key="CustomBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="1" />
+        <Setter Property="CornerRadius" Value="3" />
+
+        <Style.Triggers>
+            <!--  Триггер на наведение мыши  -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Padding" Value="0" />
+            </Trigger>
+
+            <!--  Триггер на фокус внутри Border  -->
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Padding" Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style BasedOn="{StaticResource MaterialDesignOutlinedButton}" TargetType="Button">
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
