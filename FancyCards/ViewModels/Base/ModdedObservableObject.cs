@@ -16,5 +16,6 @@ namespace FancyCards.ViewModels
                 OnPropertyChanged(property.Name);
             }
         }
+
     }
 }

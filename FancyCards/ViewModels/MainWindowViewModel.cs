@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -19,6 +21,12 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
 
         public string Title => "Fancy Cards";
+
+        [ObservableProperty]
+        private ReadOnlyObservableCollection<DeckSummaryViewModel> _decks;
+        [ObservableProperty]
+        private DeckSummaryViewModel _selectedDeck;
+        private SourceCache<DeckSummaryViewModel, int> _sourceCache;
 
         public CardListViewModel CardListViewModel { get; set; }
 
@@ -47,7 +55,7 @@ namespace FancyCards.ViewModels
             _viewModelFactory = viewModelFactory;
             _settingsService = settingsService;
            
-            CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this);
+            
 
 
             // Подписываемся на изменение коллекции модальных окон
@@ -57,9 +65,86 @@ namespace FancyCards.ViewModels
                 OnPropertyChanged(nameof(ActiveModals));
             };
 
+            _dataService.DeckEvent += OnDeckEvent;
+
+
+
+            var _ = InitializeAsync();
+
+
         }
 
-        
+
+
+        private async Task InitializeAsync()
+        {
+            var db_decks = await _dataService.GetDecksAsync();
+
+
+            _sourceCache = new SourceCache<DeckSummaryViewModel, int>(o => o.Id);
+            _sourceCache.AddOrUpdate(db_decks.Select(d => new DeckSummaryViewModel(d)) ?? new List<DeckSummaryViewModel>());
+
+            _sourceCache.Connect()
+                .Filter(CreateFilter())
+                .Bind(out _decks)
+                .Subscribe();
+
+            var selected_deck = _decks.FirstOrDefault();
+            if (selected_deck != null)
+            {
+                SelectedDeck = selected_deck;
+                CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, selected_deck.Id);
+            }
+            else
+            {
+                await OpenDeckModal(new Deck());
+            }
+
+
+
+        }
+
+        private void OnDeckEvent(DeckEventArgs args)
+        {
+            var decks = args.Decks;
+            var action = args.Action;
+
+            if (args.Action == DeckAction.Create)
+            {
+                foreach (var deck in decks)
+                {
+                    var d = new DeckSummaryViewModel(deck);
+                    _sourceCache.AddOrUpdate(d);
+                    _selectedDeck = d;
+                }
+            }
+            else if (args.Action == DeckAction.Remove)
+            {
+                foreach (var deck in decks)
+                {
+                    var d = _decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
+                    if(d != null)
+                    {
+                        _sourceCache.Remove(d);
+                    }
+                    
+                }
+            }
+            else if (args.Action == DeckAction.Update)
+            {
+                foreach (var deck in decks)
+                {
+                    var d = _decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
+                    if (d != null)
+                    {
+                        _sourceCache.AddOrUpdate(d);
+                    }
+
+                }
+            }
+        }
+
+
         public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)
         {
             try
@@ -103,21 +188,20 @@ namespace FancyCards.ViewModels
             await OpenSettingsModal();
         }
 
+        public async Task<ModalResult<Deck>> OpenDeckModal(Deck deck)
+        {
+            await StartLoading();
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<DeckDetailViewModel>(deck ?? new Deck()));
+
+            return result;
+        }
 
         public async Task<ModalResult<Card>> OpenCardModal(Card card)
         {
             await StartLoading();
-            try
-            {
-                var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
 
-                return result;
-            }
-            finally
-            {
-
-            }
-
+            return result;
         }
 
         public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!", Brush background = null)
@@ -167,6 +251,21 @@ namespace FancyCards.ViewModels
         public void ChangeCursor(Cursor cursor = null)
         {
             Mouse.OverrideCursor = cursor;
+        }
+
+
+        //----------------------------------------------------------------------------- FILTER --------------------------------------------------------------------------
+        private Func<DeckSummaryViewModel, bool> CreateFilter()
+        {
+            return item => true;
+            
+            //return item =>
+            //{
+            //    var front_pass = string.IsNullOrEmpty(FrontTextFilter) ||
+            //                  item.FrontText.Contains(FrontTextFilter);
+
+            //    return front_pass; //&& categoryPass && pricePass;
+            //};
         }
     }
 }

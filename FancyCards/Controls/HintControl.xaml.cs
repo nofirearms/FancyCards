@@ -20,20 +20,20 @@ namespace FancyCards.Controls
 
 
 
-        public new Control Content
+        public new FrameworkElement Content
         {
-            get { return (Control)GetValue(ContentProperty); }
+            get { return (FrameworkElement)GetValue(ContentProperty); }
             set { SetValue(ContentProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Content.  This enables animation, styling, binding, etc...
         public static readonly new DependencyProperty ContentProperty =
-            DependencyProperty.Register(nameof(Content), typeof(Control), typeof(HintControl), new PropertyMetadata(null, OnNewContentChanged));
+            DependencyProperty.Register(nameof(Content), typeof(FrameworkElement), typeof(HintControl), new PropertyMetadata(null, OnNewContentChanged));
 
         private static void OnNewContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (HintControl)d;
-            var content = e.NewValue as Control;
+            var content = e.NewValue as FrameworkElement;
 
             if (content is null) return;
 

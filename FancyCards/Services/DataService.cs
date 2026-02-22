@@ -23,7 +23,7 @@ namespace FancyCards.Services
         }
 
 
-        public async Task<IEnumerable<Deck>> GetDecksAsync() => await _repository.GetAllDecksAsync();
+        
 
         //-------------------------------------------------------------------------------- SETTINGS ------------------------------------------------------------------------
 
@@ -67,6 +67,16 @@ namespace FancyCards.Services
 
         #region DECKS
         public async Task<Deck> GetDeckByIdAsync(int id) => await _repository.GetDeckAsync(id);
+        public async Task<IEnumerable<Deck>> GetDecksAsync() => await _repository.GetAllDecksAsync();
+
+        public async Task<IEnumerable<Deck>> AddOrUpdateDecks(IEnumerable<Deck> decks, DeckAction deckAction)
+        {
+            await _repository.AddOrUpdateAsync(decks);
+
+            DeckEvent?.Invoke(new DeckEventArgs(decks, deckAction));
+
+            return decks;
+        }
 
         #endregion
 

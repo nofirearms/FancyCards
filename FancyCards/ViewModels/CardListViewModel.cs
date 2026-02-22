@@ -20,7 +20,7 @@ namespace FancyCards.ViewModels
         private ReadOnlyObservableCollection<Card> _cards;
         
         private SourceCache<Card, int> _sourceCache;
-        public CardListViewModel(MainWindowViewModel host, DataService dataService)
+        public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
         {
             _dataService = dataService;
             _host = host;
@@ -28,16 +28,16 @@ namespace FancyCards.ViewModels
             
             _dataService.CardEvent += OnCardEvent;
 
-            InitializeAsync();
+            InitializeAsync(deckId);
         }
 
-        private async void InitializeAsync()
+        private async void InitializeAsync(int deckId)
         {
 
             //_cards = new ObservableCollection<Card>(_decks.First().Cards ?? new List<Card>());
             _sourceCache = new SourceCache<Card, int>(o => o.Id);
 
-            var cards = await _dataService.GetCardsAsync(1);
+            var cards = await _dataService.GetCardsAsync(deckId);
             _sourceCache.AddOrUpdate(cards ?? new List<Card>());
 
             _sourceCache.Connect()

@@ -12,6 +12,7 @@
     <Grid>
 
         <ContentPresenter Content="{Binding ElementName=root, Path=Content}" />
+
         <TextBlock
             x:Name="HintTextBlock"
             Margin="10,-5"
