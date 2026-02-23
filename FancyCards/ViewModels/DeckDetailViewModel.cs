@@ -30,6 +30,17 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private string _description;
 
+        //---------------------------------------------------------------- SETTINGS ----------------------------------------------------------------------------
+        [ObservableProperty]
+        private int _trainingLearnCards = 5;
+        [ObservableProperty]
+        private int _trainingReviewCards = 5;
+        [ObservableProperty]
+        private int _correctAnswersToFinishLearning = 2;
+        [ObservableProperty]
+        private int _correctAnswersToFinishReviewing = 50;
+
+
         public DeckDetailViewModel(MainWindowViewModel host, DataService dataService, Deck deck) 
         {
             _host = host;
@@ -49,35 +60,35 @@ namespace FancyCards.ViewModels
 
                 _name = _deck.Name;
                 _description = _deck.Description;
+
+                _trainingLearnCards = _deck.Settings.TrainingLearnCards;
+                _trainingReviewCards = _deck.Settings.TrainingReviewCards;
+                _correctAnswersToFinishLearning = _deck.Settings.СorrectAnswersToFinishLearning;
+                _correctAnswersToFinishReviewing = _deck.Settings.СorrectAnswersToFinishReviewing;
             }
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
         private async void Save()
         {
-            //if(DeckAction == DeckAction.Create)
-            //{
-
-            //}
-            //else if(DeckAction == DeckAction.Update)
-            //{
-
-            //}
 
             _deck.Name = Name;
             _deck.Description = Description;
             _deck.Cards = new List<Card>();
 
+            _deck.Settings.TrainingLearnCards = TrainingLearnCards;
+            _deck.Settings.TrainingReviewCards = TrainingReviewCards;
+            _deck.Settings.СorrectAnswersToFinishLearning = CorrectAnswersToFinishLearning;
+            _deck.Settings.СorrectAnswersToFinishReviewing = CorrectAnswersToFinishReviewing;
+
             await _host.StartLoading(false);
 
             //сначала сохраняем чтобы получить Id
             await _dataService.AddOrUpdateDecks([_deck], DeckAction);
-            await _dataService.StoreSelectedDeckIdAsync(_deck.Id);
-
-
-            Close(true, _deck, "Save");
 
             _host.StopLoading();
+
+            Close(true, _deck, "Save");
             
         }
         private bool CanSave() => !string.IsNullOrEmpty(_name);

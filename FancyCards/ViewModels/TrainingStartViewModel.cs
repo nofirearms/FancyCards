@@ -55,13 +55,13 @@ namespace FancyCards.ViewModels
 
         private async void InitializeAsync()
         {
-            _dbCardsOnDate = (await _dataService.GetCardsAsync(1)).Where(c => c.NextReviewDate.Date <= DateTime.Now);
+            _dbCardsOnDate = (await _dataService.GetCardsAsync(_host.Deck.Id)).Where(c => c.NextReviewDate.Date <= DateTime.Now);
 
             MaxReviewCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Reviewing).Count();
             MaxLearnCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Learning).Count();
 
-            ReviewCardsCount = Math.Min(_settingsService.TrainingReviewCards, MaxReviewCardsCount);
-            LearnCardsCount = Math.Min(_settingsService.TrainingLearnCards, MaxLearnCardsCount);
+            ReviewCardsCount = Math.Min(_host.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
+            LearnCardsCount = Math.Min(_host.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
         }
 
         [RelayCommand(CanExecute = nameof(CanStartTraining))]

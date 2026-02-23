@@ -30,13 +30,13 @@ namespace FancyCards.Services
 
         #region SETTINGS
 
-        public async Task<IEnumerable<Setting>> GetSettingsAsync(int deckId) => (await _repository.GetAllAsync<Setting>()).Where(s => s.DeckId == deckId);
+        public async Task<IEnumerable<Setting>> GetSettingsAsync() => (await _repository.GetAllAsync<Setting>());
 
-        public async Task<bool> SaveSettingsAsync(IEnumerable<Setting> settings, int deckId)
+        public async Task<bool> SaveSettingsAsync(IEnumerable<Setting> settings)
         {
             try
             {
-                var db_settings = await GetSettingsAsync(deckId);
+                var db_settings = await GetSettingsAsync();
                 foreach (var setting in settings)
                 {
                     var db_setting = db_settings.FirstOrDefault(s => s.Key == setting.Key);
@@ -79,44 +79,7 @@ namespace FancyCards.Services
             return decks;
         }
 
-        public async Task StoreSelectedDeckIdAsync(int deckId)
-        {
-            if (deckId == 0) return;
-
-            var settings = await _repository.GetAllAsync<Setting>();
-            var db_setting = settings.FirstOrDefault(s => s.DeckId == 0 && s.Key == "SelectedDeck");
-            if(db_setting != null)
-            {
-                db_setting.Value = deckId.ToString();
-                await _repository.AddOrUpdateAsync([db_setting]);
-            }
-            else
-            {
-                var setting = new Setting
-                {
-                    Key = "SelectedDeck",
-                    DeckId = 0,
-                    Value = deckId.ToString()
-                };
-                await _repository.AddOrUpdateAsync([setting]);
-            }
-
-        }
-
-        public async Task<int> GetSelectedDeckIdAsync()
-        {
-            var settings = await _repository.GetAllAsync<Setting>();
-            var selected = settings.FirstOrDefault(s => s.DeckId == 0 && s.Key == "SelectedDeck");
-            if(selected != null)
-            {
-                return int.Parse(selected.Value);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
+ 
         #endregion
 
         //---------------------------------------------------------------------------------- CARDS -------------------------------------------------------------------------

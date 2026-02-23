@@ -9,65 +9,11 @@
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Width="300"
     Height="200"
+    d:Background="White"
     d:DataContext="{d:DesignInstance vm:SettingsViewModel}"
     mc:Ignorable="d">
     <StackPanel Orientation="Vertical">
-        <controls:CustomNumericControl
-            Margin="0,0,0,5"
-            DefaultValue="10"
-            Frequency="1"
-            MaxValue="100"
-            MinValue="0"
-            Value="{Binding TrainingLearnCards, Mode=TwoWay}">
-            <controls:CustomNumericControl.ContentTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="1" CornerRadius="3">
-                        <TextBlock>
-                            <Run Text="Training learn cards:" />
-                            <Run Text="{Binding Path=.}" />
-                        </TextBlock>
-                    </Border>
-                </DataTemplate>
-            </controls:CustomNumericControl.ContentTemplate>
-        </controls:CustomNumericControl>
 
-        <controls:CustomNumericControl
-            Margin="0,0,0,5"
-            DefaultValue="10"
-            Frequency="1"
-            MaxValue="100"
-            MinValue="0"
-            Value="{Binding TrainingReviewCards, Mode=TwoWay}">
-            <controls:CustomNumericControl.ContentTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="1" CornerRadius="3">
-                        <TextBlock>
-                            <Run Text="Training review cards:" />
-                            <Run Text="{Binding Path=.}" />
-                        </TextBlock>
-                    </Border>
-                </DataTemplate>
-            </controls:CustomNumericControl.ContentTemplate>
-        </controls:CustomNumericControl>
-
-        <controls:CustomNumericControl
-            Margin="0,0,0,5"
-            DefaultValue="2"
-            Frequency="1"
-            MaxValue="100"
-            MinValue="1"
-            Value="{Binding СorrectAnswersToFinishLearning, Mode=TwoWay}">
-            <controls:CustomNumericControl.ContentTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="1" CornerRadius="3">
-                        <TextBlock>
-                            <Run Text="Correct answers to finish learning:" />
-                            <Run Text="{Binding Path=.}" />
-                        </TextBlock>
-                    </Border>
-                </DataTemplate>
-            </controls:CustomNumericControl.ContentTemplate>
-        </controls:CustomNumericControl>
 
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
             <Button

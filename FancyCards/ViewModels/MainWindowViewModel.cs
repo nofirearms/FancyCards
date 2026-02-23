@@ -4,8 +4,11 @@ using DynamicData;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
+using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.DirectoryServices.ActiveDirectory;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -19,6 +22,7 @@ namespace FancyCards.ViewModels
         private readonly AudioEngine _audioEngine;
         private readonly ViewModelFactory _viewModelFactory;
         private readonly SettingsService _settingsService;
+        private readonly LoadingCursorManager _cursorManager;
 
         public string Title => "Fancy Cards";
 
@@ -29,6 +33,7 @@ namespace FancyCards.ViewModels
             if(value != null)
             {
                 LoadCards(value.Id);
+                var _ = StoreStartupDeckAsync(value.Id);
             }
         }
 
@@ -59,6 +64,7 @@ namespace FancyCards.ViewModels
             _audioEngine = audioEngine;
             _viewModelFactory = viewModelFactory;
             _settingsService = settingsService;
+            _cursorManager = new LoadingCursorManager();
            
 
             // Подписываемся на изменение коллекции модальных окон
@@ -77,7 +83,7 @@ namespace FancyCards.ViewModels
         private async Task InitializeAsync()
         {
 
-            var selected_deck_id = await _dataService.GetSelectedDeckIdAsync();
+            var selected_deck_id = _settingsService.StartupSelectedDeckId;
             if(selected_deck_id == 0)
             {
                 var result = await OpenDeckModal(new Deck());
@@ -119,6 +125,15 @@ namespace FancyCards.ViewModels
                 ////unfreeze ui
                 //await Task.Delay(15);
             }
+        }
+
+        private async Task StoreStartupDeckAsync(int deckId)
+        {
+            await StartLoading(false);
+            _settingsService.StartupSelectedDeckId = deckId;
+            //TODO возможно сохранять только при закрытии программы
+            var _ = _settingsService.SaveAsync();
+            StopLoading();
         }
 
         [RelayCommand]
@@ -209,7 +224,10 @@ namespace FancyCards.ViewModels
             Loading = true;
             ShowLoadingBackground = showBackground;
 
+            //unfreeze interface
             await Task.Delay(20);
+
+            //_cursorManager.OperationStarted();
             ChangeCursor(Cursors.Wait);
         }
         [RelayCommand]
@@ -218,6 +236,7 @@ namespace FancyCards.ViewModels
             Loading = false;
             ShowLoadingBackground = false;
 
+            //_cursorManager.OperationCompleted();
             ChangeCursor();
         }
 

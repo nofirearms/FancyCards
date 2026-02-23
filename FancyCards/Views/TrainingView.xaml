@@ -18,6 +18,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:DateToDaysPassedStringConverter x:Key="DateToDaysPassedStringConverter" />
+        <converters:DateTimeToVisibilityConverter x:Key="DateTimeToVisibilityConverter" />
 
         <DataTemplate x:Key="EasyTemplate">
             <TextBlock Text="E" />
@@ -71,15 +72,21 @@
 
                         </TextBlock>
 
-                        <TextBlock>
-                            <Run Text="Last review:" />
-                            <Run
-                                FontWeight="Bold"
-                                Foreground="{StaticResource MaterialDesign.Brush.Primary}"
-                                Text="{Binding CurrentCard.Card.LastReviewDate, Converter={StaticResource DateToDaysPassedStringConverter}}" />
-                            <Run Text=" | " />
-                            <Run Text="{Binding CurrentCard.Card.LastReviewDate, StringFormat='\{0:dd.MM.yyyy}'}" />
-                        </TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>
+                                <Run Text="Last review:" />
+                                <Run
+                                    FontWeight="Bold"
+                                    Foreground="{StaticResource MaterialDesign.Brush.Primary}"
+                                    Text="{Binding CurrentCard.Card.LastReviewDate, Converter={StaticResource DateToDaysPassedStringConverter}}" />
+                            </TextBlock>
+                            <TextBlock Margin="2,0,0,0" Visibility="{Binding CurrentCard.Card.LastReviewDate, Converter={StaticResource DateTimeToVisibilityConverter}}">
+                                <Run Text=" | " />
+                                <Run Text="{Binding CurrentCard.Card.LastReviewDate, StringFormat='\{0:dd.MM.yyyy}'}" />
+                            </TextBlock>
+                        </StackPanel>
+
+
 
                     </StackPanel>
 

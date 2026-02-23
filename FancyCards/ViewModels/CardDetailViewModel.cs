@@ -152,7 +152,7 @@ namespace FancyCards.ViewModels
 
                 await _host.StartLoading(false);
 
-                await _dataService.CreateCardAsync(1, _card);
+                await _dataService.CreateCardAsync(_host.Deck.Id, _card);
                 await _audioEngine.RenderToMp3Async(_card.Audio.Path);
 
                 _host.StopLoading();

@@ -146,18 +146,17 @@
                 <Button Command="{Binding OpenReplaceModal}" Content="{materialDesign:PackIcon Kind=Cached}" />
             </StackPanel>
 
-            <controls:HintControl
+
+
+            <Border
                 Margin="5"
-                DockPanel.Dock="Top"
-                HintBackground="{Binding ElementName=root, Path=Background}"
-                HintText="Cards">
-                <Border Style="{StaticResource CustomBorderStyle}">
+                BorderBrush="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
+                BorderThickness="1"
+                CornerRadius="3"
+                DockPanel.Dock="Top">
 
-                    <local:CardListView DataContext="{Binding CardListViewModel}" />
-                </Border>
-
-            </controls:HintControl>
-
+                <local:CardListView DataContext="{Binding CardListViewModel}" />
+            </Border>
 
         </DockPanel>
 

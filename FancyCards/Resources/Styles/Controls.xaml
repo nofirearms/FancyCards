@@ -100,7 +100,7 @@
         TargetType="Button">
         <Setter Property="Padding" Value="0,0,0,0" />
         <Setter Property="Width" Value="40" />
-        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="ClickMode" Value="Release" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />

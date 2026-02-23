@@ -13,6 +13,7 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
+        private readonly SettingsService _settingsService;
 
         [ObservableProperty]
         private ReadOnlyObservableCollection<DeckSummaryViewModel> _decks;
@@ -24,11 +25,12 @@ namespace FancyCards.ViewModels
 
         private SourceCache<DeckSummaryViewModel, int> _sourceCache;
 
-        public DeckListViewModel(MainWindowViewModel host, DataService dataService)
+        public DeckListViewModel(MainWindowViewModel host, DataService dataService, SettingsService settingsService)
         {
 
             _host = host;
             _dataService = dataService;
+            _settingsService = settingsService;
 
             Header = "Decks";
 
@@ -40,7 +42,7 @@ namespace FancyCards.ViewModels
         private async Task InitializeAsync()
         {
             var db_decks = await _dataService.GetDecksAsync();
-            var db_selected = await _dataService.GetSelectedDeckIdAsync();
+            var selected_id = _host.Deck.Id;
 
             _sourceCache = new SourceCache<DeckSummaryViewModel, int>(o => o.Id);
             _sourceCache.AddOrUpdate(db_decks.Select(d => new DeckSummaryViewModel(d)) ?? new List<DeckSummaryViewModel>());
@@ -50,7 +52,7 @@ namespace FancyCards.ViewModels
                 .Bind(out _decks)
                 .Subscribe();
 
-            SelectedDeck = _decks.FirstOrDefault(d => d.Id == db_selected);
+            SelectedDeck = _decks.FirstOrDefault(d => d.Id == selected_id);
         }
 
         private void OnDeckEvent(DeckEventArgs args)
@@ -108,7 +110,6 @@ namespace FancyCards.ViewModels
         [RelayCommand(CanExecute = nameof(CanSelect))]
         private async void Select()
         {
-            await _dataService.StoreSelectedDeckIdAsync(SelectedDeck.Deck.Id);
             Close(true, SelectedDeck.Deck, "Select");
         }
         private bool CanSelect() => SelectedDeck != null;

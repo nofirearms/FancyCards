@@ -200,10 +200,6 @@ namespace FancyCards.ViewModels
 
             var result_cards = _cardManager.BaseCards;
 
-            //todo deck id
-            await _settingsService.LoadSettingsAsync(1);
-
-
             var session_cards = new List<TrainingSessionCard>();
 
             //var card_trainings = await _dataService.GetTrainingSessionCardsAsync(result_cards.Select(o => o.Card.Id));
@@ -221,7 +217,7 @@ namespace FancyCards.ViewModels
 
                     if (card.Card.State == CardState.Learning)
                     {
-                        if (card.Card.Scores.CorrectCount >= _settingsService.СorrectAnswersToFinishLearning)
+                        if (card.Card.Scores.CorrectCount >= _host.Deck.Settings.СorrectAnswersToFinishLearning)
                         {
                             card.Card.State = CardState.Reviewing;
                             ProcessScore(card);

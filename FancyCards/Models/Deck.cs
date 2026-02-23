@@ -10,6 +10,7 @@ namespace FancyCards.Models
         public string Description { get; set; } 
         public ICollection<Card> Cards { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
+        public DeckSettings Settings { get; set; } = new();
 
     }
 }

@@ -18,29 +18,7 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
 
 
-        private int _trainingLearnCards = 5;
-        [Setting]
-        public int TrainingLearnCards
-        {
-            get => _trainingLearnCards;
-            set => SetProperty(ref _trainingLearnCards, value);
-        }
 
-        private int _trainingReviewCards = 5;
-        [Setting]
-        public int TrainingReviewCards
-        {
-            get => _trainingReviewCards;
-            set => SetProperty(ref _trainingReviewCards, value);
-        }
-
-        private int _correctAnswersToFinishLearning = 2;
-        [Setting]
-        public int СorrectAnswersToFinishLearning
-        {
-            get => _correctAnswersToFinishLearning;
-            set => SetProperty(ref _correctAnswersToFinishLearning, value);
-        }
 
         //private int _correctAnswersToFinishReviewing = 10;
         //[Setting]
@@ -63,8 +41,6 @@ namespace FancyCards.ViewModels
 
         private async Task LoadSettings()
         {
-            //TODO selected deck
-            await _settingsService.LoadSettingsAsync(1);
 
             var properties = this.GetType().GetProperties().Where(p => p.GetCustomAttribute<SettingAttribute>() != null);
 
