@@ -88,7 +88,7 @@ namespace FancyCards.ViewModels
                     var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
                     if (d != null)
                     {
-                        _sourceCache.AddOrUpdate(d);
+                        //_sourceCache.AddOrUpdate(d);
                         d.Update();
                     }
 

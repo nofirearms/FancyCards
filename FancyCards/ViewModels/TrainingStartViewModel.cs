@@ -60,8 +60,8 @@ namespace FancyCards.ViewModels
             MaxReviewCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Reviewing).Count();
             MaxLearnCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Learning).Count();
 
-            ReviewCardsCount = Math.Min(_host.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
-            LearnCardsCount = Math.Min(_host.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
+            ReviewCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
+            LearnCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
         }
 
         [RelayCommand(CanExecute = nameof(CanStartTraining))]

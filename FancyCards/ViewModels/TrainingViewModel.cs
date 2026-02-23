@@ -217,7 +217,7 @@ namespace FancyCards.ViewModels
 
                     if (card.Card.State == CardState.Learning)
                     {
-                        if (card.Card.Scores.CorrectCount >= _host.Deck.Settings.СorrectAnswersToFinishLearning)
+                        if (card.Card.Scores.CorrectCount >= _host.Deck.Deck.Settings.СorrectAnswersToFinishLearning)
                         {
                             card.Card.State = CardState.Reviewing;
                             ProcessScore(card);

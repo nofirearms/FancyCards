@@ -27,8 +27,8 @@ namespace FancyCards.ViewModels
         public string Title => "Fancy Cards";
 
         [ObservableProperty]
-        private Deck _deck;
-        partial void OnDeckChanged(Deck value)
+        private DeckSummaryViewModel _deck;
+        partial void OnDeckChanged(DeckSummaryViewModel value)
         {
             if(value != null)
             {
@@ -89,7 +89,7 @@ namespace FancyCards.ViewModels
                 var result = await OpenDeckModal(new Deck());
                 if (result.Success)
                 {
-                    Deck = result.Data;
+                    Deck = new DeckSummaryViewModel(result.Data);
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace FancyCards.ViewModels
             }
             else
             {
-                Deck = await _dataService.GetDeckByIdAsync(selected_deck_id);
+                Deck = new DeckSummaryViewModel(await _dataService.GetDeckByIdAsync(selected_deck_id));
             }
             
         }
@@ -142,7 +142,7 @@ namespace FancyCards.ViewModels
             var result = await OpenDeckListModal();
             if (result.Success)
             {
-                Deck = result.Data;
+                Deck = new DeckSummaryViewModel(result.Data);
             }
         }
 
