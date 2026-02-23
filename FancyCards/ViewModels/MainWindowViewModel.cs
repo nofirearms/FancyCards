@@ -23,12 +23,17 @@ namespace FancyCards.ViewModels
         public string Title => "Fancy Cards";
 
         [ObservableProperty]
-        private ReadOnlyObservableCollection<DeckSummaryViewModel> _decks;
-        [ObservableProperty]
-        private DeckSummaryViewModel _selectedDeck;
-        private SourceCache<DeckSummaryViewModel, int> _sourceCache;
+        private Deck _deck;
+        partial void OnDeckChanged(Deck value)
+        {
+            if(value != null)
+            {
+                LoadCards(value.Id);
+            }
+        }
 
-        public CardListViewModel CardListViewModel { get; set; }
+        [ObservableProperty]
+        private CardListViewModel _cardListViewModel;
 
         public IReadOnlyList<BaseModalViewModel> ActiveModals => _modalService.ActiveModals;
         public bool HasActiveModals => _modalService.ActiveModals.Any();
@@ -55,8 +60,6 @@ namespace FancyCards.ViewModels
             _viewModelFactory = viewModelFactory;
             _settingsService = settingsService;
            
-            
-
 
             // Подписываемся на изменение коллекции модальных окон
             ((INotifyCollectionChanged)_modalService.ActiveModals).CollectionChanged += (s, e) =>
@@ -65,12 +68,7 @@ namespace FancyCards.ViewModels
                 OnPropertyChanged(nameof(ActiveModals));
             };
 
-            _dataService.DeckEvent += OnDeckEvent;
-
-
-
             var _ = InitializeAsync();
-
 
         }
 
@@ -78,72 +76,31 @@ namespace FancyCards.ViewModels
 
         private async Task InitializeAsync()
         {
-            var db_decks = await _dataService.GetDecksAsync();
 
-
-            _sourceCache = new SourceCache<DeckSummaryViewModel, int>(o => o.Id);
-            _sourceCache.AddOrUpdate(db_decks.Select(d => new DeckSummaryViewModel(d)) ?? new List<DeckSummaryViewModel>());
-
-            _sourceCache.Connect()
-                .Filter(CreateFilter())
-                .Bind(out _decks)
-                .Subscribe();
-
-            var selected_deck = Decks.FirstOrDefault();
-            if (selected_deck != null)
+            var selected_deck_id = await _dataService.GetSelectedDeckIdAsync();
+            if(selected_deck_id == 0)
             {
-                SelectedDeck = selected_deck;
-                CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, selected_deck.Id);
+                var result = await OpenDeckModal(new Deck());
+                if (result.Success)
+                {
+                    Deck = result.Data;
+                }
+                else
+                {
+                    InitializeAsync();
+                }
             }
             else
             {
-                await OpenDeckModal(new Deck());
+                Deck = await _dataService.GetDeckByIdAsync(selected_deck_id);
             }
-
-
-
+            
         }
 
-        private void OnDeckEvent(DeckEventArgs args)
+        private void LoadCards(int deckId)
         {
-            var decks = args.Decks;
-            var action = args.Action;
-
-            if (args.Action == DeckAction.Create)
-            {
-                foreach (var deck in decks)
-                {
-                    var d = new DeckSummaryViewModel(deck);
-                    _sourceCache.AddOrUpdate(d);
-                    SelectedDeck = d;
-                }
-            }
-            else if (args.Action == DeckAction.Remove)
-            {
-                foreach (var deck in decks)
-                {
-                    var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
-                    if(d != null)
-                    {
-                        _sourceCache.Remove(d);
-                    }
-                    
-                }
-            }
-            else if (args.Action == DeckAction.Update)
-            {
-                foreach (var deck in decks)
-                {
-                    var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
-                    if (d != null)
-                    {
-                        _sourceCache.AddOrUpdate(d);
-                    }
-
-                }
-            }
+            CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, deckId);
         }
-
 
         public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)
         {
@@ -162,8 +119,18 @@ namespace FancyCards.ViewModels
                 ////unfreeze ui
                 //await Task.Delay(15);
             }
-
         }
+
+        [RelayCommand]
+        private async void OpenDeckList()
+        {
+            var result = await OpenDeckListModal();
+            if (result.Success)
+            {
+                Deck = result.Data;
+            }
+        }
+
         [RelayCommand]
         private async void CreateCard()
         {
@@ -229,6 +196,12 @@ namespace FancyCards.ViewModels
             return result;
         }
 
+        public async Task<ModalResult<Deck>> OpenDeckListModal()
+        {
+            await StartLoading();
+            return await _modalService.ShowModalAsync(_viewModelFactory.Create<DeckListViewModel>());
+        }
+
 
         [RelayCommand]
         public async Task StartLoading(bool showBackground = true)
@@ -251,21 +224,6 @@ namespace FancyCards.ViewModels
         public void ChangeCursor(Cursor cursor = null)
         {
             Mouse.OverrideCursor = cursor;
-        }
-
-
-        //----------------------------------------------------------------------------- FILTER --------------------------------------------------------------------------
-        private Func<DeckSummaryViewModel, bool> CreateFilter()
-        {
-            return item => true;
-            
-            //return item =>
-            //{
-            //    var front_pass = string.IsNullOrEmpty(FrontTextFilter) ||
-            //                  item.FrontText.Contains(FrontTextFilter);
-
-            //    return front_pass; //&& categoryPass && pricePass;
-            //};
         }
     }
 }

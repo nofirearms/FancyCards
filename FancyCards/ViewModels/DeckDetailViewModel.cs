@@ -70,7 +70,10 @@ namespace FancyCards.ViewModels
 
             await _host.StartLoading(false);
 
+            //сначала сохраняем чтобы получить Id
             await _dataService.AddOrUpdateDecks([_deck], DeckAction);
+            await _dataService.StoreSelectedDeckIdAsync(_deck.Id);
+
 
             Close(true, _deck, "Save");
 

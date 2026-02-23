@@ -14,11 +14,12 @@ namespace FancyCards.Models
 
         public Setting() { }    
 
-        public Setting(string key, string value, string description)
+        public Setting(string key, string value, string description, int deckId)
         {
             Key = key;
             Value = value;
             Description = description;
+            DeckId = deckId;
         }
     }
 }

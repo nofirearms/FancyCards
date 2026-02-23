@@ -60,6 +60,10 @@
                     <local:DeckDetailView />
                 </DataTemplate>
 
+                <DataTemplate DataType="{x:Type vm:DeckListViewModel}">
+                    <local:DeckListView />
+                </DataTemplate>
+
             </ItemsControl.Resources>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -95,36 +99,41 @@
 
         <DockPanel>
 
-            <controls:HintControl
-                Margin="5"
-                DockPanel.Dock="Top"
-                HintBackground="{Binding ElementName=root, Path=Background}"
-                HintText="Deck">
-                <ComboBox
-                    Padding="10"
-                    materialDesign:HintAssist.Hint=""
-                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    ItemsSource="{Binding Decks}"
-                    SelectedItem="{Binding SelectedDeck, Mode=TwoWay}"
-                    Style="{StaticResource MaterialDesignOutlinedComboBox}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="50" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Name}" />
-                                <TextBlock
-                                    Grid.Column="1"
-                                    HorizontalAlignment="Right"
-                                    Text="{Binding CardsCount}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </controls:HintControl>
+            <!--<Grid Margin="5,5,5,0" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="School" />
+                    <materialDesign:PackIcon Kind="Refresh" />
+                </StackPanel>
 
+
+
+            </Grid>-->
+
+            <StackPanel
+                Margin="10,5,5,5"
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                    Text="{Binding Deck.Name}" />
+                <Button
+                    Width="35"
+                    VerticalAlignment="Center"
+                    Command="{Binding OpenDeckListCommand}"
+                    Style="{StaticResource CustomButtonStyleNoBg}">
+                    <materialDesign:PackIcon
+                        Width="25"
+                        Height="25"
+                        Kind="CardsPlaying" />
+                </Button>
+            </StackPanel>
 
             <StackPanel
                 HorizontalAlignment="Center"
@@ -142,10 +151,7 @@
                 DockPanel.Dock="Top"
                 HintBackground="{Binding ElementName=root, Path=Background}"
                 HintText="Cards">
-                <Border
-                  
-                    
-                    Style="{StaticResource CustomBorderStyle}">
+                <Border Style="{StaticResource CustomBorderStyle}">
 
                     <local:CardListView DataContext="{Binding CardListViewModel}" />
                 </Border>

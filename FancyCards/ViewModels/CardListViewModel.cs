@@ -20,6 +20,12 @@ namespace FancyCards.ViewModels
         private ReadOnlyObservableCollection<Card> _cards;
         
         private SourceCache<Card, int> _sourceCache;
+
+        //[ObservableProperty]
+        //private int _learnCount;
+        //[ObservableProperty]
+        //private int _reviewCount;
+
         public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
         {
             _dataService = dataService;

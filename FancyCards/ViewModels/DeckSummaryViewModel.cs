@@ -21,7 +21,7 @@ namespace FancyCards.ViewModels
             _deck = deck;
         }
 
-        public void Update(Deck deck)
+        public void Update(Deck deck = null)
         {
             if (deck != null) _deck = deck;
 

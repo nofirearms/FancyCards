@@ -3,6 +3,7 @@ using FancyCards.Helpers;
 using FancyCards.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Security.Policy;
 using System.Text;
@@ -76,6 +77,44 @@ namespace FancyCards.Services
             DeckEvent?.Invoke(new DeckEventArgs(decks, deckAction));
 
             return decks;
+        }
+
+        public async Task StoreSelectedDeckIdAsync(int deckId)
+        {
+            if (deckId == 0) return;
+
+            var settings = await _repository.GetAllAsync<Setting>();
+            var db_setting = settings.FirstOrDefault(s => s.DeckId == 0 && s.Key == "SelectedDeck");
+            if(db_setting != null)
+            {
+                db_setting.Value = deckId.ToString();
+                await _repository.AddOrUpdateAsync([db_setting]);
+            }
+            else
+            {
+                var setting = new Setting
+                {
+                    Key = "SelectedDeck",
+                    DeckId = 0,
+                    Value = deckId.ToString()
+                };
+                await _repository.AddOrUpdateAsync([setting]);
+            }
+
+        }
+
+        public async Task<int> GetSelectedDeckIdAsync()
+        {
+            var settings = await _repository.GetAllAsync<Setting>();
+            var selected = settings.FirstOrDefault(s => s.DeckId == 0 && s.Key == "SelectedDeck");
+            if(selected != null)
+            {
+                return int.Parse(selected.Value);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         #endregion

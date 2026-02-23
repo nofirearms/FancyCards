@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:interation="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     d:DataContext="{d:DesignInstance vm:CardListViewModel}"
@@ -13,7 +14,7 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <ListView ItemsSource="{Binding Cards}">
+        <ListView materialDesign:RippleAssist.IsDisabled="True" ItemsSource="{Binding Cards}">
             <ListView.ItemContainerStyle>
                 <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListViewItem">
                     <Setter Property="Padding" Value="0" />
