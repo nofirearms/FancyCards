@@ -97,6 +97,41 @@
             </controls:ContextBase.Resources>
         </controls:ContextBase>
 
+        <controls:OverlayControl
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            DataContext="{Binding OverlayViewModel}" />
+
+        <!--<controls:AnimatedControl
+            Width="100"
+            Height="100"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Panel.ZIndex="15"
+            AnimationType="SlideFromTop"
+            AutoHideDelay="0" Content="{Binding OverlayViewModel}">
+            <interaction:Interaction.Triggers>
+                <interaction:DataTrigger Binding="{Binding AnimationType}" Value="Success">
+                    <interaction:ChangePropertyAction PropertyName="Content">
+                        <interaction:ChangePropertyAction.Value>
+                            <materialDesign:PackIcon
+                                Width="100"
+                                Height="100"
+                                Kind="Check" />
+                        </interaction:ChangePropertyAction.Value>
+                    </interaction:ChangePropertyAction>
+                </interaction:DataTrigger>
+                <interaction:DataTrigger Binding="{Binding AnimationType}" Value="Hide">
+                    <interaction:ChangePropertyAction PropertyName="Content">
+                        <interaction:ChangePropertyAction.Value>
+                            <x:Null />
+                        </interaction:ChangePropertyAction.Value>
+                    </interaction:ChangePropertyAction>
+                </interaction:DataTrigger>
+            </interaction:Interaction.Triggers>
+
+        </controls:AnimatedControl>-->
+
         <DockPanel>
 
             <!--<Grid Margin="5,5,5,0" DockPanel.Dock="Top">
@@ -143,7 +178,7 @@
                 <Button Command="{Binding CreateCardCommand}" Content="{materialDesign:PackIcon Kind=Add}" />
                 <Button Command="{Binding OpenStatsModal}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
                 <Button Command="{Binding OpenSettingsCommand}" Content="{materialDesign:PackIcon Kind=Settings}" />
-                <Button Command="{Binding OpenReplaceModal}" Content="{materialDesign:PackIcon Kind=Cached}" />
+                <Button Command="{Binding OpenReplaceModalCommand}" Content="{materialDesign:PackIcon Kind=Cached}" />
             </StackPanel>
 
 
@@ -162,7 +197,7 @@
 
 
         <Grid
-            Panel.ZIndex="12"
+            Panel.ZIndex="13"
             d:Visibility="Collapsed"
             Visibility="{Binding ShowLoadingBackground, Converter={StaticResource BoolToVisibilityConverter}}">
             <!--<ProgressBar IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />

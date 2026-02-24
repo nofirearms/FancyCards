@@ -41,6 +41,14 @@ namespace FancyCards.Models
         Selected, Full, SelectedSlow
     }
 
+    public enum OverlayType
+    {
+        None,
+        Loading,
+        Success,
+        Error
+    }
+
     public struct Selection
     {
         public double Start { get; set; }

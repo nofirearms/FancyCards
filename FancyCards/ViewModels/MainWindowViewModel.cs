@@ -22,6 +22,7 @@ namespace FancyCards.ViewModels
         private readonly AudioEngine _audioEngine;
         private readonly ViewModelFactory _viewModelFactory;
         private readonly SettingsService _settingsService;
+        private readonly OverlayService _overlayService;
         private readonly LoadingCursorManager _cursorManager;
 
         public string Title => "Fancy Cards";
@@ -57,15 +58,26 @@ namespace FancyCards.ViewModels
 
         public bool ContextMenuOpen => _contextMenu != null;
 
-        public MainWindowViewModel(ViewModelFactory viewModelFactory, DataService dataService, ModalService modalService, AudioEngine audioEngine, SettingsService settingsService)
+        public OverlayViewModel OverlayViewModel { get; }
+
+        public MainWindowViewModel(ViewModelFactory viewModelFactory, 
+            DataService dataService, 
+            ModalService modalService, 
+            AudioEngine audioEngine, 
+            SettingsService settingsService, 
+            OverlayService overlayService, 
+            OverlayViewModel overlayViewModel)
         {
             _modalService = modalService;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _viewModelFactory = viewModelFactory;
             _settingsService = settingsService;
+            _overlayService = overlayService;
+
             _cursorManager = new LoadingCursorManager();
-           
+
+            OverlayViewModel = overlayViewModel;
 
             // Подписываемся на изменение коллекции модальных окон
             ((INotifyCollectionChanged)_modalService.ActiveModals).CollectionChanged += (s, e) =>
@@ -168,6 +180,13 @@ namespace FancyCards.ViewModels
         private async void OpenSettings()
         {
             await OpenSettingsModal();
+        }
+
+        [RelayCommand]
+        private async void OpenReplaceModal()
+        {
+            await _overlayService.ShowAndHideAsync(OverlayType.Success, 1000);
+            await _overlayService.ShowAndHideAsync(OverlayType.Error, 1000);
         }
 
         public async Task<ModalResult<Deck>> OpenDeckModal(Deck deck)

@@ -1,0 +1,109 @@
+﻿<UserControl
+    x:Class="FancyCards.Controls.OverlayControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:FancyCards.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:FancyCards.Controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:FancyCards.Models"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    d:DataContext="{d:DesignInstance vm:OverlayViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+
+        <!--  затемнение  -->
+        <Border Background="Transparent" />
+
+        <ContentControl Content="{Binding Type}">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Setter Property="ContentTemplate" Value="{x:Null}" />
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding Type}" Value="Loading">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon
+                                            Width="50"
+                                            Height="50"
+                                            Kind="Loading">
+                                            <materialDesign:PackIcon.RenderTransform>
+                                                <RotateTransform />
+                                            </materialDesign:PackIcon.RenderTransform>
+                                            <materialDesign:PackIcon.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="Forever">
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="RenderTransform.Angle"
+                                                                To="360"
+                                                                Duration="0:0:1" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </materialDesign:PackIcon.Triggers>
+                                        </materialDesign:PackIcon>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Type}" Value="Success">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon
+                                            Width="70"
+                                            Height="70"
+                                            Foreground="#FF75C236"
+                                            Kind="CheckBold" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Type}" Value="Error">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon
+                                            Width="70"
+                                            Height="70"
+                                            Foreground="Red"
+                                            Kind="CloseBold" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Type}" Value="None">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <Grid />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+        <Grid.Effect>
+            <DropShadowEffect
+                BlurRadius="5"
+                Opacity="0.3"
+                ShadowDepth="1" />
+        </Grid.Effect>
+    </Grid>
+
+</UserControl>
