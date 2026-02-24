@@ -19,7 +19,8 @@
     <Grid Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
 
         <!--  затемнение  -->
-        <Border Background="Transparent" />
+        <!--
+        <Border Background="Transparent" />-->
 
         <ContentControl Content="{Binding Type}">
             <ContentControl.Style>
@@ -61,10 +62,24 @@
                                 <Setter.Value>
                                     <DataTemplate>
                                         <materialDesign:PackIcon
-                                            Width="70"
-                                            Height="70"
+                                            Width="80"
+                                            Height="80"
                                             Foreground="#FF75C236"
-                                            Kind="CheckBold" />
+                                            Kind="CheckBold">
+                                            <materialDesign:PackIcon.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="1x">
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="Opacity"
+                                                                From="0.2"
+                                                                To="1"
+                                                                Duration="0:0:0.1" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </materialDesign:PackIcon.Triggers>
+                                        </materialDesign:PackIcon>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -75,10 +90,24 @@
                                 <Setter.Value>
                                     <DataTemplate>
                                         <materialDesign:PackIcon
-                                            Width="70"
-                                            Height="70"
+                                            Width="80"
+                                            Height="80"
                                             Foreground="Red"
-                                            Kind="CloseBold" />
+                                            Kind="CloseBold">
+                                            <materialDesign:PackIcon.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="1x">
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="Opacity"
+                                                                From="0.2"
+                                                                To="1"
+                                                                Duration="0:0:0.1" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </materialDesign:PackIcon.Triggers>
+                                        </materialDesign:PackIcon>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
