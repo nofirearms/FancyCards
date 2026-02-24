@@ -36,6 +36,8 @@ namespace FancyCards
 
             services.AddDbContext<AppDbContext>(o => o.UseSqlite($"Data source=data.db"));
 
+            services.AddSingleton<MainWindow>();
+
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<CardListViewModel>();
             services.AddSingleton<OverlayViewModel>();
@@ -46,6 +48,7 @@ namespace FancyCards
             services.AddSingleton<SettingsService>();
             services.AddSingleton<TextReplacementService>();
             services.AddSingleton<OverlayService>();
+            services.AddSingleton<HotkeyService>();
 
             services.AddSingleton<ViewModelFactory>();
 
@@ -61,7 +64,7 @@ namespace FancyCards
         {
             base.OnStartup(e);
 
-            var window = new MainWindow();
+            var window = Services.GetRequiredService<MainWindow>();
             window.Loaded += OnWindowLoaded;
 
 

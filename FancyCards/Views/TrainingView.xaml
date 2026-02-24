@@ -15,6 +15,7 @@
     Height="auto"
     d:Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
     d:DataContext="{d:DesignInstance vm:TrainingViewModel}"
+    FocusManager.FocusedElement="{Binding ElementName=AnswerTextBox}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:DateToDaysPassedStringConverter x:Key="DateToDaysPassedStringConverter" />
@@ -202,6 +203,7 @@
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Padding" Value="0" />
+                            <Setter Property="Focusable" Value="True" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListViewItem">

@@ -5,8 +5,10 @@ using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
 using NAudio.Wave;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -19,6 +21,9 @@ namespace FancyCards.ViewModels
         private readonly AudioEngine _audioEngine;
         private readonly TextReplacementService _textService;
         private readonly SettingsService _settingsService;
+        private readonly HotkeyService _hotkeyService;
+        private readonly OverlayService _overlayService;
+
         private TrainingCardListManager _cardManager;
         private DispatcherTimer _timer;
 
@@ -40,19 +45,30 @@ namespace FancyCards.ViewModels
 
         public IEnumerable<Difficulty> Difficulties => Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>();
 
-        public TrainingViewModel(MainWindowViewModel host, DataService dataService, TextReplacementService textService, AudioEngine audioEngine, SettingsService settingsService, IEnumerable<Card> cards )
+        public TrainingViewModel(MainWindowViewModel host,
+            DataService dataService,
+            TextReplacementService textService,
+            AudioEngine audioEngine,
+            SettingsService settingsService,
+            HotkeyService hotkeyService,
+            OverlayService overlayService,
+            IEnumerable<Card> cards )
         {
             _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _textService = textService;
             _settingsService = settingsService;
+            _hotkeyService = hotkeyService;
+            _overlayService = overlayService;
 
             Header = "Training";
 
             _audioEngine.MaxSampleVolume += (v) => MaxSampleVolume = v;
 
             _cardManager = new TrainingCardListManager(cards.Select(c => new TrainingCardViewModel(c)));
+
+            _hotkeyService.RegisterHotkey<TrainingViewModel>(Key.Enter, ModifierKeys.None, AcceptCommand);
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
@@ -151,10 +167,13 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void Accept()
         {
+            if (string.IsNullOrEmpty(CurrentCard.Answer)) return;
+
             var answer_result = await _textService.ProcessAndCompareAsync(CurrentCard.Answer, CurrentCard.Card.FrontText);
 
             if (answer_result)
             {
+                await _overlayService.ShowAndHideAsync(OverlayType.Success, 500);
                 if (!CurrentCard.Hint)
                 {
                     CurrentCard.CardStatus = TrainingCardState.Success;
@@ -166,8 +185,9 @@ namespace FancyCards.ViewModels
             }
             else
             {
+                await _overlayService.ShowAndHideAsync(OverlayType.Error, 500);
                 //из сновного списка
-                if(CurrentCard.ShowCount == 1)
+                if (CurrentCard.ShowCount == 1)
                 {
                     _cardManager.AddCard(CurrentCard);
                 }

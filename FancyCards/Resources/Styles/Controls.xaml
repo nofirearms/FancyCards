@@ -40,12 +40,14 @@
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+        <Setter Property="Focusable" Value="False" />
     </Style>
 
     <Style
         x:Key="CustomButtonStyleNoBg"
         BasedOn="{StaticResource MaterialDesignOutlinedButton}"
         TargetType="Button">
+        <Setter Property="Focusable" Value="False" />
         <Setter Property="Padding" Value="0,0,0,0" />
         <Setter Property="Width" Value="40" />
         <Setter Property="ClickMode" Value="Press" />
@@ -98,6 +100,7 @@
         x:Key="CloseButtonStyle"
         BasedOn="{StaticResource MaterialDesignOutlinedButton}"
         TargetType="Button">
+        <Setter Property="Focusable" Value="False" />
         <Setter Property="Padding" Value="0,0,0,0" />
         <Setter Property="Width" Value="40" />
         <Setter Property="ClickMode" Value="Release" />
@@ -162,6 +165,7 @@
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Width" Value="35" />
+        <Setter Property="Focusable" Value="False" />
         <Setter Property="Height" Value="35" />
     </Style>
 
@@ -170,7 +174,8 @@
         BasedOn="{StaticResource MaterialDesignFlatButton}"
         TargetType="RadioButton">
         <Setter Property="Padding" Value="0,0,0,0" />
-        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="ClickMode" Value="Release" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
@@ -186,7 +191,8 @@
         BasedOn="{StaticResource MaterialDesignFlatButton}"
         TargetType="RadioButton">
         <Setter Property="Padding" Value="0,0,0,0" />
-        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="ClickMode" Value="Release" />
+        <Setter Property="Focusable" Value="False" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />

@@ -16,6 +16,9 @@
     Height="700"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
     IsHitTestVisible="{Binding Loading, Converter={StaticResource ReverseBoolConverter}}"
+    KeyboardNavigation.ControlTabNavigation="None"
+    KeyboardNavigation.DirectionalNavigation="None"
+    KeyboardNavigation.TabNavigation="None"
     Style="{StaticResource MaterialDesignWindow}"
     mc:Ignorable="d">
     <Window.Resources>
@@ -100,6 +103,7 @@
         <controls:OverlayControl
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
+            Panel.ZIndex="12"
             DataContext="{Binding OverlayViewModel}" />
 
         <!--<controls:AnimatedControl

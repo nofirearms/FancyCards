@@ -38,7 +38,6 @@ namespace FancyCards.ViewModels
                 Data = data,
                 ButtonTag = buttonTag
             });
-            
         }
 
         protected virtual void Cancel()
@@ -58,5 +57,7 @@ namespace FancyCards.ViewModels
 
         [RelayCommand]
         private void CloseModal() => Cancel();
+
+        //public abstract void Dispose();
     }
 }
