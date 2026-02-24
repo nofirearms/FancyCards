@@ -337,6 +337,8 @@ namespace FancyCards.ViewModels
                 {
                     card.Card.Scores.I = (int)Math.Round(card.Card.Scores.I * card.Card.Scores.EF, MidpointRounding.AwayFromZero);
                 }
+
+                card.Card.Scores.Reps++;
             }
         }
 
