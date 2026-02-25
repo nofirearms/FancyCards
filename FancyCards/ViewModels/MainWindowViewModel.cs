@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DynamicData;
 using FancyCards.Audio;
 using FancyCards.Models;
+using FancyCards.Models.Param;
 using FancyCards.Services;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
@@ -23,6 +24,7 @@ namespace FancyCards.ViewModels
         private readonly ViewModelFactory _viewModelFactory;
         private readonly SettingsService _settingsService;
         private readonly OverlayService _overlayService;
+
         private readonly LoadingCursorManager _cursorManager;
 
         public string Title => "Fancy Cards";
@@ -207,13 +209,13 @@ namespace FancyCards.ViewModels
 
         public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!", Brush background = null)
         {
-            var result = await _modalService.ShowModalAsync(new MessageBoxViewModel(header, message, buttons, background));
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<MessageBoxViewModel>(new MessageBoxParameters(header, message, buttons, background)));
             return result;
         }
 
         public async Task<ModalResult<object>> OpenFailedAnswer(string answer, string correct)
         {
-            var result = await _modalService.ShowModalAsync(new TrainingFailedAnswerViewModel(answer, correct));
+            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingFailedAnswerViewModel>(new TrainingFailedAnswerParameters(answer, correct)));
             return result;
         }
 

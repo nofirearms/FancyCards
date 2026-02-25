@@ -1,15 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
-using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
-using NAudio.Wave;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
@@ -21,7 +15,6 @@ namespace FancyCards.ViewModels
         private readonly AudioEngine _audioEngine;
         private readonly TextReplacementService _textService;
         private readonly SettingsService _settingsService;
-        private readonly HotkeyService _hotkeyService;
         private readonly OverlayService _overlayService;
 
         private TrainingCardListManager _cardManager;
@@ -59,7 +52,6 @@ namespace FancyCards.ViewModels
             _audioEngine = audioEngine;
             _textService = textService;
             _settingsService = settingsService;
-            _hotkeyService = hotkeyService;
             _overlayService = overlayService;
 
             Header = "Training";
@@ -68,7 +60,11 @@ namespace FancyCards.ViewModels
 
             _cardManager = new TrainingCardListManager(cards.Select(c => new TrainingCardViewModel(c)));
 
-            _hotkeyService.RegisterHotkey<TrainingViewModel>(Key.Enter, ModifierKeys.None, AcceptCommand);
+            hotkeyService.RegisterHotkey<TrainingViewModel>(Key.Enter, ModifierKeys.None, AcceptCommand);
+            hotkeyService.RegisterHotkey<TrainingViewModel>(Key.F1, ModifierKeys.None, AudioPlaybackSelectedCommand);
+            hotkeyService.RegisterHotkey<TrainingViewModel>(Key.F2, ModifierKeys.None, AudioPlaybackFullCommand);
+            hotkeyService.RegisterHotkey<TrainingViewModel>(Key.F3, ModifierKeys.None, AudioPlaybackSlowCommand);
+            hotkeyService.RegisterHotkey<TrainingViewModel>(Key.F4, ModifierKeys.None, AudioStopPlaybackCommand);
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);

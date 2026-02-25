@@ -1,4 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using FancyCards.Models;
+using FancyCards.Services;
+using System.Windows.Input;
 using System.Windows.Media;
 
 
@@ -9,14 +12,14 @@ namespace FancyCards.ViewModels
         public string Message { get; }
         public string[] Buttons { get; }
 
-        public MessageBoxViewModel(string header, string message, string[] buttons, Brush background = null)
+        public MessageBoxViewModel(HotkeyService hotkeyService, MessageBoxParameters parameters)
         {
-            Header = header;
-            Message = message;
-            Buttons = buttons;
+            Header = parameters.Header;
+            Message = parameters.Message;
+            Buttons = parameters.Buttons;
+            Background = parameters.Background is null ? new SolidColorBrush(Colors.PaleGreen) : parameters.Background;
 
-            Background = background is null ? new SolidColorBrush(Colors.PaleGreen) : background;
-            Header = header;
+            hotkeyService.RegisterHotkey<MessageBoxViewModel>(Key.Enter, ModifierKeys.None, ButtonClickCommand, parameters.Buttons[0]);          
         }
 
         [RelayCommand]

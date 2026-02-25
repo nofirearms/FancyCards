@@ -38,7 +38,7 @@ namespace FancyCards.Services
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            var hotkeys = _hotkeys.Where(h => h.Type == _modalService.ActiveModals.LastOrDefault().GetType());
+           var hotkeys = _hotkeys.Where(h => h.Type == _modalService.ActiveModals.LastOrDefault().GetType());
             if (hotkeys is null) return;
             else
             {
