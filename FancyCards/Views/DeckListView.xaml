@@ -26,7 +26,7 @@
             materialDesign:HintAssist.Hint=""
             materialDesign:HintAssist.HintPaddingBrush="Transparent"
             Text="Search" />
-        <Border Grid.Row="1" Style="{StaticResource CustomBorderStyle}">
+        <Border Grid.Row="1" Style="{StaticResource CustomBorderSimpleStyle}">
             <ListView
                 materialDesign:RippleAssist.IsDisabled="True"
                 ItemsSource="{Binding Decks}"

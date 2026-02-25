@@ -20,12 +20,20 @@
             VerticalAlignment="Top"
             Background="{Binding ElementName=self, Path=HintBackground}"
             CornerRadius="3">
-            <TextBlock
-                x:Name="HintTextBlock"
-                FontSize="12"
-                IsHitTestVisible="False"
-                Text="{Binding ElementName=self, Path=HintText}"
-                Visibility="Collapsed" />
+            <Grid>
+                <TextBlock
+                    x:Name="HintTextBlock"
+                    FontSize="12"
+                    IsHitTestVisible="False"
+                    Text="{Binding ElementName=self, Path=HintText}"
+                    Visibility="Collapsed" />
+                <ContentPresenter
+                    x:Name="HintContentPresenter"
+                    Content="{Binding ElementName=self, Path=Hint}"
+                    IsHitTestVisible="False"
+                    Visibility="Collapsed" />
+            </Grid>
+
         </Border>
         <!--<TextBlock
             x:Name="HintTextBlock"

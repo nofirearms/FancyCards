@@ -8,7 +8,8 @@ namespace FancyCards.Models
     {
         Learning,   // В процессе изучения
         Reviewing,  // На повторении
-        Mastered    // Выучена
+        Mastered, // Выучена
+        Scheduled
     }
 
     public enum Difficulty

@@ -40,29 +40,37 @@ namespace FancyCards.Controls
             content.GotFocus += (_, _) =>
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
-                control.HintTextBlock.Foreground = brush;
-                control.SuffixTextBlock.Foreground = brush;
+                //control.HintTextBlock.Foreground = brush;
+                //control.SuffixTextBlock.Foreground = brush;
+
+                TextBlock.SetForeground(control, brush);
             };
 
             content.LostFocus += (_, _) =>
             {
                 var brush = new SolidColorBrush(Colors.Black);
-                control.HintTextBlock.Foreground = brush;
-                control.SuffixTextBlock.Foreground = brush;
+                //control.HintTextBlock.Foreground = brush;
+                //control.SuffixTextBlock.Foreground = brush;
+
+                TextBlock.SetForeground(control, brush);
             };
 
             content.GotKeyboardFocus += (_, _) =>
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
-                control.HintTextBlock.Foreground = brush;
-                control.SuffixTextBlock.Foreground = brush;
+                //control.HintTextBlock.Foreground = brush;
+                //control.SuffixTextBlock.Foreground = brush;
+
+                TextBlock.SetForeground(control, brush);
             };
 
             content.LostKeyboardFocus += (_, _) =>
             {
                 var brush = new SolidColorBrush(Colors.Black);
-                control.HintTextBlock.Foreground = brush;
-                control.SuffixTextBlock.Foreground = brush;
+                //control.HintTextBlock.Foreground = brush;
+                //control.SuffixTextBlock.Foreground = brush;
+
+                TextBlock.SetForeground(control, brush);
             };
 
             content.PreviewGotKeyboardFocus += (_, _) =>
@@ -131,6 +139,33 @@ namespace FancyCards.Controls
             else
             {
                 control.SuffixTextBlock.Visibility = Visibility.Visible;
+            }
+        }
+
+
+
+        public object Hint
+        {
+            get { return (object)GetValue(HintProperty); }
+            set { SetValue(HintProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Hint.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HintProperty =
+            DependencyProperty.Register(nameof(Hint), typeof(object), typeof(HintControl), new PropertyMetadata(null, OnHintChanged));
+
+        private static void OnHintChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (HintControl)d;
+            var hint = e.NewValue;
+
+            if (hint == null)
+            {
+                control.HintContentPresenter.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                control.HintContentPresenter.Visibility = Visibility.Visible;
             }
         }
 

@@ -13,6 +13,14 @@
         <Setter Property="FontSize" Value="18" />
     </Style>
 
+    <Style x:Key="CustomBorderSimpleStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="1" />
+        <Setter Property="CornerRadius" Value="3" />
+    </Style>
+
     <Style x:Key="CustomBorderStyle" TargetType="Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />

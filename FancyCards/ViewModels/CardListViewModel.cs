@@ -7,6 +7,7 @@ using FancyCards.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace FancyCards.ViewModels
@@ -25,6 +26,11 @@ namespace FancyCards.ViewModels
         //private int _learnCount;
         //[ObservableProperty]
         //private int _reviewCount;
+
+        public IEnumerable<CardState> States => Enum.GetValues(typeof(CardState)).Cast<CardState>();
+
+        [ObservableProperty]
+        private CardState _selectedState = CardState.Reviewing;
 
         public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
         {

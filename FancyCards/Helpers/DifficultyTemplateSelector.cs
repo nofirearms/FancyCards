@@ -23,4 +23,26 @@ namespace FancyCards.Helpers
             };
         }
     }
+
+    public class CardStateTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate ReviewingTemplate { get; set; }
+        public DataTemplate LearningTemplate { get; set; }
+        public DataTemplate MasteredTemplate { get; set; }
+        public DataTemplate ScheduledTemplate { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var type = (CardState)item;
+
+            return type switch
+            {
+                CardState.Reviewing => ReviewingTemplate,
+                CardState.Learning => LearningTemplate,
+                CardState.Mastered => MasteredTemplate,
+                CardState.Scheduled => ScheduledTemplate,
+                _ => null
+            };
+        }
+    }
 }

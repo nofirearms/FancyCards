@@ -37,6 +37,7 @@
             HardTemplate="{StaticResource HardTemplate}"
             NormalTemplate="{StaticResource NormalTemplate}" />
     </UserControl.Resources>
+
     <Grid>
         <StackPanel Orientation="Vertical">
 

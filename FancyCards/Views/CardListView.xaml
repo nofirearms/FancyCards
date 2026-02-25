@@ -3,41 +3,154 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="clr-namespace:FancyCards.Behaviors"
+    xmlns:controls="clr-namespace:FancyCards.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:FancyCards.Helpers"
     xmlns:interation="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    x:Name="root"
     d:DataContext="{d:DesignInstance vm:CardListViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Background="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Background}"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ReviewingTemplate">
+            <materialDesign:PackIcon Kind="Refresh" />
+        </DataTemplate>
+        <DataTemplate x:Key="LearningTemplate">
+            <materialDesign:PackIcon Kind="SchoolOutline" />
+        </DataTemplate>
+        <DataTemplate x:Key="MasteredTemplate">
+            <materialDesign:PackIcon Kind="Check" />
+        </DataTemplate>
+        <DataTemplate x:Key="ScheduledTemplate">
+            <materialDesign:PackIcon
+                Width="15"
+                Height="15"
+                Kind="HourglassEmpty" />
+        </DataTemplate>
+
+        <helpers:CardStateTemplateSelector
+            x:Key="CardStateTemplateSelector"
+            LearningTemplate="{StaticResource LearningTemplate}"
+            MasteredTemplate="{StaticResource MasteredTemplate}"
+            ReviewingTemplate="{StaticResource ReviewingTemplate}"
+            ScheduledTemplate="{StaticResource ScheduledTemplate}" />
+    </UserControl.Resources>
+
     <Grid>
-        <ListView materialDesign:RippleAssist.IsDisabled="True" ItemsSource="{Binding Cards}">
-            <ListView.ItemContainerStyle>
-                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListViewItem">
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <!--<Setter Property="Background" Value="White" />-->
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Border
+            Margin="5"
+            BorderBrush="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
+            BorderThickness="1"
+            CornerRadius="3"
+            DockPanel.Dock="Top">
 
-                <DataTemplate>
-                    <Border Background="Transparent">
-                        <interation:Interaction.Behaviors>
-                            <behaviors:OpenContextMenuBehavior Command="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.OpenCardContextCommand}" Parameter="{Binding}" />
-                        </interation:Interaction.Behaviors>
-                        <Grid Margin="10">
+            <ListView materialDesign:RippleAssist.IsDisabled="True" ItemsSource="{Binding Cards}">
+                <ListView.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                        <!--<Setter Property="Background" Value="White" />-->
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
 
-                            <TextBlock Text="{Binding FrontText}" />
-                        </Grid>
-                    </Border>
+                    <DataTemplate>
+                        <Border Background="Transparent">
+                            <interation:Interaction.Behaviors>
+                                <behaviors:OpenContextMenuBehavior Command="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.OpenCardContextCommand}" Parameter="{Binding}" />
+                            </interation:Interaction.Behaviors>
+                            <Grid Margin="10">
 
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                <TextBlock Text="{Binding FrontText}" />
+                            </Grid>
+                        </Border>
+
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+
+
+        <Grid Grid.Row="1" Margin="5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <ListView
+                Margin="2"
+                Cursor="Hand"
+                ItemTemplateSelector="{StaticResource CardStateTemplateSelector}"
+                ItemsSource="{Binding States}"
+                SelectedIndex="0"
+                SelectedValue="{Binding SelectedState, Mode=TwoWay}">
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Focusable" Value="True" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <Border
+                                        x:Name="Bd"
+                                        Width="30"
+                                        Height="30"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="1"
+                                        CornerRadius="2"
+                                        ToolTip="{Binding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource InactiveForeground}" />
+                                        </Trigger>
+
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+
+            <controls:HintControl
+                Grid.Column="1"
+                Margin="0,0,0,0"
+                HintBackground="{Binding ElementName=root, Path=Background}">
+                <controls:HintControl.Hint>
+                    <materialDesign:PackIcon Kind="Search" />
+                </controls:HintControl.Hint>
+                <TextBox
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            </controls:HintControl>
+        </Grid>
+
     </Grid>
 </UserControl>
