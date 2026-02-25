@@ -20,12 +20,21 @@
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <TextBox
+        <controls:HintControl
             Grid.Row="0"
             Margin="0,0,0,5"
-            materialDesign:HintAssist.Hint=""
-            materialDesign:HintAssist.HintPaddingBrush="Transparent"
-            Text="Search" />
+            HintBackground="{Binding ElementName=root, Path=Background}">
+            <controls:HintControl.Hint>
+                <materialDesign:PackIcon Kind="Search" />
+            </controls:HintControl.Hint>
+            <TextBox
+                materialDesign:HintAssist.Hint=""
+                materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                materialDesign:TextFieldAssist.HasClearButton="True"
+                Text="" />
+        </controls:HintControl>
+
+
         <Border Grid.Row="1" Style="{StaticResource CustomBorderSimpleStyle}">
             <ListView
                 materialDesign:RippleAssist.IsDisabled="True"

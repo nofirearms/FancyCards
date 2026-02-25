@@ -148,6 +148,7 @@
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    materialDesign:TextFieldAssist.HasClearButton="True"
                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </controls:HintControl>
         </Grid>

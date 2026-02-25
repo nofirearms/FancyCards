@@ -17,7 +17,6 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="1" />
         <Setter Property="CornerRadius" Value="3" />
     </Style>
 
