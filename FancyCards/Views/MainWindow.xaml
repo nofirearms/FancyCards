@@ -188,7 +188,7 @@
             </StackPanel>
 
             <Border
-                Margin="5"
+                Margin="7"
                 BorderThickness="1"
                 CornerRadius="3"
                 DockPanel.Dock="Top">

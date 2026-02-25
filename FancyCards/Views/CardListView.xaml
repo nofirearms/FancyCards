@@ -48,7 +48,7 @@
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Border
-            Margin="5"
+            Margin="0,5"
             BorderBrush="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
             BorderThickness="1"
             CornerRadius="3"
@@ -82,65 +82,72 @@
         </Border>
 
 
-        <Grid Grid.Row="1" Margin="5,0">
+        <Grid Grid.Row="1" Margin="0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <ListView
-                Margin="2"
-                Cursor="Hand"
-                ItemTemplateSelector="{StaticResource CardStateTemplateSelector}"
-                ItemsSource="{Binding States}"
-                SelectedIndex="0"
-                SelectedValue="{Binding SelectedState, Mode=TwoWay}">
+            <Border
+                Padding="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Style="{StaticResource CustomBorderSimpleStyle}">
+                <ListView
+                    Margin="2"
+                    Cursor="Hand"
+                    ItemTemplateSelector="{StaticResource CardStateTemplateSelector}"
+                    ItemsSource="{Binding States}"
+                    SelectedIndex="0"
+                    SelectedValue="{Binding SelectedState, Mode=TwoWay}">
 
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Focusable" Value="True" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <Border
-                                        x:Name="Bd"
-                                        Width="30"
-                                        Height="30"
-                                        Background="Transparent"
-                                        BorderBrush="Transparent"
-                                        BorderThickness="1"
-                                        CornerRadius="2"
-                                        ToolTip="{Binding}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Focusable" Value="True" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Border
+                                            x:Name="Bd"
+                                            Width="30"
+                                            Height="30"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="1"
+                                            CornerRadius="2"
+                                            ToolTip="{Binding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
 
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource InactiveForeground}" />
-                                        </Trigger>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource InactiveForeground}" />
+                                            </Trigger>
 
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
 
 
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+            </Border>
+
 
             <controls:HintControl
                 Grid.Column="1"
-                Margin="0,0,0,0"
+                Margin="0,0,-1,0"
                 HintBackground="{Binding ElementName=root, Path=Background}">
                 <controls:HintControl.Hint>
                     <materialDesign:PackIcon Kind="Search" />
@@ -149,7 +156,7 @@
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     materialDesign:TextFieldAssist.HasClearButton="True"
-                    Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    Text="{Binding FrontTextFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </controls:HintControl>
         </Grid>
 

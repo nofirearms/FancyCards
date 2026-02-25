@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Text;
+using System.Windows.Controls.Primitives;
 
 namespace FancyCards.ViewModels
 {
@@ -27,10 +28,20 @@ namespace FancyCards.ViewModels
         //[ObservableProperty]
         //private int _reviewCount;
 
-        public IEnumerable<CardState> States => Enum.GetValues(typeof(CardState)).Cast<CardState>();
+        public IEnumerable<CardState> States => new List<CardState>
+        {
+            CardState.Scheduled,
+            CardState.Learning,
+            CardState.Reviewing,
+            CardState.Mastered
+        };
 
         [ObservableProperty]
         private CardState _selectedState = CardState.Reviewing;
+        partial void OnSelectedStateChanged(CardState value)
+        {
+            UpdateFilter();
+        }
 
         public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
         {
@@ -134,10 +145,15 @@ namespace FancyCards.ViewModels
         {
             return item =>
             {
-                var front_pass = string.IsNullOrEmpty(FrontTextFilter) ||
-                              item.FrontText.Contains(FrontTextFilter);
+                bool date_pass = SelectedState == CardState.Scheduled 
+                    ? item.NextReviewDate > DateTime.Now 
+                    : item.NextReviewDate <= DateTime.Now && SelectedState == item.State;
 
-                return front_pass; //&& categoryPass && pricePass;
+                 var text_pass = string.IsNullOrEmpty(FrontTextFilter) ||
+                                  item.FrontText.Contains(FrontTextFilter, StringComparison.OrdinalIgnoreCase) ||
+                                  item.BackText.Contains(FrontTextFilter, StringComparison.OrdinalIgnoreCase);
+
+                return date_pass && text_pass; //&& categoryPass && pricePass;
             };
         }
 

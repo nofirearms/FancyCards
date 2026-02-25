@@ -117,17 +117,34 @@ namespace FancyCards.ViewModels
 
 
         //----------------------------------------------------------------------------- FILTER --------------------------------------------------------------------------
+
+        private string _nameFilter;
+        public string NameFilter
+        {
+            get => _nameFilter;
+            set
+            {
+                SetProperty(ref _nameFilter, value);
+                UpdateFilter();
+            }
+        }
+
         private Func<DeckSummaryViewModel, bool> CreateFilter()
         {
-            return item => true;
+            return item =>
+            {
+                var name_pass = string.IsNullOrEmpty(NameFilter) ||
+                              item.Name.Contains(NameFilter, StringComparison.OrdinalIgnoreCase);
 
-            //return item =>
-            //{
-            //    var front_pass = string.IsNullOrEmpty(FrontTextFilter) ||
-            //                  item.FrontText.Contains(FrontTextFilter);
+                return name_pass; //&& categoryPass && pricePass;
+            };
+        }
 
-            //    return front_pass; //&& categoryPass && pricePass;
-            //};
+
+        private void UpdateFilter()
+        {
+            // DynamicData автоматически применит новый фильтр
+            _sourceCache.Refresh(); // Перефильтрует существующие данные
         }
     }
 }

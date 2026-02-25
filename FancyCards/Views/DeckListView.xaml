@@ -31,7 +31,7 @@
                 materialDesign:HintAssist.Hint=""
                 materialDesign:HintAssist.HintPaddingBrush="Transparent"
                 materialDesign:TextFieldAssist.HasClearButton="True"
-                Text="" />
+                Text="{Binding NameFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </controls:HintControl>
 
 
