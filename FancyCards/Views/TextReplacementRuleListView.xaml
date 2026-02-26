@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="FancyCards.Views.TextReplacementRuleListView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:FancyCards.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:FancyCards.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    Width="300"
+    Height="400"
+    d:DataContext="{d:DesignInstance vm:TextReplacementRuleListViewModel}"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Border Margin="0 5" Style="{StaticResource CustomBorderSimpleStyle}">
+            <ListView materialDesign:RippleAssist.IsDisabled="True" ItemsSource="{Binding Rules}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Original}" />
+                            <TextBlock Grid.Column="1" Text="&gt;" />
+                            <TextBlock Grid.Column="2" Text="{Binding Replacement}" />
+                            <interaction:Interaction.Behaviors>
+                                <behaviors:OpenContextMenuBehavior Command="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.OpenContextCommand}" Parameter="{Binding}" />
+                            </interaction:Interaction.Behaviors>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+        </Border>
+
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button Command="{Binding CloseModalCommand}" Content="Ok" />
+        </StackPanel>
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Left"
+            Orientation="Horizontal">
+            <Button Command="{Binding AddCommand}">
+                <materialDesign:PackIcon Kind="Add" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -157,6 +157,15 @@ namespace FancyCards.Services
             return rule;
         }
 
+        public async Task<IEnumerable<TextReplacementRule>> AddOrUpdateTextReplacementRuleAsync(IEnumerable<TextReplacementRule> rules)
+        {
+            await _repository.AddOrUpdateAsync(rules);
+
+            TextReplacementRuleEvent?.Invoke(new TextReplacementRuleEventArgs(rules, CardAction.Create));
+
+            return rules;
+        }
+
         public async Task<TextReplacementRule> RemoveTextReplacementRuleAsync(TextReplacementRule rule)
         {
             await _repository.RemoveAsync(rule);

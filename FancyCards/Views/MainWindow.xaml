@@ -67,6 +67,14 @@
                     <local:DeckListView />
                 </DataTemplate>
 
+                <DataTemplate DataType="{x:Type vm:TextReplacementRuleListViewModel}">
+                    <local:TextReplacementRuleListView />
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type vm:TextReplacementRuleDetailViewModel}">
+                    <local:TextReplacementRuleDetailView />
+                </DataTemplate>
+
             </ItemsControl.Resources>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -96,6 +104,9 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AudioGraphContextViewModel}">
                     <local:AudioGraphContextView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GeneralListContextViewModel}">
+                    <local:GeneralListContextView />
                 </DataTemplate>
             </controls:ContextBase.Resources>
         </controls:ContextBase>
