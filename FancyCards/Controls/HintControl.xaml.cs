@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace FancyCards.Controls
 {
@@ -40,37 +41,29 @@ namespace FancyCards.Controls
             content.GotFocus += (_, _) =>
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
-                //control.HintTextBlock.Foreground = brush;
-                //control.SuffixTextBlock.Foreground = brush;
 
-                TextBlock.SetForeground(control, brush);
+                TextBlock.SetForeground(control.HintGrid, brush);
             };
 
             content.LostFocus += (_, _) =>
             {
                 var brush = new SolidColorBrush(Colors.Black);
-                //control.HintTextBlock.Foreground = brush;
-                //control.SuffixTextBlock.Foreground = brush;
 
-                TextBlock.SetForeground(control, brush);
+                TextBlock.SetForeground(control.HintGrid, brush);
             };
 
             content.GotKeyboardFocus += (_, _) =>
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
-                //control.HintTextBlock.Foreground = brush;
-                //control.SuffixTextBlock.Foreground = brush;
 
-                TextBlock.SetForeground(control, brush);
+                TextBlock.SetForeground(control.HintGrid, brush);
             };
 
             content.LostKeyboardFocus += (_, _) =>
             {
                 var brush = new SolidColorBrush(Colors.Black);
-                //control.HintTextBlock.Foreground = brush;
-                //control.SuffixTextBlock.Foreground = brush;
 
-                TextBlock.SetForeground(control, brush);
+                TextBlock.SetForeground(control.HintGrid, brush);
             };
 
             content.PreviewGotKeyboardFocus += (_, _) =>
@@ -173,6 +166,7 @@ namespace FancyCards.Controls
         {
             base.OnContentChanged(oldContent, newContent);
         }
+
 
         public HintControl()
         {

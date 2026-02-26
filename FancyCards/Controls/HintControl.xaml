@@ -13,29 +13,30 @@
 
         <ContentPresenter Content="{Binding ElementName=self, Path=Content}" />
 
-        <Border
-            Margin="10,-5"
-            Padding="3,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="{Binding ElementName=self, Path=HintBackground}"
-            CornerRadius="3">
-            <Grid>
-                <TextBlock
-                    x:Name="HintTextBlock"
-                    FontSize="12"
-                    IsHitTestVisible="False"
-                    Text="{Binding ElementName=self, Path=HintText}"
-                    Visibility="Collapsed" />
-                <ContentPresenter
-                    x:Name="HintContentPresenter"
-                    Content="{Binding ElementName=self, Path=Hint}"
-                    IsHitTestVisible="False"
-                    Visibility="Collapsed" />
-            </Grid>
+        <Grid x:Name="HintGrid">
+            <Border
+                Margin="10,-5"
+                Padding="3,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Background="{Binding ElementName=self, Path=HintBackground}"
+                CornerRadius="3">
+                <Grid>
+                    <TextBlock
+                        x:Name="HintTextBlock"
+                        FontSize="12"
+                        IsHitTestVisible="False"
+                        Text="{Binding ElementName=self, Path=HintText}"
+                        Visibility="Collapsed" />
+                    <ContentPresenter
+                        x:Name="HintContentPresenter"
+                        Content="{Binding ElementName=self, Path=Hint}"
+                        IsHitTestVisible="False"
+                        Visibility="Collapsed" />
+                </Grid>
 
-        </Border>
-        <!--<TextBlock
+            </Border>
+            <!--<TextBlock
             x:Name="HintTextBlock"
             Margin="10,-5"
             Padding="3,0"
@@ -47,22 +48,22 @@
             Text="{Binding ElementName=root, Path=HintText}"
             Visibility="Collapsed" />-->
 
-        <Border
-            Margin="10,-5"
-            Padding="3,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Background="{Binding ElementName=self, Path=HintBackground}"
-            CornerRadius="3">
-            <TextBlock
-                x:Name="SuffixTextBlock"
-                FontSize="12"
-                IsHitTestVisible="False"
-                Text="{Binding ElementName=self, Path=SuffixText}"
-                Visibility="Collapsed" />
-        </Border>
+            <Border
+                Margin="10,-5"
+                Padding="3,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="{Binding ElementName=self, Path=HintBackground}"
+                CornerRadius="3">
+                <TextBlock
+                    x:Name="SuffixTextBlock"
+                    FontSize="12"
+                    IsHitTestVisible="False"
+                    Text="{Binding ElementName=self, Path=SuffixText}"
+                    Visibility="Collapsed" />
+            </Border>
 
-        <!--<TextBlock
+            <!--<TextBlock
             x:Name="SuffixTextBlock"
             Margin="10,-5"
             Padding="3,0"
@@ -73,5 +74,8 @@
             IsHitTestVisible="False"
             Text="{Binding ElementName=root, Path=SuffixText}"
             Visibility="Collapsed" />-->
+        </Grid>
+
+
     </Grid>
 </UserControl>
