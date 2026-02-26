@@ -14,5 +14,9 @@ namespace FancyCards.Models
             Original = original;
             Replacement = replacement;
         }
+        public TextReplacementRule()
+        {
+            
+        }
     }
 }

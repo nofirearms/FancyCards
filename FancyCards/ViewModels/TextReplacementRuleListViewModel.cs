@@ -54,12 +54,17 @@ namespace FancyCards.ViewModels
                 var edit_result = await _host.OpenTextReplacementRuleDetailModal(rule);
                 if (edit_result.Success)
                 {
-                    rule.Original = edit_result.Data.Original;
-                    rule.Replacement = edit_result.Data.Replacement;
+
+                    var edited = new TextReplacementRule
+                    {
+                        Id = rule.Id,
+                        Original = edit_result.Data.Original,
+                        Replacement= edit_result.Data.Replacement
+                    };
 
                     await _host.StartLoading(false);
 
-                    _sourceCache.AddOrUpdate(rule);
+                    _sourceCache.AddOrUpdate(edited);
                     await _dataService.UpdateTextReplacementRuleAsync(rule);
 
                     _host.StopLoading();

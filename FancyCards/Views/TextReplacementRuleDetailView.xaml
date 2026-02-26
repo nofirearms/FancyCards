@@ -26,13 +26,20 @@
                 <ColumnDefinition Width="15" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <TextBox Text="{Binding Original, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                materialDesign:HintAssist.Hint=""
+                materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                Text="{Binding Original, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <materialDesign:PackIcon
                 Grid.Column="1"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Kind="ArrowRightBold" />
-            <TextBox Grid.Column="2" Text="{Binding Replacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                Grid.Column="2"
+                materialDesign:HintAssist.Hint=""
+                materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                Text="{Binding Replacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
         </Grid>
 
