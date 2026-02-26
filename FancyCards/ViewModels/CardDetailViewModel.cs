@@ -45,7 +45,11 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private AudioSamplerViewModel _audioSamplerViewModel;
 
-        public IEnumerable<CardState> States => Enum.GetValues<CardState>().Cast<CardState>();
+        public IEnumerable<CardState> States => new List<CardState>
+        {
+            CardState.Learning,
+            CardState.Reviewing,
+        };
         [ObservableProperty]
         private CardState _selectedState = CardState.Learning;
 

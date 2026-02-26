@@ -19,19 +19,47 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <DataTemplate x:Key="ReviewingTemplate">
-            <materialDesign:PackIcon Kind="Refresh" />
+            <StackPanel Orientation="Vertical">
+                <materialDesign:PackIcon Kind="Refresh" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ReviewingCount}" />
+            </StackPanel>
+
         </DataTemplate>
         <DataTemplate x:Key="LearningTemplate">
-            <materialDesign:PackIcon Kind="SchoolOutline" />
+            <StackPanel Orientation="Vertical">
+                <materialDesign:PackIcon Kind="SchoolOutline" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.LearningCount}" />
+            </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="MasteredTemplate">
-            <materialDesign:PackIcon Kind="Check" />
+            <StackPanel Orientation="Vertical">
+                <materialDesign:PackIcon Kind="Check" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.MasteredCount}" />
+            </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ScheduledTemplate">
-            <materialDesign:PackIcon
-                Width="15"
-                Height="15"
-                Kind="HourglassEmpty" />
+            <StackPanel Orientation="Vertical">
+                <materialDesign:PackIcon
+
+                    Kind="HourglassEmpty" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ScheduledCount}" />
+            </StackPanel>
         </DataTemplate>
 
         <helpers:CardStateTemplateSelector
@@ -110,8 +138,8 @@
                                     <ControlTemplate TargetType="ListViewItem">
                                         <Border
                                             x:Name="Bd"
-                                            Width="30"
-                                            Height="30"
+                                            Width="32"
+                                            Height="32"
                                             Background="Transparent"
                                             BorderBrush="Transparent"
                                             BorderThickness="1"

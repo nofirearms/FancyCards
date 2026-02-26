@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
+using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
 using System;
@@ -28,20 +29,15 @@ namespace FancyCards.ViewModels
         //[ObservableProperty]
         //private int _reviewCount;
 
-        public IEnumerable<CardState> States => new List<CardState>
-        {
-            CardState.Scheduled,
-            CardState.Learning,
-            CardState.Reviewing,
-            CardState.Mastered
-        };
-
         [ObservableProperty]
-        private CardState _selectedState = CardState.Reviewing;
-        partial void OnSelectedStateChanged(CardState value)
-        {
-            UpdateFilter();
-        }
+        private int _scheduledCount;
+        [ObservableProperty]
+        private int _reviewingCount;
+        [ObservableProperty]
+        private int _learningCount;
+        [ObservableProperty]
+        private int _masteredCount;
+
 
         public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
         {
@@ -63,10 +59,23 @@ namespace FancyCards.ViewModels
             var cards = await _dataService.GetCardsAsync(deckId);
             _sourceCache.AddOrUpdate(cards ?? new List<Card>());
 
+            // Подписываемся на изменения и пересчитываем свойства
+            var _cleanUp = _sourceCache.Connect()
+                .Subscribe(cards =>
+                {
+                    ScheduledCount = _sourceCache.Items.Count(o => o.NextReviewDate > DateTime.Now);
+                    ReviewingCount = _sourceCache.Items.Count(o => o.State == CardState.Reviewing && o.NextReviewDate <= DateTime.Now);
+                    LearningCount = _sourceCache.Items.Count(o => o.State == CardState.Learning && o.NextReviewDate <= DateTime.Now);
+                    MasteredCount = _sourceCache.Items.Count(o => o.State == CardState.Mastered);
+
+                });
+
             _sourceCache.Connect()
             .Filter(CreateFilter())
             .Bind(out _cards)
             .Subscribe();
+
+
         }
 
         private void OnCardEvent(CardsEventArgs args)
@@ -140,6 +149,22 @@ namespace FancyCards.ViewModels
                 UpdateFilter();
             }
         }
+
+        public IEnumerable<CardState> States => new List<CardState>
+        {
+            CardState.Scheduled,
+            CardState.Learning,
+            CardState.Reviewing,
+            CardState.Mastered
+        };
+
+        [ObservableProperty]
+        private CardState _selectedState = CardState.Reviewing;
+        partial void OnSelectedStateChanged(CardState value)
+        {
+            UpdateFilter();
+        }
+
 
         private Func<Card, bool> CreateFilter()
         {
