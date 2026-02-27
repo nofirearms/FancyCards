@@ -1,4 +1,5 @@
 ﻿
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
 using FancyCards.Helpers;
@@ -20,6 +21,7 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly SettingsService _settingsService;
+        private readonly DataService _dataService;
 
 
 
@@ -32,11 +34,14 @@ namespace FancyCards.ViewModels
         //    set => SetProperty(ref _correctAnswersToFinishReviewing, value);
         //}
 
+        [ObservableProperty]
+        private string _info;
 
-        public SettingsViewModel(MainWindowViewModel host, SettingsService settingsService)
+        public SettingsViewModel(MainWindowViewModel host, SettingsService settingsService, DataService dataService)
         {
             _host = host;
             _settingsService = settingsService;
+            _dataService = dataService;
 
             Header = "Settings";
 
@@ -79,7 +84,7 @@ namespace FancyCards.ViewModels
 
         private async Task Script()
         {
-            await System.Threading.Tasks.Task.Run(() =>
+            await System.Threading.Tasks.Task.Run(async() =>
             {
                 IEnumerable<Change> old_rules = PathHelper.ReadFile<List<Change>>("old_data/Changes.json");
                 var old_phrases = PathHelper.ReadFile<List<Phrase>>("old_data/Phrases.json");
@@ -91,9 +96,15 @@ namespace FancyCards.ViewModels
 
                 var audio_utilities = new AudioUtilities();
 
+                int i = 0;
+
                 foreach(var old_phrase in old_phrases)
                 {
+                    Info = $"{++i} | {old_phrases.Count}";
+
                     old_phrase.Sound.Path = Path.Combine("old_data", old_phrase.Sound.Path);
+
+                    var length = audio_utilities.GetLength(old_phrase.Sound.Path);
 
                     var card = new Card
                     {
@@ -101,7 +112,7 @@ namespace FancyCards.ViewModels
                         CommentText = old_phrase.Remark,
                         DateCreated = old_phrase.CreationDate,
                         DeckId = deck_id,
-                        FrontText = old_phrase.Translation,
+                        FrontText = old_phrase.Original,
                         LastReviewDate = old_phrase.ClosestDate.AddDays(-intervals[old_phrase.Answers.RepeatCorrect - 1]),
                         NextReviewDate = old_phrase.ClosestDate,
                         Difficulty = Difficulty.Normal,
@@ -121,8 +132,8 @@ namespace FancyCards.ViewModels
                             Tempo = old_phrase.Sound.Tempo,
                             Path = Path.Combine("audio", Path.GetFileName(old_phrase.Sound.Path)),
                             Volume = old_phrase.Sound.Volume,
-                            StartPosition = old_phrase.Sound.StartPosition / audio_utilities.GetLength(old_phrase.Sound.Path),
-                            EndPosition = old_phrase.Sound.StopPosition / audio_utilities.GetLength(old_phrase.Sound.Path)
+                            StartPosition = (double)old_phrase.Sound.StartPosition / length,
+                            EndPosition = (double)(length - old_phrase.Sound.StopPosition) / length
                         },
                         Scores = new CardScores
                         {
@@ -136,9 +147,10 @@ namespace FancyCards.ViewModels
 
                     };
 
+                    cards.Add(card);
                 }
 
-
+                await _dataService.CreateCardsAsync(cards);
             });
         }
 

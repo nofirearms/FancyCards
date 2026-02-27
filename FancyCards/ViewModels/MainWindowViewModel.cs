@@ -117,9 +117,11 @@ namespace FancyCards.ViewModels
             
         }
 
-        private void LoadCards(int deckId)
+        private async void LoadCards(int deckId)
         {
+            await StartLoading(false);
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, deckId);
+            StopLoading();
         }
 
         public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)

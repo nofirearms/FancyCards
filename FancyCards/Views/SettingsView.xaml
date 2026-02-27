@@ -14,6 +14,10 @@
     mc:Ignorable="d">
     <StackPanel Orientation="Vertical">
 
+        <TextBlock>
+            <Run Text="Progress:" />
+            <Run Foreground="Green" Text="{Binding Info}" />
+        </TextBlock>
 
         <Button Command="{Binding RunScriptCommand}" Content="Run Script" />
 

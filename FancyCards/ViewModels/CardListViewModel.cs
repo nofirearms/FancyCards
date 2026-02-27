@@ -78,32 +78,38 @@ namespace FancyCards.ViewModels
 
         }
 
-        private void OnCardEvent(CardsEventArgs args)
+        private async void OnCardEvent(CardsEventArgs args)
         {
-            var cards = args.Cards;
-            var action = args.Action;
+            App.Current.Dispatcher.Invoke(() => 
+            {
 
-            if (args.Action == CardAction.Create)
-            {
-                foreach (var card in cards)
+                var cards = args.Cards;
+                var action = args.Action;
+
+                if (args.Action == CardAction.Create)
                 {
-                    _sourceCache.AddOrUpdate(card);
+                    foreach (var card in cards)
+                    {
+                        _sourceCache.AddOrUpdate(card);
+                    }
                 }
-            }
-            else if (args.Action == CardAction.Remove)
-            {
-                foreach (var card in cards)
+                else if (args.Action == CardAction.Remove)
                 {
-                    _sourceCache.Remove(card);
+                    foreach (var card in cards)
+                    {
+                        _sourceCache.Remove(card);
+                    }
                 }
-            }
-            else if (args.Action == CardAction.Update) 
-            {
-                foreach (var card in cards)
+                else if (args.Action == CardAction.Update)
                 {
-                    _sourceCache.AddOrUpdate(card);
+                    foreach (var card in cards)
+                    {
+                        _sourceCache.AddOrUpdate(card);
+                    }
                 }
-            }
+
+
+            }, System.Windows.Threading.DispatcherPriority.Background);
         }
 
 

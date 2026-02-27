@@ -20,7 +20,7 @@
     <UserControl.Resources>
         <DataTemplate x:Key="ReviewingTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon Kind="Refresh" />
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Refresh" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -31,7 +31,7 @@
         </DataTemplate>
         <DataTemplate x:Key="LearningTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon Kind="SchoolOutline" />
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="SchoolOutline" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -41,7 +41,7 @@
         </DataTemplate>
         <DataTemplate x:Key="MasteredTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon Kind="Check" />
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Check" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -51,9 +51,7 @@
         </DataTemplate>
         <DataTemplate x:Key="ScheduledTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon
-
-                    Kind="HourglassEmpty" />
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="HourglassEmpty" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"

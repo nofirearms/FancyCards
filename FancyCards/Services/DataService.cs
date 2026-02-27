@@ -115,6 +115,15 @@ namespace FancyCards.Services
             return cards;
         }
 
+        public async Task<IEnumerable<Card>> CreateCardsAsync(IEnumerable<Card> cards)
+        {
+            await _repository.AddOrUpdateAsync(cards);
+
+            CardEvent?.Invoke(new CardsEventArgs(cards, CardAction.Create));
+
+            return cards;
+        }
+
         public async Task<bool> RemoveCardAsync(Card card)
         {
             bool output = true;
