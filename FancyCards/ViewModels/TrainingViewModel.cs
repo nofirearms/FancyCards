@@ -299,26 +299,29 @@ namespace FancyCards.ViewModels
 
         private void ProcessScore(TrainingCardViewModel card)
         {
-            if(card.CardStatus == TrainingCardState.Failed)
+            var profile = _host.Deck.Deck.Settings.ReviewProfile;
+
+
+            if (card.CardStatus == TrainingCardState.Failed)
             {
                 card.Card.Scores.Reps = 0;
                 card.Card.Scores.I = 1;
 
-                card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.25, 1.3, 2.8);
+                card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.ErrorRatioEF, profile.MinEF, profile.MaxEF);
             }
             else
             {
                 if(card.Difficulty == Difficulty.Hard)
                 {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.15, 1.3, 2.8);
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.HardRatioEF, profile.MinEF, profile.MaxEF);
                 }
                 else if(card.Difficulty == Difficulty.Normal)
                 {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF - 0.05 , 1.3, 2.8);
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.NormalRatioEF , profile.MinEF, profile.MaxEF);
                 }
                 else if (card.Difficulty == Difficulty.Easy)
                 {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + 0.08, 1.3, 2.8);
+                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.EasyRatioEF, profile.MinEF, profile.MaxEF);
                 }
 
                 if (card.Card.Scores.Reps == 0)
@@ -327,7 +330,7 @@ namespace FancyCards.ViewModels
                 }
                 else if (card.Card.Scores.Reps == 1)
                 {
-                    card.Card.Scores.I = 6;
+                    card.Card.Scores.I = profile.SecondRepetitionInterval;
                 }
                 else if (card.Card.Scores.Reps >= 2)
                 {

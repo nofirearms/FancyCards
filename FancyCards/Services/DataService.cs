@@ -209,5 +209,22 @@ namespace FancyCards.Services
         }
 
         #endregion
+
+        //--------------------------------------------------------------------------------- REVIEW PROFILES -----------------------------------------------------------------
+
+        #region REVIEW PROFILES
+
+        public async Task<IEnumerable<ReviewProfile>> GetReivewProfilesAsync() => await _repository.GetAllAsync<ReviewProfile>();
+
+        public async Task<ReviewProfile> GetReivewProfileAsync(int id) => await _repository.GetAsync<ReviewProfile>(id);
+
+        public async Task<ReviewProfile> CreateReviewProfileAsync(ReviewProfile reviewProfile)
+        {
+            await _repository.AddAsync(reviewProfile);
+
+            return reviewProfile;
+        }
+
+        #endregion
     }
 }

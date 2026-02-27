@@ -42,7 +42,6 @@ namespace FancyCards.Audio
         public WasapiCapture GetWasapiCaptureInstance(MMDevice device) => device.DataFlow == DataFlow.Capture ? new WasapiCapture(device) : new WasapiLoopbackCapture(device);
         #endregion
 
-
         //------------------------------------------------------------------------------------------------------------------------------------------- AUDIO PROCESSING -------------------------
         #region AUDIO PROCESSING
 
@@ -159,6 +158,17 @@ namespace FancyCards.Audio
 
         #endregion
 
+
+        /// <summary>
+        /// Length in bytes
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public int GetLength(string path)
+        {
+            var audio = new AudioFileReader(path);
+            return (int)audio.Length;
+        }
 
         public void CreateDirectory(string path)
         {

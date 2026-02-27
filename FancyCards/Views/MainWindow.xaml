@@ -191,6 +191,7 @@
                 HorizontalAlignment="Center"
                 DockPanel.Dock="Bottom"
                 Orientation="Horizontal">
+
                 <Button Command="{Binding StartTrainingCommand}" Content="{materialDesign:PackIcon Kind=PlayBox}" />
                 <Button Command="{Binding CreateCardCommand}" Content="{materialDesign:PackIcon Kind=Add}" />
                 <Button Command="{Binding OpenStatsModal}" Content="{materialDesign:PackIcon Kind=ChartBar}" />

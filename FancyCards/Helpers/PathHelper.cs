@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Newtonsoft.Json;
+using System.IO;
 using System.Windows;
 
 namespace FancyCards.Helpers
@@ -98,6 +99,40 @@ namespace FancyCards.Helpers
             catch
             {
                 return false;
+            }
+
+        }
+
+        public static T ReadFile<T>(string filePath) where T : new()
+        {
+            if (!File.Exists(filePath)) return new T();
+
+            using (var reader = File.OpenText(filePath))
+            {
+                var text = reader.ReadToEnd();
+                if (string.IsNullOrEmpty(text)) return new T();
+
+                return JsonConvert.DeserializeObject<T>(text);
+            }
+
+
+        }
+
+        public static void WriteFile<T>(T parameter, string filePath)
+        {
+            try
+            {
+                //File.Copy(filePath, $"Backups/{filePath}", true);
+                using (var write = File.CreateText(filePath))
+                {
+                    string output = JsonConvert.SerializeObject(parameter);
+                    write.Write(output);
+
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
 
         }

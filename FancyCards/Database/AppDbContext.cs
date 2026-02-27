@@ -12,7 +12,7 @@ namespace FancyCards.Database
         public DbSet<TrainingSession> TrainingSessions { get; set; }
         public DbSet<TrainingSessionCard> TrainingSessionCards { get; set; }
         public DbSet<Setting> Settings { get; set; }
-
+        public DbSet<ReviewProfile> ReviewProfiles { get; set; }
 
         public AppDbContext()
         {
@@ -49,6 +49,22 @@ namespace FancyCards.Database
                 new TextReplacementRule("-"){ Id = 12},
             ]);
 
+            modelBuilder.Entity<ReviewProfile>().HasData(
+            [
+                new ReviewProfile
+                {
+                    Id = 1,
+                    Name = "Default",
+                    StartEF = 2.1,
+                    EasyRatioEF = 0.08,
+                    NormalRatioEF = 0.05,
+                    HardRatioEF = -0.15,
+                    ErrorRatioEF = -0.25,
+                    MinEF = 1.3,
+                    MaxEF = 2.5,
+                    SecondRepetitionInterval = 3
+                }
+            ]);
         }
     }
 }

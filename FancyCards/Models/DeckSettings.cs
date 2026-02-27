@@ -12,5 +12,7 @@ namespace FancyCards.Models
         public int TrainingReviewCards { get; set; } = 14;
         public int СorrectAnswersToFinishLearning { get; set; } = 2;
         public int СorrectAnswersToFinishReviewing { get; set; } = 2;
+
+        public ReviewProfile ReviewProfile { get; set; }
     }
 }

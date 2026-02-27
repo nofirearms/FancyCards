@@ -30,6 +30,12 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private string _description;
 
+        [ObservableProperty]
+        private IEnumerable<ReviewProfile> _profiles;
+
+        [ObservableProperty]
+        private ReviewProfile _selectedProfile;
+
         //---------------------------------------------------------------- SETTINGS ----------------------------------------------------------------------------
         [ObservableProperty]
         private int _trainingLearnCards = 5;
@@ -66,6 +72,14 @@ namespace FancyCards.ViewModels
                 _correctAnswersToFinishLearning = _deck.Settings.СorrectAnswersToFinishLearning;
                 _correctAnswersToFinishReviewing = _deck.Settings.СorrectAnswersToFinishReviewing;
             }
+
+            var _ = InitializeAsync();
+        }
+
+        private async Task InitializeAsync()
+        {
+            Profiles = await _dataService.GetReivewProfilesAsync();
+            SelectedProfile = Profiles.FirstOrDefault();
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
@@ -80,6 +94,8 @@ namespace FancyCards.ViewModels
             _deck.Settings.TrainingReviewCards = TrainingReviewCards;
             _deck.Settings.СorrectAnswersToFinishLearning = CorrectAnswersToFinishLearning;
             _deck.Settings.СorrectAnswersToFinishReviewing = CorrectAnswersToFinishReviewing;
+
+            _deck.Settings.ReviewProfile = SelectedProfile;
 
             await _host.StartLoading(false);
 

@@ -24,6 +24,7 @@ namespace FancyCards.Database
         {
             return await _context.Set<Deck>()
                 .Include(d => d.Cards)
+                .Include(d => d.Settings.ReviewProfile)
                 //    .ThenInclude(c => c.Scores)
                 //.Include(d => d.Cards)
                 //    .ThenInclude(c => c.Audio)
@@ -34,6 +35,7 @@ namespace FancyCards.Database
         {
             return await _context.Set<Deck>()
                 .Include(d => d.Cards)
+                .Include(d => d.Settings.ReviewProfile)
                 //    .ThenInclude(c => c.Scores)
                 //.Include(d => d.Cards)
                 //    .ThenInclude(c => c.Audio)

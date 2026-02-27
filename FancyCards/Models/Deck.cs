@@ -12,5 +12,6 @@ namespace FancyCards.Models
         public DateTime DateCreated { get; set; } = DateTime.Now;
         public DeckSettings Settings { get; set; } = new();
 
+
     }
 }
