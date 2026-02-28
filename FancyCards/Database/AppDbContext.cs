@@ -57,9 +57,22 @@ namespace FancyCards.Database
                     Name = "Default",
                     StartEF = 2.1,
                     EasyRatioEF = 0.08,
-                    NormalRatioEF = 0.05,
+                    NormalRatioEF = -0.05,
                     HardRatioEF = -0.15,
                     ErrorRatioEF = -0.25,
+                    MinEF = 1.3,
+                    MaxEF = 2.5,
+                    SecondRepetitionInterval = 3
+                },
+                new ReviewProfile
+                {
+                    Id = 2,
+                    Name = "Default 2",
+                    StartEF = 1.3,
+                    EasyRatioEF = 0.12,
+                    NormalRatioEF = 0.05,
+                    HardRatioEF = -0.10,
+                    ErrorRatioEF = -0.15,
                     MinEF = 1.3,
                     MaxEF = 2.5,
                     SecondRepetitionInterval = 3

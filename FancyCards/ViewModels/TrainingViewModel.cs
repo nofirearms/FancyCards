@@ -4,6 +4,7 @@ using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
@@ -246,8 +247,18 @@ namespace FancyCards.ViewModels
                     }
                     else if (card.Card.State == CardState.Reviewing)
                     {
-                        ProcessScore(card);
-                        card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
+                        //считается выученной
+                        if(card.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays)
+                        {
+                            card.Card.State = CardState.Mastered;
+                            await _host.OpenMessageBox("Card mastered!", ["Ok"], "Congratulations!", new SolidColorBrush(Colors.GreenYellow));
+                        }
+                        else
+                        {
+                            ProcessScore(card);
+                            card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
+                        }
+
                     }
                 }
                 else if (card.CardStatus == TrainingCardState.Failed)
@@ -335,6 +346,10 @@ namespace FancyCards.ViewModels
                 else if (card.Card.Scores.Reps >= 2)
                 {
                     card.Card.Scores.I = (int)Math.Round(card.Card.Scores.I * card.Card.Scores.EF, MidpointRounding.AwayFromZero);
+
+                    //после этого карточка будет выучена
+                    if(card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays) 
+                        card.Card.Scores.I = _host.Deck.Deck.Settings.MaxIntervalDays;
                 }
 
                 card.Card.Scores.Reps++;
