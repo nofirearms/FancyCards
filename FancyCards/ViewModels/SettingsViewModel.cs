@@ -123,7 +123,7 @@ namespace FancyCards.ViewModels
                         {
                             PhraseState.Repeat => CardState.Reviewing,
                             PhraseState.Learn => CardState.Learning,
-                            PhraseState.Done => CardState.Mastered,
+                            PhraseState.Done => CardState.Archived,
                             _ => CardState.Learning
                         },
                         TimeSpent = TimeSpan.Zero,

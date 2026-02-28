@@ -140,6 +140,10 @@ namespace FancyCards.ViewModels
                     DateCreated = DateTime.Now,
                     NextReviewDate = NextReviewDate.Date,
                     State = SelectedState,
+                    Scores = new CardScores
+                    {
+                        EF = _host.Deck.Deck.Settings.ReviewProfile.StartEF
+                    }
                 };
                 var audio_source = new AudioSource
                 {

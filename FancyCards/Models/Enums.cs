@@ -8,7 +8,7 @@ namespace FancyCards.Models
     {
         Learning,   // В процессе изучения
         Reviewing,  // На повторении
-        Mastered, // Выучена
+        Archived, // Выучена
         Scheduled
     }
 
@@ -47,7 +47,8 @@ namespace FancyCards.Models
         None,
         Loading,
         Success,
-        Error
+        Error,
+        Archived
     }
 
     public struct Selection

@@ -39,14 +39,14 @@
                     Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.LearningCount}" />
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="MasteredTemplate">
+        <DataTemplate x:Key="ArchivedTemplate">
             <StackPanel Orientation="Vertical">
                 <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Check" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="10"
-                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.MasteredCount}" />
+                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ArchivedCount}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ScheduledTemplate">
@@ -62,8 +62,8 @@
 
         <helpers:CardStateTemplateSelector
             x:Key="CardStateTemplateSelector"
+            ArchivedTemplate="{StaticResource ArchivedTemplate}"
             LearningTemplate="{StaticResource LearningTemplate}"
-            MasteredTemplate="{StaticResource MasteredTemplate}"
             ReviewingTemplate="{StaticResource ReviewingTemplate}"
             ScheduledTemplate="{StaticResource ScheduledTemplate}" />
     </UserControl.Resources>

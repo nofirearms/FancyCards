@@ -192,6 +192,14 @@ namespace FancyCards.ViewModels
             await OpenTextReplacementRuleListModal();
         }
 
+        [RelayCommand]
+        private async void OpenStatsModal()
+        {
+            await _overlayService.ShowAndHideAsync(OverlayType.Success, 1000);
+            await _overlayService.ShowAndHideAsync(OverlayType.Archived, 1000);
+            await _overlayService.ShowAndHideAsync(OverlayType.Error, 1000);
+        }
+
         public async Task<ModalResult<Deck>> OpenDeckModal(Deck deck)
         {
             await StartLoading();

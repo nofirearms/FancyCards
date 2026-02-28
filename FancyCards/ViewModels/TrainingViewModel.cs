@@ -37,6 +37,8 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private double _maxSampleVolume = 0;
 
+        private const double TOLERANCE = 0.13;
+
         public IEnumerable<Difficulty> Difficulties => Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>();
 
         public TrainingViewModel(MainWindowViewModel host,
@@ -174,6 +176,13 @@ namespace FancyCards.ViewModels
                 if (!CurrentCard.Hint)
                 {
                     CurrentCard.CardStatus = TrainingCardState.Success;
+                    if (CurrentCard.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays)
+                    {
+                        await _overlayService.ShowAndHideAsync(OverlayType.Archived, 1000);
+                        //await _host.OpenMessageBox("Card moved to archive!", ["Ok"], "Congratulations!", new SolidColorBrush(Colors.GreenYellow));
+                    }
+
+
                 }
                 else
                 {
@@ -234,11 +243,11 @@ namespace FancyCards.ViewModels
 
                     if (card.Card.State == CardState.Learning)
                     {
+                        //learning -> reviewing
                         if (card.Card.Scores.CorrectCount >= _host.Deck.Deck.Settings.СorrectAnswersToFinishLearning)
                         {
                             card.Card.State = CardState.Reviewing;
                             ProcessScore(card);
-                            card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
                         }
                         else
                         {
@@ -250,13 +259,11 @@ namespace FancyCards.ViewModels
                         //считается выученной
                         if(card.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays)
                         {
-                            card.Card.State = CardState.Mastered;
-                            await _host.OpenMessageBox("Card mastered!", ["Ok"], "Congratulations!", new SolidColorBrush(Colors.GreenYellow));
+                            card.Card.State = CardState.Archived;
                         }
                         else
                         {
                             ProcessScore(card);
-                            card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
                         }
 
                     }
@@ -271,7 +278,6 @@ namespace FancyCards.ViewModels
                     else if (card.Card.State == CardState.Reviewing)
                     {
                         ProcessScore(card);
-                        card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
                     }
                 }
 
@@ -296,6 +302,7 @@ namespace FancyCards.ViewModels
 
             await _host.StartLoading(false);
 
+            //TrainingSessionCards записываются автоматом через сессию
             await _dataService.CreateTrainingSessionAsync(training_session);
 
             await _dataService.UpdateCardsAsync(result_cards.Select(r => r.Card));
@@ -308,6 +315,8 @@ namespace FancyCards.ViewModels
 
         }
 
+        //При ошибке или подсказке повторяем карточку на следующий день, I сбрасывается на четверть
+        //При правильном ответе следующий повтор через I дней
         private void ProcessScore(TrainingCardViewModel card)
         {
             var profile = _host.Deck.Deck.Settings.ReviewProfile;
@@ -315,10 +324,21 @@ namespace FancyCards.ViewModels
 
             if (card.CardStatus == TrainingCardState.Failed)
             {
-                card.Card.Scores.Reps = 0;
-                card.Card.Scores.I = 1;
+                //card.Card.Scores.Reps = 0;
+                //card.Card.Scores.I = 1;
+                //card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.ErrorRatioEF, profile.MinEF, profile.MaxEF);
 
+                if(card.Card.Scores.Reps == 0)
+                {
+                    //card.Card.Scores.I = 1;
+                }
+                else
+                {
+                    card.Card.Scores.I = Math.Max(profile.SecondRepetitionInterval, card.Card.Scores.I - card.Card.Scores.I / 4);
+                }
                 card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.ErrorRatioEF, profile.MinEF, profile.MaxEF);
+
+                card.Card.NextReviewDate = DateTime.Now.Date.AddDays(1);
             }
             else
             {
@@ -348,11 +368,14 @@ namespace FancyCards.ViewModels
                     card.Card.Scores.I = (int)Math.Round(card.Card.Scores.I * card.Card.Scores.EF, MidpointRounding.AwayFromZero);
 
                     //после этого карточка будет выучена
-                    if(card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays) 
+                    //делаем допуск - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE, чтобы если значение рядом, то тоже засчитывалось
+                    if (card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE) 
                         card.Card.Scores.I = _host.Deck.Deck.Settings.MaxIntervalDays;
                 }
 
                 card.Card.Scores.Reps++;
+
+                card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);
             }
         }
 

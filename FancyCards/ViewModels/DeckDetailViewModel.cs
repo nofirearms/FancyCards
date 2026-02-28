@@ -44,7 +44,7 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private int _correctAnswersToFinishLearning = 2;
         [ObservableProperty]
-        private int _correctAnswersToFinishReviewing = 50;
+        private int _maxIntervalDays = 90;
 
 
         public DeckDetailViewModel(MainWindowViewModel host, DataService dataService, Deck deck) 
@@ -54,10 +54,14 @@ namespace FancyCards.ViewModels
 
             DeckAction = deck.Id == default ? DeckAction.Create : DeckAction.Update;
 
+            Profiles = _dataService.GetReivewProfilesAsync().Result;
+
             if (DeckAction == DeckAction.Create)
             {
                 Header = "Create Deck";
                 _deck = deck;
+
+                _selectedProfile = Profiles.FirstOrDefault();
             }
             else if(DeckAction == DeckAction.Update) 
             {
@@ -70,7 +74,8 @@ namespace FancyCards.ViewModels
                 _trainingLearnCards = _deck.Settings.TrainingLearnCards;
                 _trainingReviewCards = _deck.Settings.TrainingReviewCards;
                 _correctAnswersToFinishLearning = _deck.Settings.СorrectAnswersToFinishLearning;
-                _correctAnswersToFinishReviewing = _deck.Settings.СorrectAnswersToFinishReviewing;
+                _maxIntervalDays = _deck.Settings.MaxIntervalDays;
+                _selectedProfile = _deck.Settings.ReviewProfile;
             }
 
             var _ = InitializeAsync();
@@ -78,8 +83,7 @@ namespace FancyCards.ViewModels
 
         private async Task InitializeAsync()
         {
-            Profiles = await _dataService.GetReivewProfilesAsync();
-            SelectedProfile = Profiles.FirstOrDefault();
+            
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
@@ -93,7 +97,7 @@ namespace FancyCards.ViewModels
             _deck.Settings.TrainingLearnCards = TrainingLearnCards;
             _deck.Settings.TrainingReviewCards = TrainingReviewCards;
             _deck.Settings.СorrectAnswersToFinishLearning = CorrectAnswersToFinishLearning;
-            _deck.Settings.СorrectAnswersToFinishReviewing = CorrectAnswersToFinishReviewing;
+            _deck.Settings.MaxIntervalDays = MaxIntervalDays;
 
             _deck.Settings.ReviewProfile = SelectedProfile;
 

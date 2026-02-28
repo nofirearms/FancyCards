@@ -29,7 +29,7 @@ namespace FancyCards.Helpers
     {
         public DataTemplate ReviewingTemplate { get; set; }
         public DataTemplate LearningTemplate { get; set; }
-        public DataTemplate MasteredTemplate { get; set; }
+        public DataTemplate ArchivedTemplate { get; set; }
         public DataTemplate ScheduledTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -40,7 +40,7 @@ namespace FancyCards.Helpers
             {
                 CardState.Reviewing => ReviewingTemplate,
                 CardState.Learning => LearningTemplate,
-                CardState.Mastered => MasteredTemplate,
+                CardState.Archived => ArchivedTemplate,
                 CardState.Scheduled => ScheduledTemplate,
                 _ => null
             };

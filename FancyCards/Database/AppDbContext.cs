@@ -69,13 +69,13 @@ namespace FancyCards.Database
                     Id = 2,
                     Name = "Default 2",
                     StartEF = 1.3,
-                    EasyRatioEF = 0.12,
+                    EasyRatioEF = 0.13,
                     NormalRatioEF = 0.05,
                     HardRatioEF = -0.10,
                     ErrorRatioEF = -0.15,
                     MinEF = 1.3,
                     MaxEF = 2.5,
-                    SecondRepetitionInterval = 3
+                    SecondRepetitionInterval = 4
                 }
             ]);
         }

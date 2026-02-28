@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Width="250"
     Height="auto"
@@ -38,6 +39,18 @@
                     AcceptsReturn="True"
                     Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextWrapping="Wrap" />
+            </controls:HintControl>
+
+            <controls:HintControl
+                Margin="0,0,0,5"
+                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                HintText="Profile">
+                <ComboBox
+                    Padding="10"
+                    DisplayMemberPath="Name"
+                    ItemsSource="{Binding Profiles}"
+                    SelectedItem="{Binding SelectedProfile, Mode=TwoWay}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
             </controls:HintControl>
 
             <controls:CustomNumericControl
@@ -96,6 +109,27 @@
                     </DataTemplate>
                 </controls:CustomNumericControl.ContentTemplate>
             </controls:CustomNumericControl>
+
+            <controls:CustomNumericControl
+                Margin="0,0,0,5"
+                DefaultValue="30"
+                Frequency="1"
+                MaxValue="{x:Static sys:Int32.MaxValue}"
+                MinValue="1"
+                Value="{Binding MaxIntervalDays, Mode=TwoWay}">
+                <controls:CustomNumericControl.ContentTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="1" CornerRadius="3">
+                            <TextBlock>
+                                <Run Text="Archive after (days):" />
+                                <Run Text="{Binding Path=.}" />
+                            </TextBlock>
+                        </Border>
+                    </DataTemplate>
+                </controls:CustomNumericControl.ContentTemplate>
+            </controls:CustomNumericControl>
+
+
 
         </StackPanel>
 

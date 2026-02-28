@@ -66,6 +66,9 @@
                                             Height="80"
                                             Foreground="#FF75C236"
                                             Kind="CheckBold">
+                                            <materialDesign:PackIcon.RenderTransform>
+                                                <TranslateTransform />
+                                            </materialDesign:PackIcon.RenderTransform>
                                             <materialDesign:PackIcon.Triggers>
                                                 <EventTrigger RoutedEvent="Loaded">
                                                     <BeginStoryboard>
@@ -102,6 +105,42 @@
                                                                 Storyboard.TargetProperty="Opacity"
                                                                 From="0.2"
                                                                 To="1"
+                                                                Duration="0:0:0.1" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </materialDesign:PackIcon.Triggers>
+                                        </materialDesign:PackIcon>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Type}" Value="Archived">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon
+                                            Width="80"
+                                            Height="80"
+                                            Foreground="Orange"
+                                            Kind="ArchiveCheck">
+                                            <materialDesign:PackIcon.RenderTransform>
+                                                <TranslateTransform />
+                                            </materialDesign:PackIcon.RenderTransform>
+                                            <materialDesign:PackIcon.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="1x">
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="Opacity"
+                                                                From="0.2"
+                                                                To="1"
+                                                                Duration="0:0:0.1" />
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                From="-20"
+                                                                To="0"
                                                                 Duration="0:0:0.1" />
                                                         </Storyboard>
                                                     </BeginStoryboard>
