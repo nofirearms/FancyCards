@@ -29,7 +29,7 @@ namespace FancyCards.ViewModels
         private TimeSpan _totalTimeSpent;
 
         [ObservableProperty]
-        private TimeSpan _sessionTimeSpent;
+        private TimeSpan _sessionDuration;
 
         [ObservableProperty]
         private string _answer = string.Empty;
@@ -43,7 +43,7 @@ namespace FancyCards.ViewModels
         {
             _card = card;
 
-            _totalTimeSpent = _card.TimeSpent;
+            _totalTimeSpent = _card.TotalTimeSpent;
             InitialState = _card.State;
             Difficulty = _card.Difficulty;
         }
@@ -51,7 +51,7 @@ namespace FancyCards.ViewModels
         public void OnTimerTick()
         {
             TotalTimeSpent = TotalTimeSpent.Add(TimeSpan.FromSeconds(1));
-            SessionTimeSpent = SessionTimeSpent.Add(TimeSpan.FromSeconds(1));
+            SessionDuration = SessionDuration.Add(TimeSpan.FromSeconds(1));
         }
 
 

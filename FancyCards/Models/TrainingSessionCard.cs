@@ -10,7 +10,7 @@ namespace FancyCards.Models
         public int CardId { get; set; }
         public Difficulty Difficulty { get; set; }
         public DateTime Date { get; set; }
-        public TimeSpan TimeSpent { get; set; }
+        public TimeSpan Duration { get; set; }
         public TrainingCardResult Result { get; set; }
         public CardState CardState { get; set; }
 

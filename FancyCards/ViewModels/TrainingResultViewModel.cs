@@ -7,7 +7,7 @@ namespace FancyCards.ViewModels
 
         public int SuccessCount { get; set; }
         public int FailedCount { get; set; }
-        public TimeSpan TimeSpent { get; set; }
+        public TimeSpan Duration { get; set; }
 
         public TrainingResultViewModel(IEnumerable<TrainingCardViewModel> cards)
         {
@@ -15,7 +15,7 @@ namespace FancyCards.ViewModels
 
             SuccessCount = cards.Where(c => c.CardStatus == Models.TrainingCardState.Success).Count();
             FailedCount = cards.Where(c => c.CardStatus == Models.TrainingCardState.Failed).Count();
-            TimeSpent = TimeSpan.FromSeconds( cards.Select(c => c.SessionTimeSpent.TotalSeconds).Sum());
+            Duration = TimeSpan.FromSeconds( cards.Select(c => c.SessionDuration.TotalSeconds).Sum());
         }
 
 

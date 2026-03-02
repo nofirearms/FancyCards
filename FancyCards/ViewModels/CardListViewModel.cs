@@ -11,10 +11,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Text;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
 namespace FancyCards.ViewModels
 {
-    public partial class CardListViewModel : ObservableObject
+    public partial class CardListViewModel : ObservableObject, IDisposable
     {
         private readonly DataService _dataService;
         private readonly MainWindowViewModel _host;
@@ -23,6 +24,8 @@ namespace FancyCards.ViewModels
         private ReadOnlyObservableCollection<Card> _cards;
         
         private SourceCache<Card, int> _sourceCache;
+        private IDisposable _cleanUp;
+
 
         //[ObservableProperty]
         //private int _learnCount;
@@ -61,7 +64,7 @@ namespace FancyCards.ViewModels
             _sourceCache.AddOrUpdate(cards ?? new List<Card>());
 
             // Подписываемся на изменения и пересчитываем свойства
-            var clean_up = _sourceCache.Connect()
+            _cleanUp = _sourceCache.Connect()
                 .Subscribe(cards =>
                 {
                     ScheduledCount = _sourceCache.Items.Count(o => o.NextReviewDate > DateTime.Now);
@@ -118,6 +121,10 @@ namespace FancyCards.ViewModels
         private async void OpenCardContext(Card card)
         {
             if (card is null) return;
+
+            //await _host.OpenMessageBox($"I:{card.Scores.I}; Last Review:{card.LastReviewDate}", ["Ok"], background: new SolidColorBrush(Colors.Azure));
+
+            //return;
             var result = await _host.OpenContext(new CardContextViewModel(card));
             if (result.Success)
             {
@@ -167,6 +174,7 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private CardState _selectedState = CardState.Reviewing;
+
         partial void OnSelectedStateChanged(CardState value)
         {
             UpdateFilter();
@@ -195,7 +203,19 @@ namespace FancyCards.ViewModels
             _sourceCache.Refresh(); // Перефильтрует существующие данные
         }
 
+
+
         #endregion
+
+        public void Dispose()
+        {
+            _cleanUp?.Dispose();
+            _sourceCache?.Dispose();
+            _sourceCache = null;
+            _cleanUp = null;
+            _dataService.CardEvent -= OnCardEvent;
+
+        }
     }
 }
 

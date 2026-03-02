@@ -101,7 +101,7 @@
                         <Run FontWeight="Bold" Text="{Binding TotalCards}" />
                     </TextBlock>
                     <TextBlock>
-                        <Run Text="{Binding CurrentCard.SessionTimeSpent}" />
+                        <Run Text="{Binding CurrentCard.SessionDuration}" />
                         <Run Text=" | " />
                         <Run FontWeight="Bold" Text="{Binding TrainingTime}" />
                     </TextBlock>
@@ -194,7 +194,7 @@
             </controls:HintControl>
 
             <StackPanel
-                Margin="40 5 5 5" 
+                Margin="40,5,5,5"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
                 <Button

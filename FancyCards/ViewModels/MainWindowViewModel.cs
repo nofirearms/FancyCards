@@ -121,6 +121,7 @@ namespace FancyCards.ViewModels
         private async void LoadCards(int deckId)
         {
             await StartLoading(false);
+            CardListViewModel.Dispose();
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, deckId);
             StopLoading();
         }

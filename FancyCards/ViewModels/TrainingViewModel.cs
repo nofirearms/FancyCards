@@ -240,7 +240,7 @@ namespace FancyCards.ViewModels
             {
                 card.Card.Scores.TotalCount++;
                 card.Card.LastReviewDate = DateTime.Now;
-                card.Card.TimeSpent = card.TotalTimeSpent;
+                card.Card.TotalTimeSpent = card.TotalTimeSpent;
                 card.Card.Difficulty = card.Difficulty;
 
                 if (card.CardStatus == TrainingCardState.Success)
@@ -294,7 +294,7 @@ namespace FancyCards.ViewModels
                     Date = DateTime.Now,
                     Difficulty = card.Difficulty,
                     Result = card.CardStatus == TrainingCardState.Success ? TrainingCardResult.Success : TrainingCardResult.Failed,
-                    TimeSpent = card.SessionTimeSpent,
+                    Duration = card.SessionDuration,
                 });
 
             }
@@ -303,7 +303,7 @@ namespace FancyCards.ViewModels
             {
                 Cards = session_cards,
                 Date = DateTime.Now,
-                TimeSpent = TrainingTime
+                Duration = TrainingTime
             };
 
             await _host.StartLoading(false);

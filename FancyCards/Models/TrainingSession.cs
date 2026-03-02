@@ -7,7 +7,7 @@ namespace FancyCards.Models
     public class TrainingSession : EntityBase
     {
         public DateTime Date { get; set; }
-        public TimeSpan TimeSpent { get; set; }
+        public TimeSpan Duration { get; set; }
         public IEnumerable<TrainingSessionCard> Cards { get; set; }
     }
 }

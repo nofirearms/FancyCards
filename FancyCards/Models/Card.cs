@@ -20,7 +20,7 @@ namespace FancyCards.Models
         public DateTime DateCreated { get; set; }
         public DateTime NextReviewDate { get; set; }
         public DateTime LastReviewDate { get; set; }
-        public TimeSpan TimeSpent { get; set; }
+        public TimeSpan TotalTimeSpent { get; set; }
         public int DeckId { get; set; }
 
 

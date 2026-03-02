@@ -13,7 +13,7 @@
     <StackPanel>
         <TextBlock>
             <Run Text="Time spent:" />
-            <Run Text="{Binding TimeSpent}" />
+            <Run Text="{Binding Duration}" />
         </TextBlock>
         <Button
             Grid.Row="2"

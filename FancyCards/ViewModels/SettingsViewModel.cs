@@ -9,6 +9,7 @@ using FancyPhrases.Models;
 
 using System.IO;
 using System.Reflection;
+using System.Windows;
 
 
 
@@ -98,7 +99,7 @@ namespace FancyCards.ViewModels
 
                 int i = 0;
 
-                foreach(var old_phrase in old_phrases)
+                foreach(var old_phrase in old_phrases.OrderByDescending(o => o.CreationDate))
                 {
                     Info = $"{++i} | {old_phrases.Count}";
 
@@ -113,7 +114,7 @@ namespace FancyCards.ViewModels
                         DateCreated = old_phrase.CreationDate,
                         DeckId = deck_id,
                         FrontText = old_phrase.Original,
-                        LastReviewDate = old_phrase.ClosestDate.AddDays(-intervals[old_phrase.Answers.RepeatCorrect - 1]),
+                        LastReviewDate = old_phrase.ClosestDate.AddDays(old_phrase.Answers.RepeatCorrect == 0 ? 0 : -intervals[old_phrase.Answers.RepeatCorrect - 1]),
                         NextReviewDate = old_phrase.ClosestDate,
                         Difficulty = Difficulty.Normal,
                         MessageText = string.Empty,
@@ -126,7 +127,7 @@ namespace FancyCards.ViewModels
                             PhraseState.Done => CardState.Archived,
                             _ => CardState.Learning
                         },
-                        TimeSpent = TimeSpan.Zero,
+                        TotalTimeSpent = TimeSpan.Zero,
                         Audio = new AudioSource
                         {
                             Tempo = old_phrase.Sound.Tempo,
@@ -137,9 +138,9 @@ namespace FancyCards.ViewModels
                         },
                         Scores = new CardScores
                         {
-                            CorrectCount = old_phrase.Answers.GetCorrectSum,
+                            CorrectCount = old_phrase.Answers.GetCorrectSum - 2,
                             TotalCount = old_phrase.Answers.GetTotalSum,
-                            I = intervals[old_phrase.Answers.RepeatCorrect - 1],
+                            I = old_phrase.Answers.RepeatCorrect == 0 ?  0 : intervals[old_phrase.Answers.RepeatCorrect - 1],
                             Reps = old_phrase.Answers.RepeatCorrect,
                             EF = 2.0
                         }
@@ -150,7 +151,34 @@ namespace FancyCards.ViewModels
                     cards.Add(card);
                 }
 
+                Info = $"Sesseions progress";
+                var sessions = new List<TrainingSession>();
+                foreach (var old_attempt in old_attempts) 
+                {
+                    var session = new TrainingSession
+                    {
+                        Date = old_attempt.Date,
+                        Duration = old_attempt.Duration,
+
+                    };
+                    sessions.Add(session);
+                }
+
+                Info = $"Rules progress";
+                var rules = new List<TextReplacementRule>();
+                foreach(var old_rule in old_rules)
+                {
+                    var rule = new TextReplacementRule
+                    {
+                        Original = old_rule.Input,
+                        Replacement = old_rule.Output
+                    };
+                    rules.Add(rule);
+                }
+
                 await _dataService.CreateCardsAsync(cards);
+                await _dataService.CreateTrainingSessionsAsync(sessions);
+                await _dataService.AddOrUpdateTextReplacementRuleAsync(rules);
             });
         }
 

@@ -200,6 +200,13 @@ namespace FancyCards.Services
             return session;
         }
 
+        public async Task<IEnumerable<TrainingSession>> CreateTrainingSessionsAsync(IEnumerable<TrainingSession> sessions)
+        {
+            await _repository.AddOrUpdateAsync(sessions);
+
+            return sessions;
+        }
+
         #endregion
 
         //----------------------------------------------------------------------------- TRAINING SESSION CARDS -------------------------------------------------------------
