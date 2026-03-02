@@ -39,6 +39,7 @@ namespace FancyCards.ViewModels
         private int _archivedCount;
 
 
+
         public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
         {
             _dataService = dataService;
@@ -47,12 +48,12 @@ namespace FancyCards.ViewModels
             
             _dataService.CardEvent += OnCardEvent;
 
-            InitializeAsync(deckId);
+            _ = InitializeAsync(deckId);
         }
 
-        private async void InitializeAsync(int deckId)
+        private async Task InitializeAsync(int deckId)
         {
-
+            if (deckId == 0) return;
             //_cards = new ObservableCollection<Card>(_decks.First().Cards ?? new List<Card>());
             _sourceCache = new SourceCache<Card, int>(o => o.Id);
 
@@ -60,7 +61,7 @@ namespace FancyCards.ViewModels
             _sourceCache.AddOrUpdate(cards ?? new List<Card>());
 
             // Подписываемся на изменения и пересчитываем свойства
-            var _cleanUp = _sourceCache.Connect()
+            var clean_up = _sourceCache.Connect()
                 .Subscribe(cards =>
                 {
                     ScheduledCount = _sourceCache.Items.Count(o => o.NextReviewDate > DateTime.Now);
@@ -156,7 +157,7 @@ namespace FancyCards.ViewModels
             }
         }
 
-        public IEnumerable<CardState> States => new List<CardState>
+        public List<CardState> States => new List<CardState>
         {
             CardState.Scheduled,
             CardState.Learning,

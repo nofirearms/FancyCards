@@ -58,7 +58,7 @@ namespace FancyCards.Database
                     EasyEF = 1.80,
                     NormalEF = 1.60,
                     HardEF = 1.40,
-                    EasySecondRepetitionInterval = 3,
+                    EasySecondRepetitionInterval = 4,
                     NormalSecondRepetitionInterval = 3,
                     HardSecondRepetitionInterval = 3,
                 },

@@ -80,6 +80,7 @@ namespace FancyCards.ViewModels
             _cursorManager = new LoadingCursorManager();
 
             OverlayViewModel = overlayViewModel;
+            CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, 0);
 
             // Подписываемся на изменение коллекции модальных окон
             ((INotifyCollectionChanged)_modalService.ActiveModals).CollectionChanged += (s, e) =>

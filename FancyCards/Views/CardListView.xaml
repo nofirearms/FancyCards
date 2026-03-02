@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="clr-namespace:FancyCards.Behaviors"
     xmlns:controls="clr-namespace:FancyCards.Controls"
+    xmlns:converters="clr-namespace:FancyCards.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="clr-namespace:FancyCards.Helpers"
     xmlns:interation="http://schemas.microsoft.com/xaml/behaviors"
@@ -17,7 +18,12 @@
     d:DesignWidth="800"
     Background="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Background}"
     mc:Ignorable="d">
+
     <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+        <converters:IsNullTovisibilityConverter x:Key="IsNullTovisibilityConverter" />
+
         <DataTemplate x:Key="ReviewingTemplate">
             <StackPanel Orientation="Vertical">
                 <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Refresh" />
@@ -79,7 +85,6 @@
             BorderThickness="1"
             CornerRadius="3"
             DockPanel.Dock="Top">
-
             <ListView materialDesign:RippleAssist.IsDisabled="True" ItemsSource="{Binding Cards}">
                 <ListView.ItemContainerStyle>
                     <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListViewItem">
@@ -115,6 +120,7 @@
             </Grid.ColumnDefinitions>
 
             <Border
+                x:Name="StatesBorder"
                 Padding="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
@@ -124,7 +130,6 @@
                     Cursor="Hand"
                     ItemTemplateSelector="{StaticResource CardStateTemplateSelector}"
                     ItemsSource="{Binding States}"
-                    SelectedIndex="0"
                     SelectedValue="{Binding SelectedState, Mode=TwoWay}">
 
                     <ListView.ItemContainerStyle>
