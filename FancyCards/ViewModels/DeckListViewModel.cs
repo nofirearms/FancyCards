@@ -36,7 +36,7 @@ namespace FancyCards.ViewModels
 
             _dataService.DeckEvent += OnDeckEvent;
 
-            var _ = InitializeAsync();
+            _ = InitializeAsync();
         }
 
         private async Task InitializeAsync()
@@ -97,8 +97,10 @@ namespace FancyCards.ViewModels
         }
 
 
-        [RelayCommand]
-        private async void CreateDeck(Deck deck)
+        private AsyncRelayCommand<Deck> _createDeckCommand;
+        public IAsyncRelayCommand CreateDeckCommand => _createDeckCommand ??= new AsyncRelayCommand<Deck>(CreateDeck);
+
+        private async Task CreateDeck(Deck deck)
         {
             var result = await _host.OpenDeckModal(deck);
             if (result.Success)

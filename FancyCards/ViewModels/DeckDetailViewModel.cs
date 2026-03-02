@@ -86,10 +86,10 @@ namespace FancyCards.ViewModels
             
         }
 
-        [RelayCommand(CanExecute = nameof(CanSave))]
-        private async void Save()
+        private AsyncRelayCommand _saveCommand;
+        public IAsyncRelayCommand SaveCommand => _saveCommand ??= new AsyncRelayCommand(Save, CanSave);
+        private async Task Save()
         {
-
             _deck.Name = Name;
             _deck.Description = Description;
             _deck.Cards = new List<Card>();

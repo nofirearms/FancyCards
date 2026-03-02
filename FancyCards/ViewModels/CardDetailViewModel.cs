@@ -123,8 +123,9 @@ namespace FancyCards.ViewModels
 
         }
 
-        [RelayCommand(CanExecute = nameof(CanSaveCard))]
-        private async void SaveCard()
+        private AsyncRelayCommand _saveCardCommand;
+        public IAsyncRelayCommand SaveCardCommand => _saveCardCommand ??= new AsyncRelayCommand(SaveCard, CanSaveCard);
+        private async Task SaveCard()
         {
             //create
             if (CardAction == CardAction.Create)
