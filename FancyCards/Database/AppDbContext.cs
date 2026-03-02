@@ -55,28 +55,14 @@ namespace FancyCards.Database
                 {
                     Id = 1,
                     Name = "Default",
-                    StartEF = 2.1,
-                    EasyRatioEF = 0.08,
-                    NormalRatioEF = -0.05,
-                    HardRatioEF = -0.15,
-                    ErrorRatioEF = -0.25,
-                    MinEF = 1.3,
-                    MaxEF = 2.5,
-                    SecondRepetitionInterval = 3
+                    EasyEF = 1.80,
+                    NormalEF = 1.60,
+                    HardEF = 1.40,
+                    EasySecondRepetitionInterval = 3,
+                    NormalSecondRepetitionInterval = 3,
+                    HardSecondRepetitionInterval = 3,
                 },
-                new ReviewProfile
-                {
-                    Id = 2,
-                    Name = "Default 2",
-                    StartEF = 1.3,
-                    EasyRatioEF = 0.13,
-                    NormalRatioEF = 0.05,
-                    HardRatioEF = -0.10,
-                    ErrorRatioEF = -0.15,
-                    MinEF = 1.3,
-                    MaxEF = 2.5,
-                    SecondRepetitionInterval = 4
-                }
+
             ]);
         }
     }

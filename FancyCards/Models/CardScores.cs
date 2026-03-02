@@ -19,9 +19,10 @@ namespace FancyCards.Models
         /// <summary>
         /// ease factor
         /// </summary>
-        public double EF { get; set; } = 2.5; 
-
-
-
+        public double EF { get; set; } = 2.5;
+        /// <summary>
+        /// ошибка в последней попытке
+        /// </summary>
+        public bool Error { get; set; } = false;
     }
 }

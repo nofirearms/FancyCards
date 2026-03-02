@@ -3,9 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Services;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FancyCards.ViewModels
 {
@@ -38,6 +40,7 @@ namespace FancyCards.ViewModels
         private double _maxSampleVolume = 0;
 
         private const double TOLERANCE = 0.13;
+        private const double PUNISH_RATIO = 3;
 
         public IEnumerable<Difficulty> Difficulties => Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>();
 
@@ -163,8 +166,11 @@ namespace FancyCards.ViewModels
         }
         #endregion
 
-        [RelayCommand]
-        private async void Accept()
+        //----------------------------------------------------------------------------------------------------------------------------------------------------
+        
+        private AsyncRelayCommand _acceptCommand;
+        public IAsyncRelayCommand AcceptCommand => _acceptCommand ??= new AsyncRelayCommand(Accept);
+        private async Task Accept()
         {
             if (string.IsNullOrEmpty(CurrentCard.Answer)) return;
 
@@ -321,55 +327,65 @@ namespace FancyCards.ViewModels
         {
             var profile = _host.Deck.Deck.Settings.ReviewProfile;
 
+            double ef = 0;
+            int second_interval = 0;
+
+            if (card.Difficulty == Difficulty.Hard)
+            {
+                ef = profile.HardEF;
+                second_interval = profile.HardSecondRepetitionInterval;
+            }
+            else if (card.Difficulty == Difficulty.Normal)
+            {
+                ef = profile.NormalEF;
+                second_interval = profile.NormalSecondRepetitionInterval;
+            }
+            else if (card.Difficulty == Difficulty.Easy)
+            {
+                ef = profile.EasyEF;
+                second_interval = profile.EasySecondRepetitionInterval;
+            }
 
             if (card.CardStatus == TrainingCardState.Failed)
             {
-                //card.Card.Scores.Reps = 0;
-                //card.Card.Scores.I = 1;
-                //card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.ErrorRatioEF, profile.MinEF, profile.MaxEF);
 
-                if(card.Card.Scores.Reps == 0)
-                {
-                    //card.Card.Scores.I = 1;
-                }
-                else
-                {
-                    card.Card.Scores.I = Math.Max(profile.SecondRepetitionInterval, card.Card.Scores.I - card.Card.Scores.I / 4);
-                }
-                card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.ErrorRatioEF, profile.MinEF, profile.MaxEF);
+                //card.Card.Scores.I = Math.Max(1, card.Card.Scores.I - (int)Math.Ceiling(card.Card.Scores.I / PUNISH_RATIO));
 
+               //card.Card.Scores.I = Math.Max(1, card.Card.Scores.I / 2);
+
+               //откат на 2 шага
+                card.Card.Scores.I = (int)Math.Max(1, Math.Ceiling(Math.Ceiling(card.Card.Scores.I / ef)) / ef);
+                card.Card.Scores.Error = true;
+                //повторяем на следующий день
                 card.Card.NextReviewDate = DateTime.Now.Date.AddDays(1);
             }
             else
             {
-                if(card.Difficulty == Difficulty.Hard)
-                {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.HardRatioEF, profile.MinEF, profile.MaxEF);
-                }
-                else if(card.Difficulty == Difficulty.Normal)
-                {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.NormalRatioEF , profile.MinEF, profile.MaxEF);
-                }
-                else if (card.Difficulty == Difficulty.Easy)
-                {
-                    card.Card.Scores.EF = Math.Clamp(card.Card.Scores.EF + profile.EasyRatioEF, profile.MinEF, profile.MaxEF);
-                }
 
-                if (card.Card.Scores.Reps == 0)
+                if (card.Card.Scores.I == 0)
                 {
                     card.Card.Scores.I = 1;
                 }
-                else if (card.Card.Scores.Reps == 1)
+                else 
                 {
-                    card.Card.Scores.I = profile.SecondRepetitionInterval;
-                }
-                else if (card.Card.Scores.Reps >= 2)
-                {
-                    card.Card.Scores.I = (int)Math.Round(card.Card.Scores.I * card.Card.Scores.EF, MidpointRounding.AwayFromZero);
+                    //суть алгоритма: При штрафах, смене сложности или смене алгоритма могут появляться интервалы дней, которые не соответствуют формулам,
+                    //поэтому мы ищем ближайшее число из формулы дат, которое меньше I и уже дальше его прогоняем через основную формулу рачёта дат
+                    var i = second_interval;
+                    while ((int)Math.Ceiling(i * ef) <= card.Card.Scores.I)
+                    {
+                        i = (int)Math.Ceiling(i * ef);
+                    }
+                    //делаем расчёт по формулам, только если не было ошибки в предыдущей попытке
+                    if (!card.Card.Scores.Error)
+                    {
+                        i = (int)Math.Ceiling(i * ef);
+                    }
 
+                    card.Card.Scores.I = i;
+                    card.Card.Scores.Error = false;
                     //после этого карточка будет выучена
                     //делаем допуск - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE, чтобы если значение рядом, то тоже засчитывалось
-                    if (card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE) 
+                    if (card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
                         card.Card.Scores.I = _host.Deck.Deck.Settings.MaxIntervalDays;
                 }
 
@@ -380,6 +396,7 @@ namespace FancyCards.ViewModels
         }
 
 
+       
 
         protected override async void Cancel()
         {
