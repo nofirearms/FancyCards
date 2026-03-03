@@ -18,11 +18,11 @@ namespace FancyCards.Services
         {
             var rules = await _dataService.GetTextReplacementRules();
 
-            var result = text;
+            var result = text.ToLower();
 
             foreach (var rule in rules)
             {
-                result.ToLower().Replace(rule.Original, rule.Replacement);
+                result = result.Replace(rule.Original, rule.Replacement);
             }
 
             return result;

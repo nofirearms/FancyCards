@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="1" Orientation="Vertical">
-            <!--<Grid Margin="0,0,0,5">
+            <Grid Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -41,8 +41,6 @@
                         TextWrapping="Wrap" />
                 </controls:HintControl>
 
-
-
                 <controls:HintControl
                     Grid.Column="1"
                     HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
@@ -55,7 +53,7 @@
                         Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         TextWrapping="Wrap" />
                 </controls:HintControl>
-            </Grid>-->
+            </Grid>
 
             <controls:HintControl
                 Margin="0,0,0,5"

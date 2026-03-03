@@ -182,7 +182,7 @@ namespace FancyCards.ViewModels
                 if (!CurrentCard.Hint)
                 {
                     CurrentCard.CardStatus = TrainingCardState.Success;
-                    if (CurrentCard.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays)
+                    if (CurrentCard.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
                     {
                         await _overlayService.ShowAndHideAsync(OverlayType.Archived, 1000);
                         //await _host.OpenMessageBox("Card moved to archive!", ["Ok"], "Congratulations!", new SolidColorBrush(Colors.GreenYellow));

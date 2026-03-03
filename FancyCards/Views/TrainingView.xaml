@@ -116,7 +116,9 @@
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                        IsHitTestVisible="False">
+                        IsHitTestVisible="False"
+                        TextAlignment="Left"
+                        TextWrapping="Wrap">
                         <interaction:Interaction.Triggers>
                             <interaction:DataTrigger Binding="{Binding CurrentCard.ShowBack}" Value="true">
                                 <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.BackText}" />
@@ -152,7 +154,9 @@
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                        IsHitTestVisible="False">
+                        IsHitTestVisible="False"
+                        TextAlignment="Left"
+                        TextWrapping="Wrap">
                         <interaction:Interaction.Triggers>
                             <interaction:DataTrigger Binding="{Binding CurrentCard.Hint}" Value="true">
                                 <interaction:ChangePropertyAction PropertyName="Text" Value="{Binding CurrentCard.Card.FrontText}" />
@@ -181,16 +185,41 @@
                 </RadioButton>
             </Grid>
 
+            <controls:HintControl
+                Margin="0,0,0,10"
+                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                HintText="Comment">
+                <RichTextBox
+                    Padding="10"
+                    IsHitTestVisible="False"
+                    Style="{StaticResource MaterialDesignOutlinedRichTextBox}">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding CurrentCard.Card.PrefixText}" />
+                            <LineBreak />
+                            <Run Text="{Binding CurrentCard.Card.CommentText}" />
+                            <LineBreak />
+                            <Run Text="{Binding CurrentCard.Card.SuffixText}" />
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+
+            </controls:HintControl>
 
             <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Answer">
-                <TextBox
-                    materialDesign:HintAssist.Hint=""
-                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
-                    Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <interaction:Interaction.Behaviors>
-                        <behaviors:SetFocusBehavior />
-                    </interaction:Interaction.Behaviors>
-                </TextBox>
+                <Grid>
+                    <TextBox
+                        materialDesign:HintAssist.Hint=""
+                        materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                        Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        TextAlignment="Left"
+                        TextWrapping="Wrap">
+                        <interaction:Interaction.Behaviors>
+                            <behaviors:SetFocusBehavior />
+                        </interaction:Interaction.Behaviors>
+                    </TextBox>
+                </Grid>
+
             </controls:HintControl>
 
             <StackPanel
