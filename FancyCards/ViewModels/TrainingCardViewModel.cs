@@ -38,6 +38,7 @@ namespace FancyCards.ViewModels
         private Difficulty _difficulty;
 
         public CardState InitialState { get; }
+        public Difficulty InitialDifficulty { get; }
 
         public TrainingCardViewModel(Card card)
         {
@@ -45,6 +46,7 @@ namespace FancyCards.ViewModels
 
             _totalTimeSpent = _card.TotalTimeSpent;
             InitialState = _card.State;
+            InitialDifficulty = _card.Difficulty;
             Difficulty = _card.Difficulty;
         }
 

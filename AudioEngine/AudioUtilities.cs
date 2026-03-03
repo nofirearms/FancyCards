@@ -7,7 +7,7 @@ namespace FancyCards.Audio
     public class AudioUtilities
     {
 
-        //------------------------------------------------------------------------------------------------------------------------------------------- DEVICES -----------------------------//
+        //------------------------------------------------------------------------------------------------------------------------------------------- DEVICES --------------------------------
         #region DEVICES
         private MMDeviceEnumerator _deviceEnumerator = new MMDeviceEnumerator();
         /// <summary>
@@ -42,7 +42,7 @@ namespace FancyCards.Audio
         public WasapiCapture GetWasapiCaptureInstance(MMDevice device) => device.DataFlow == DataFlow.Capture ? new WasapiCapture(device) : new WasapiLoopbackCapture(device);
         #endregion
 
-        //------------------------------------------------------------------------------------------------------------------------------------------- AUDIO PROCESSING -------------------------
+        //------------------------------------------------------------------------------------------------------------------------------------------- AUDIO PROCESSING -----------------------
         #region AUDIO PROCESSING
 
         /// <summary>Обрезать 0 - 1</summary>
@@ -125,7 +125,7 @@ namespace FancyCards.Audio
 
         #endregion
 
-        //--------------------------------------------------------- EXPORT ------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------------------- EXPORT ---------------------------------
         #region EXPORT
 
         /// <summary>Экспорт текущего PCM в WAV файл</summary>
@@ -166,8 +166,11 @@ namespace FancyCards.Audio
         /// <returns></returns>
         public int GetLength(string path)
         {
-            var audio = new AudioFileReader(path);
-            return (int)audio.Length;
+           
+            using(var audio = new AudioFileReader(path))
+            {
+                return (int)audio.Length;
+            }
         }
 
         public void CreateDirectory(string path)

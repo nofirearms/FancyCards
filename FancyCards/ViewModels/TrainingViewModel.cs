@@ -330,6 +330,8 @@ namespace FancyCards.ViewModels
             double ef = 0;
             int second_interval = 0;
 
+            double initial_ef = 0;
+
             if (card.Difficulty == Difficulty.Hard)
             {
                 ef = profile.HardEF;
@@ -345,6 +347,22 @@ namespace FancyCards.ViewModels
                 ef = profile.EasyEF;
                 second_interval = profile.EasySecondRepetitionInterval;
             }
+
+            if (card.InitialDifficulty == Difficulty.Hard)
+            {
+                initial_ef = profile.HardEF;
+            }
+            else if (card.InitialDifficulty == Difficulty.Normal)
+            {
+                initial_ef = profile.NormalEF;                
+            }
+            else if (card.InitialDifficulty == Difficulty.Easy)
+            {
+                initial_ef = profile.EasyEF;
+            }
+
+            //разность ef мнежно изначальной сложностью и новой
+            double ef_difference = ef - initial_ef;
 
             if (card.CardStatus == TrainingCardState.Failed)
             {
@@ -368,27 +386,44 @@ namespace FancyCards.ViewModels
                 }
                 else 
                 {
+                    //делаем расчёт по формулам, только если не было ошибки в предыдущей попытке
+                    var new_i = card.Card.Scores.I;
+                    if (!card.Card.Scores.Error)
+                    {
+                        new_i = (int)Math.Ceiling(new_i * ef);
+                    }
+
                     //суть алгоритма: При штрафах, смене сложности или смене алгоритма могут появляться интервалы дней, которые не соответствуют формулам,
                     //поэтому мы ищем ближайшее число из формулы дат, которое меньше I и уже дальше его прогоняем через основную формулу рачёта дат
                     var i = second_interval;
-                    while ((int)Math.Ceiling(i * ef) <= card.Card.Scores.I)
+                    //если сложность изменилась на более сложную или осталась без изменений, берём первое число по формуле, которое меньше получившегося после вычисления
+                    //например после вычислений получилось 10, берём 8, а не 13
+                    if(ef_difference <= 0)
                     {
-                        i = (int)Math.Ceiling(i * ef);
+                        while ((int)Math.Ceiling(i * ef) <= new_i)
+                        {
+                            i = (int)Math.Ceiling(i * ef);
+                        }
                     }
-                    //делаем расчёт по формулам, только если не было ошибки в предыдущей попытке
-                    if (!card.Card.Scores.Error)
+                    //если сложность изменилась на более лёгкую, берём первое число по формуле, которое больше получившегося после вычисления
+                    //например получилось 10, берем 13, а не 8
+                    else
                     {
-                        i = (int)Math.Ceiling(i * ef);
+                        while (i <= new_i)
+                        {
+                            i = (int)Math.Ceiling(i * ef);
+                        }
                     }
-
+                        
                     card.Card.Scores.I = i;
-                    card.Card.Scores.Error = false;
+
                     //после этого карточка будет выучена
                     //делаем допуск - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE, чтобы если значение рядом, то тоже засчитывалось
                     if (card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
                         card.Card.Scores.I = _host.Deck.Deck.Settings.MaxIntervalDays;
                 }
 
+                card.Card.Scores.Error = false;
                 card.Card.Scores.Reps++;
 
                 card.Card.NextReviewDate = DateTime.Now.Date.AddDays(card.Card.Scores.I);

@@ -138,13 +138,19 @@ namespace FancyCards.ViewModels
                         },
                         Scores = new CardScores
                         {
-                            CorrectCount = old_phrase.Answers.GetCorrectSum - 2,
+                            CorrectCount = old_phrase.State switch
+                            {
+                                PhraseState.Repeat => old_phrase.Answers.GetCorrectSum - 2,
+                                PhraseState.Learn => old_phrase.Answers.LearnCorrect,
+                                PhraseState.Done => old_phrase.Answers.GetCorrectSum - 2,
+                                _ => 0
+                            },
                             TotalCount = old_phrase.Answers.GetTotalSum,
-                            I = old_phrase.Answers.RepeatCorrect == 0 ?  0 : intervals[old_phrase.Answers.RepeatCorrect - 1],
+                            I = old_phrase.Answers.RepeatCorrect == 0 ? 0 : intervals[old_phrase.Answers.RepeatCorrect - 1],
                             Reps = old_phrase.Answers.RepeatCorrect,
                             EF = 2.0
                         }
-                         
+
 
                     };
 
