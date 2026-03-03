@@ -67,6 +67,7 @@
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
                     Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextAlignment="Left"
                     TextWrapping="Wrap" />
             </controls:HintControl>
 
@@ -80,6 +81,7 @@
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
                     Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextAlignment="Left"
                     TextWrapping="Wrap" />
             </controls:HintControl>
 
@@ -93,6 +95,7 @@
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
                     Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextAlignment="Left"
                     TextWrapping="Wrap" />
             </controls:HintControl>
 
@@ -106,6 +109,7 @@
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
                     Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextAlignment="Left"
                     TextWrapping="Wrap" />
             </controls:HintControl>
 
@@ -172,15 +176,15 @@
 
 
         </StackPanel>
-        <StackPanel  
+        <StackPanel
             Grid.Row="2"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
-            <Button 
+            <Button
                 Margin="5,0"
                 Command="{Binding SaveCardCommand}"
                 Content="{materialDesign:PackIcon Kind=ContentSave}" />
-            <Button  Command="{Binding CancelCommand}" Content="{materialDesign:PackIcon Kind=Close}" />
+            <Button Command="{Binding CancelCommand}" Content="{materialDesign:PackIcon Kind=Close}" />
         </StackPanel>
     </Grid>
 

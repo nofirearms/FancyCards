@@ -47,6 +47,8 @@
                 HintText="Profile">
                 <ComboBox
                     Padding="10"
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     DisplayMemberPath="Name"
                     ItemsSource="{Binding Profiles}"
                     SelectedItem="{Binding SelectedProfile, Mode=TwoWay}"
