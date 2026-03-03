@@ -75,7 +75,7 @@ namespace FancyCards.ViewModels
                 _trainingReviewCards = _deck.Settings.TrainingReviewCards;
                 _correctAnswersToFinishLearning = _deck.Settings.СorrectAnswersToFinishLearning;
                 _maxIntervalDays = _deck.Settings.MaxIntervalDays;
-                _selectedProfile = _deck.Settings.ReviewProfile;
+                _selectedProfile = Profiles.FirstOrDefault(p => p.Id == _deck.Settings.ReviewProfile.Id);
             }
 
             var _ = InitializeAsync();
