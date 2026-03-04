@@ -65,7 +65,7 @@
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
                     Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextAlignment="Left"
+                    TextAlignment="Left" Style="{StaticResource CustomTextbox}"
                     TextWrapping="Wrap" />
             </controls:HintControl>
 

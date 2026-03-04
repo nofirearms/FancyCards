@@ -189,25 +189,19 @@
                 Margin="0,0,0,10"
                 HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
                 HintText="Comment">
-                <RichTextBox
+                <TextBox
                     Padding="10"
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     IsHitTestVisible="False"
-                    Style="{StaticResource MaterialDesignOutlinedRichTextBox}">
-                    <FlowDocument>
-                        <Paragraph>
-                            <Run Text="{Binding CurrentCard.Card.PrefixText}" />
-                            <LineBreak />
-                            <Run Text="{Binding CurrentCard.Card.CommentText}" />
-                            <LineBreak />
-                            <Run Text="{Binding CurrentCard.Card.SuffixText}" />
-                        </Paragraph>
-                    </FlowDocument>
-                </RichTextBox>
+                    Text="{Binding CurrentCard.Card.CommentText}"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap" />
 
             </controls:HintControl>
 
             <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Answer">
-                <Grid>
+                <!--<Grid>
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
@@ -218,8 +212,11 @@
                             <behaviors:SetFocusBehavior />
                         </interaction:Interaction.Behaviors>
                     </TextBox>
-                </Grid>
-
+                </Grid>-->
+                <controls:AnswerTextBoxControl
+                    Prefix="{Binding CurrentCard.Card.PrefixText}"
+                    Suffix="{Binding CurrentCard.Card.SuffixText}"
+                    Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </controls:HintControl>
 
             <StackPanel

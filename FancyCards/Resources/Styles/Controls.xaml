@@ -13,6 +13,64 @@
         <Setter Property="FontSize" Value="18" />
     </Style>
 
+    <Style x:Key="CustomTextbox" TargetType="TextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <!--  Border - визуальная оболочка  -->
+                        <Border
+                            x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="1" Margin="1"
+                            CornerRadius="4"
+                            SnapsToDevicePixels="True">
+
+                            <!--  ScrollViewer для прокрутки текста  -->
+                            <ScrollViewer
+                                x:Name="PART_ContentHost"
+                                Margin="{TemplateBinding Padding}"
+                                Padding="{TemplateBinding Padding}"
+                                VerticalAlignment="Center"
+                                HorizontalScrollBarVisibility="Auto"
+                                VerticalScrollBarVisibility="Auto" />
+                        </Border>
+
+                    </Grid>
+
+                    <!--  Триггеры для изменения состояний  -->
+                    <ControlTemplate.Triggers>
+
+                        <!--  При наведении мыши  -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="border" Property="Padding" Value="0" />
+                        </Trigger>
+
+                        <!--  При получении фокуса  -->
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
+                            <Setter TargetName="border" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="border" Property="Padding" Value="0" />
+                        </Trigger>
+
+                        <!--  Когда отключен  -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#AAAAAA" />
+                            <Setter TargetName="border" Property="Background" Value="#F5F5F5" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#DDDDDD" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="CustomBorderSimpleStyle" TargetType="Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />

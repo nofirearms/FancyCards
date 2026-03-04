@@ -187,7 +187,8 @@
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     materialDesign:TextFieldAssist.HasClearButton="True"
-                    Text="{Binding FrontTextFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    Text="{Binding FrontTextFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
             </controls:HintControl>
         </Grid>
 
