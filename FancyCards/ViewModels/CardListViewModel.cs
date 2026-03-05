@@ -186,7 +186,7 @@ namespace FancyCards.ViewModels
             return item =>
             {
                 bool date_pass = SelectedState == CardState.Scheduled 
-                    ? item.NextReviewDate > DateTime.Now 
+                    ? item.NextReviewDate > DateTime.Now && item.State != CardState.Archived
                     : item.NextReviewDate <= DateTime.Now && SelectedState == item.State;
 
                  var text_pass = string.IsNullOrEmpty(FrontTextFilter) ||

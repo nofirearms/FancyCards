@@ -212,8 +212,12 @@ namespace FancyCards.ViewModels
 
                 var old_cards = new List<Phrase>();
 
+                var i = 0;
+
                 foreach (var card in cards)
                 {
+                    i++;
+                    Info = $"{Math.Round(((double)i / cards.Count()) * 100)}";
                     var old_card = new Phrase
                     {
                         Id = card.Id,
@@ -241,10 +245,10 @@ namespace FancyCards.ViewModels
                         },
                         Answers = new Answers
                         {
-                            LearnCorrect = Math.Max(card.Scores.CorrectCount, 2),
-                            RepeatCorrect = intervals.Select((value, index) => new { Value = value, Index = index }).OrderBy(x => Math.Abs(x.Value - card.Scores.I)).First().Index,
-                            LearnTotal = Math.Max(card.Scores.CorrectCount, 2),
-                            RepeatTotal = card.Scores.TotalCount - Math.Max(card.Scores.CorrectCount, 2)
+                            LearnCorrect = Math.Min(card.Scores.CorrectCount, 2),
+                            RepeatCorrect = intervals.Select((value, index) => new { Value = value, Index = index }).OrderBy(x => Math.Abs(x.Value - card.Scores.I)).First().Index + 1,
+                            LearnTotal = Math.Min(card.Scores.CorrectCount, 2),
+                            RepeatTotal = card.Scores.TotalCount - Math.Min(card.Scores.CorrectCount, 2)
                         }
                     };
 

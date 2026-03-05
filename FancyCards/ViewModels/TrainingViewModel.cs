@@ -281,7 +281,7 @@ namespace FancyCards.ViewModels
                     else if (card.Card.State == CardState.Reviewing)
                     {
                         //считается выученной
-                        if(card.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays)
+                        if(card.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
                         {
                             card.Card.State = CardState.Archived;
                         }

@@ -49,6 +49,7 @@ namespace FancyCards.ViewModels
         {
             CardState.Learning,
             CardState.Reviewing,
+            CardState.Archived
         };
         [ObservableProperty]
         private CardState _selectedState = CardState.Learning;
