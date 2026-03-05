@@ -2,6 +2,7 @@
     x:Class="FancyCards.Views.StatisticsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:FancyCards.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -11,12 +12,19 @@
     Height="400"
     d:DataContext="{d:DesignInstance vm:StatisticsViewModel}"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <ListView materialDesign:RippleAssist.IsDisabled="True" ItemsSource="{Binding Sessions}">
+        <ListView
+            materialDesign:RippleAssist.IsDisabled="True"
+            ItemsSource="{Binding Sessions}"
+            VirtualizingPanel.IsVirtualizing="True"
+            VirtualizingPanel.VirtualizationMode="Recycling">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -25,7 +33,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Date, StringFormat='\{0:dd.MM.yyyy}'}" />
-                        <TextBlock Grid.Column="1" Text="{Binding TotalTimeSpent}" />
+                        <TextBlock Grid.Column="1" Text="{Binding TotalTimeSpent, Converter={StaticResource TimeSpanToStringConverter}}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -34,6 +42,11 @@
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </ListView.ItemContainerStyle>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
         </ListView>
 
         <StackPanel

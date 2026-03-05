@@ -35,7 +35,7 @@ namespace FancyCards.ViewModels
                 TotalTimeSpent = TimeSpan.FromSeconds(g.Sum(s => s.Duration.TotalSeconds))
             });
 
-            Sessions = summaries.ToList();
+            Sessions = summaries.OrderByDescending(s => s.Date).ToList();
         }
 
     }
