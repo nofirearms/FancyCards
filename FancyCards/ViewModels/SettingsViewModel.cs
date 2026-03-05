@@ -196,6 +196,75 @@ namespace FancyCards.ViewModels
             _host.StopLoading();
         }
 
+        private AsyncRelayCommand _exportOldDataCommand;
+        public IAsyncRelayCommand ExportOldDataCommand => _exportOldDataCommand ??= new AsyncRelayCommand(ExportOldDataAsync);
+
+        public async Task ExportOldDataAsync()
+        {
+            await System.Threading.Tasks.Task.Run(async () =>
+            {
+
+                var cards = await _dataService.GetCardsAsync(_host.Deck.Deck.Id);
+
+                int[] intervals = new int[] { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181 };
+
+                var audio_utilities = new AudioUtilities();
+
+                var old_cards = new List<Phrase>();
+
+                foreach (var card in cards)
+                {
+                    var old_card = new Phrase
+                    {
+                        Id = card.Id,
+                        Original = card.FrontText,
+                        Translation = card.BackText,
+                        CreationDate = card.DateCreated,
+                        ClosestDate = card.NextReviewDate,
+                        State = card.State switch
+                        {
+                            CardState.Reviewing => PhraseState.Repeat,
+                            CardState.Learning => PhraseState.Learn,
+                            CardState.Archived => PhraseState.Done,
+                            _ => PhraseState.Done
+                        },
+                        PreOriginal = card.PrefixText,
+                        PostOriginal = card.SuffixText,
+                        Remark = card.CommentText,
+                        Sound = new Sound
+                        {
+                            Path = $"Phrases/{Path.GetFileName(card.Audio.Path)}",
+                            StartPosition = (long)(audio_utilities.GetLength(card.Audio.Path) * card.Audio.StartPosition),
+                            StopPosition = (long)(audio_utilities.GetLength(card.Audio.Path) * (1 - card.Audio.EndPosition)),
+                            Tempo = card.Audio.Tempo,
+                            Volume = (float)card.Audio.Volume
+                        },
+                        Answers = new Answers
+                        {
+                            LearnCorrect = Math.Max(card.Scores.CorrectCount, 2),
+                            RepeatCorrect = intervals.Select((value, index) => new { Value = value, Index = index }).OrderBy(x => Math.Abs(x.Value - card.Scores.I)).First().Index,
+                            LearnTotal = Math.Max(card.Scores.CorrectCount, 2),
+                            RepeatTotal = card.Scores.TotalCount - Math.Max(card.Scores.CorrectCount, 2)
+                        }
+                    };
+
+                    old_cards.Add(old_card);
+                }
+
+                var sessions = await _dataService.GetTrainingSessionsAsync(_host.Deck.Deck.Id);
+
+                var old_sessions = sessions.Select(o => new Attempt { Date = o.Date, Duration = o.Duration });
+
+                PathHelper.CreateDirectory("Export Data/");
+
+                PathHelper.WriteFile(old_cards, Path.Combine("Export Data", "Phrases.json"));
+                PathHelper.WriteFile(old_sessions, Path.Combine("Export Data", "Attempts.json"));
+
+            });
+
+
+        }
+
         [RelayCommand]
         private async void Save()
         {

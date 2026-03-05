@@ -19,7 +19,15 @@
             <Run Foreground="Green" Text="{Binding Info}" />
         </TextBlock>
 
-        <Button Command="{Binding RunScriptCommand}" Content="Run Script" />
+        <Button
+            Margin="0,5,0,0"
+            Command="{Binding RunScriptCommand}"
+            Content="Run Script" />
+
+        <Button
+            Margin="0,5,0,0"
+            Command="{Binding ExportOldDataCommand}"
+            Content="Export old data" />
 
         <StackPanel
             Margin="0,5,0,0"

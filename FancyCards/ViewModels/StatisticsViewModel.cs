@@ -32,7 +32,10 @@ namespace FancyCards.ViewModels
             var summaries = sessions.GroupBy(s => s.Date.Date).Select(g => new SessionsDailySummary
             {
                 Date = g.Key,
-                TotalTimeSpent = TimeSpan.FromSeconds(g.Sum(s => s.Duration.TotalSeconds))
+                TotalTimeSpent = TimeSpan.FromSeconds(g.Sum(s => s.Duration.TotalSeconds)),
+                CardsCount = g.SelectMany(s => s.Cards).Select(c => c.CardId).Distinct().Count(),
+                Attempts = g.Count(),
+                
             });
 
             Sessions = summaries.OrderByDescending(s => s.Date).ToList();
@@ -44,5 +47,7 @@ namespace FancyCards.ViewModels
     {
         public TimeSpan TotalTimeSpent { get; set; }
         public DateTime Date { get; set; }
+        public int CardsCount { get; set; }
+        public int Attempts { get; set; }
     }
 }
