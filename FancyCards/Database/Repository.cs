@@ -42,6 +42,13 @@ namespace FancyCards.Database
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<TrainingSession>> GetAllTrainingSessionsAsync()
+        {
+            return await _context.Set<TrainingSession>()
+                .Include(t => t.Cards)
+                .ToListAsync();
+        }
+
         //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public Task<T> GetAsync<T>(int id) where T : EntityBase => _context.Set<T>().FirstOrDefaultAsync(o => o.Id == id);

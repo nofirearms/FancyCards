@@ -191,7 +191,7 @@ namespace FancyCards.Services
 
         #region TRAINING SESSIONS
 
-        public async Task<IEnumerable<TrainingSession>> GetTrainingSessionsAsync() => await _repository.GetAllAsync<TrainingSession>();
+        public async Task<IEnumerable<TrainingSession>> GetTrainingSessionsAsync(int deckId) => (await _repository.GetAllTrainingSessionsAsync()).Where(s => s.DeckId == deckId);
 
         public async Task<TrainingSession> CreateTrainingSessionAsync(TrainingSession session)
         {

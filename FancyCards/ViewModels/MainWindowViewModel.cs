@@ -189,17 +189,15 @@ namespace FancyCards.ViewModels
         }
 
         [RelayCommand]
-        private async void OpenReplaceModal()
+        private async void OpenTextReplacementRules()
         {
             await OpenTextReplacementRuleListModal();
         }
 
         [RelayCommand]
-        private async void OpenStatsModal()
+        private async void OpenStatistics()
         {
-            await _overlayService.ShowAndHideAsync(OverlayType.Success, 1000);
-            await _overlayService.ShowAndHideAsync(OverlayType.Archived, 1000);
-            await _overlayService.ShowAndHideAsync(OverlayType.Error, 1000);
+            await OpenStatisticsModal();
         }
 
         public async Task<ModalResult<Deck>> OpenDeckModal(Deck deck)
@@ -259,6 +257,12 @@ namespace FancyCards.ViewModels
         {
             await StartLoading();
             return await _modalService.ShowModalAsync(_viewModelFactory.Create<TextReplacementRuleDetailViewModel>(rule ?? new TextReplacementRule("")));
+        }
+
+        public async Task<ModalResult<object>> OpenStatisticsModal()
+        {
+            await StartLoading();
+            return await _modalService.ShowModalAsync(_viewModelFactory.Create<StatisticsViewModel>());
         }
 
         [RelayCommand]

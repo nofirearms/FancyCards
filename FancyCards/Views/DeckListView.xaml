@@ -97,7 +97,7 @@
                     Margin="3,0,0,0"
                     Padding="0"
                     Command="{Binding CloseModalCommand}"
-                    Content="Cancel" />
+                    Content="Close" />
             </StackPanel>
         </Grid>
 

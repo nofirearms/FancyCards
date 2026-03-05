@@ -165,7 +165,7 @@ namespace FancyCards.ViewModels
                     {
                         Date = old_attempt.Date,
                         Duration = old_attempt.Duration,
-
+                        
                     };
                     sessions.Add(session);
                 }

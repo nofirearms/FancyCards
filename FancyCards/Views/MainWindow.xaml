@@ -75,6 +75,10 @@
                     <local:TextReplacementRuleDetailView />
                 </DataTemplate>
 
+                <DataTemplate DataType="{x:Type vm:StatisticsViewModel}">
+                    <local:StatisticsView />
+                </DataTemplate>
+
             </ItemsControl.Resources>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -194,9 +198,9 @@
 
                 <Button Command="{Binding StartTrainingCommand}" Content="{materialDesign:PackIcon Kind=PlayBox}" />
                 <Button Command="{Binding CreateCardCommand}" Content="{materialDesign:PackIcon Kind=Add}" />
-                <Button Command="{Binding OpenStatsModalCommand}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
+                <Button Command="{Binding OpenStatisticsCommand}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
                 <Button Command="{Binding OpenSettingsCommand}" Content="{materialDesign:PackIcon Kind=Settings}" />
-                <Button Command="{Binding OpenReplaceModalCommand}" Content="{materialDesign:PackIcon Kind=Repeat}" />
+                <Button Command="{Binding OpenTextReplacementRulesCommand}" Content="{materialDesign:PackIcon Kind=Repeat}" />
             </StackPanel>
 
             <Border

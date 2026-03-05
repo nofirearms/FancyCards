@@ -98,10 +98,10 @@ namespace FancyCards.ViewModels
             
         }
 
-        private async void ShowNextCard()
-        {
-            
 
+
+        private async void ShowNextCard()
+        { 
             if (_cardManager.MoveToNextCard())
             {
                 CurrentCard = _cardManager.CurrentCard;
@@ -166,7 +166,7 @@ namespace FancyCards.ViewModels
         }
         #endregion
 
-        //----------------------------------------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------- COMMANDS -------------------------------------------------------------------
         
         private AsyncRelayCommand _acceptCommand;
         public IAsyncRelayCommand AcceptCommand => _acceptCommand ??= new AsyncRelayCommand(Accept);
@@ -226,6 +226,24 @@ namespace FancyCards.ViewModels
             ShowNextCard();
         }
 
+
+        private AsyncRelayCommand<Card> _editCardCommand;
+        public IAsyncRelayCommand EditCardCommand => _editCardCommand ??= new AsyncRelayCommand<Card>(EditCard);
+
+        private async Task EditCard(Card card)
+        {
+            var edit_result = await _host.OpenCardModal(CurrentCard.Card);
+            if (edit_result.Success)
+            {
+                OnPropertyChanged(nameof(CurrentCard));
+            }
+        }
+
+
+
+        //--------------------------------------------------------------------- FINISH TRAINING --------------------------------------------------------------
+
+        #region FINISH TRAINING
         private async Task FinishTraining()
         {
             StopTraining();
@@ -303,7 +321,8 @@ namespace FancyCards.ViewModels
             {
                 Cards = session_cards,
                 Date = DateTime.Now,
-                Duration = TrainingTime
+                Duration = TrainingTime,
+                DeckId = _host.Deck.Deck.Id
             };
 
             await _host.StartLoading(false);
@@ -321,8 +340,6 @@ namespace FancyCards.ViewModels
 
         }
 
-        //При ошибке или подсказке повторяем карточку на следующий день, I сбрасывается на четверть
-        //При правильном ответе следующий повтор через I дней
         private void ProcessScore(TrainingCardViewModel card)
         {
             var profile = _host.Deck.Deck.Settings.ReviewProfile;
@@ -430,8 +447,9 @@ namespace FancyCards.ViewModels
             }
         }
 
+        #endregion
 
-       
+        //----------------------------------------------------------------------------------------------------------------------------------------------------
 
         protected override async void Cancel()
         {

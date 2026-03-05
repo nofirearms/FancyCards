@@ -219,110 +219,130 @@
                     Text="{Binding CurrentCard.Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </controls:HintControl>
 
-            <StackPanel
-                Margin="40,5,5,5"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal">
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="0,0,3,0"
-                    Padding="0"
-                    Command="{Binding AcceptCommand}"
-                    Content="{materialDesign:PackIcon Kind=ArrowRightBold}"
-                    IsEnabled="{Binding CurrentCard.Answer.Length}" />
+            <Grid Margin="40,5,0,5" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
 
-                <ListView
-                    Margin="2"
-                    Cursor="Hand"
-                    ItemTemplateSelector="{StaticResource DifficultyTemplateSelector}"
-                    ItemsSource="{Binding Difficulties}"
-                    SelectedIndex="0"
-                    SelectedValue="{Binding CurrentCard.Difficulty, Mode=TwoWay}">
-
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Padding" Value="0" />
-                            <Setter Property="Focusable" Value="True" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListViewItem">
-                                        <Border
-                                            x:Name="Bd"
-                                            Width="30"
-                                            Height="30"
-                                            Background="Transparent"
-                                            BorderBrush="Transparent"
-                                            BorderThickness="1"
-                                            CornerRadius="2"
-                                            ToolTip="{Binding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource InactiveForeground}" />
-                                            </Trigger>
-
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-
-
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                </ListView>
-
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="2,0,0,0"
-                    Padding="0"
-                    Command="{Binding AudioPlaybackSelectedCommand}"
-                    Content="{materialDesign:PackIcon Kind=play}"
-                    ToolTip="Play selected" />
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="2,0,0,0"
-                    Padding="0"
-                    Command="{Binding AudioPlaybackFullCommand}"
-                    Content="{materialDesign:PackIcon Kind=PlaySpeed}"
-                    ToolTip="Play full" />
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="2,0,0,0"
-                    Padding="0"
-                    Command="{Binding AudioPlaybackSlowCommand}"
-                    Content="{materialDesign:PackIcon Kind=FractionOneHalf}"
-                    ToolTip="Play slow" />
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="2,0,0,0"
-                    Padding="0"
-                    Command="{Binding AudioStopPlaybackCommand}"
-                    Content="{materialDesign:PackIcon Kind=Stop}"
-                    ToolTip="Stop" />
-                <materialDesign:PackIcon
-                    Width="30"
-                    Height="30"
-                    Margin="5,0"
+                <StackPanel
+                    Grid.Column="1"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Kind="Speakerphone"
-                    Opacity="{Binding MaxSampleVolume}" />
-            </StackPanel>
+                    Orientation="Horizontal">
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Margin="0,0,3,0"
+                        Padding="0"
+                        Command="{Binding AcceptCommand}"
+                        Content="{materialDesign:PackIcon Kind=ArrowRightBold}"
+                        IsEnabled="{Binding CurrentCard.Answer.Length}" />
+
+                    <ListView
+                        Margin="2"
+                        Cursor="Hand"
+                        ItemTemplateSelector="{StaticResource DifficultyTemplateSelector}"
+                        ItemsSource="{Binding Difficulties}"
+                        SelectedIndex="0"
+                        SelectedValue="{Binding CurrentCard.Difficulty, Mode=TwoWay}">
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="Focusable" Value="True" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListViewItem">
+                                            <Border
+                                                x:Name="Bd"
+                                                Width="30"
+                                                Height="30"
+                                                Background="Transparent"
+                                                BorderBrush="Transparent"
+                                                BorderThickness="1"
+                                                CornerRadius="2"
+                                                ToolTip="{Binding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource InactiveForeground}" />
+                                                </Trigger>
+
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                    </ListView>
+
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Margin="2,0,0,0"
+                        Padding="0"
+                        Command="{Binding AudioPlaybackSelectedCommand}"
+                        Content="{materialDesign:PackIcon Kind=play}"
+                        ToolTip="Play selected" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Margin="2,0,0,0"
+                        Padding="0"
+                        Command="{Binding AudioPlaybackFullCommand}"
+                        Content="{materialDesign:PackIcon Kind=PlaySpeed}"
+                        ToolTip="Play full" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Margin="2,0,0,0"
+                        Padding="0"
+                        Command="{Binding AudioPlaybackSlowCommand}"
+                        Content="{materialDesign:PackIcon Kind=FractionOneHalf}"
+                        ToolTip="Play slow" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Margin="2,0,0,0"
+                        Padding="0"
+                        Command="{Binding AudioStopPlaybackCommand}"
+                        Content="{materialDesign:PackIcon Kind=Stop}"
+                        ToolTip="Stop" />
+                    <materialDesign:PackIcon
+                        Width="30"
+                        Height="30"
+                        Margin="5,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Kind="Speakerphone"
+                        Opacity="{Binding MaxSampleVolume}" />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="2"
+                    Width="40"
+                    Height="40"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    Command="{Binding EditCardCommand}"
+                    Content="{materialDesign:PackIcon Kind=Edit}" />
+
+            </Grid>
+
+
         </StackPanel>
 
     </Grid>
