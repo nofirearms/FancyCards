@@ -87,6 +87,16 @@ namespace FancyCards.Audio
             return result;
         }
 
+        public bool OpenAudioResourceStreamAsync(Stream stream, bool createUndoPoint = false, bool clearHistory = true)
+        {
+            StopPlayback();
+
+            var result = _audioStateManager.LoadFromStream(stream, createUndoPoint, clearHistory);
+
+            State = State.Stopped;
+
+            return result;
+        }
 
 
         //----------------------------------------------------------------------------------------------------- PLAYBACK ---------------------------------------------------

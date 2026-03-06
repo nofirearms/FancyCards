@@ -2,6 +2,8 @@
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace FancyCards.Audio
@@ -14,7 +16,7 @@ namespace FancyCards.Audio
         public event Action<AudioSourceChangedArgs> SourceChanged;
 
         
-        private readonly WaveFormat _format;
+        private WaveFormat _format;
 
         private readonly Stack<byte[]> _undoStack = new Stack<byte[]>();
         private readonly Stack<byte[]> _redoStack = new Stack<byte[]>();
@@ -117,6 +119,36 @@ namespace FancyCards.Audio
 
                 return true;
             }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        public bool LoadFromStream(Stream stream, bool createUndoPoint = false, bool clearHistory = false)
+        {
+            try
+            {
+                if(stream is null) return false;
+
+                using (var reader = new Mp3FileReader(stream))
+                using (var ms = new MemoryStream())
+                {
+
+                    reader.CopyTo(ms);
+                    byte[] allBytes = ms.ToArray();
+
+                    if (clearHistory) _undoStack.Clear();
+
+                    SetData(allBytes, createUndoPoint);
+
+                    _format = reader.WaveFormat;
+
+                }
+                return true;
+            }
+            
             catch
             {
                 return false;

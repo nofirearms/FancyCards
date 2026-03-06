@@ -49,6 +49,7 @@ namespace FancyCards
             services.AddSingleton<TextReplacementService>();
             services.AddSingleton<OverlayService>();
             services.AddSingleton<HotkeyService>();
+            services.AddSingleton<NotificationService>();
 
             services.AddSingleton<ViewModelFactory>();
 

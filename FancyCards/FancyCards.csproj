@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\main_icon.ico" />
+    <None Remove="Resources\Sounds\FailureSound.mp3" />
+    <None Remove="Resources\Sounds\SuccessSound.mp3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="DynamicData" Version="9.4.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.3.0" />
@@ -26,6 +32,12 @@
 
   <ItemGroup>
     <Folder Include="Views\Controls\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\main_icon.ico" />
+    <EmbeddedResource Include="Resources\Sounds\FailureSound.mp3" />
+    <EmbeddedResource Include="Resources\Sounds\SuccessSound.mp3" />
   </ItemGroup>
 
 </Project>

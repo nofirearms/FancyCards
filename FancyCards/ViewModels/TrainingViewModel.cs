@@ -19,6 +19,7 @@ namespace FancyCards.ViewModels
         private readonly TextReplacementService _textService;
         private readonly SettingsService _settingsService;
         private readonly OverlayService _overlayService;
+        private readonly NotificationService _notificationService;
 
         private TrainingCardListManager _cardManager;
         private DispatcherTimer _timer;
@@ -51,6 +52,7 @@ namespace FancyCards.ViewModels
             SettingsService settingsService,
             HotkeyService hotkeyService,
             OverlayService overlayService,
+            NotificationService notificationService,
             IEnumerable<Card> cards )
         {
             _host = host;
@@ -59,6 +61,7 @@ namespace FancyCards.ViewModels
             _textService = textService;
             _settingsService = settingsService;
             _overlayService = overlayService;
+            _notificationService = notificationService;
 
             Header = "Training";
 
@@ -174,17 +177,21 @@ namespace FancyCards.ViewModels
         {
             if (string.IsNullOrEmpty(CurrentCard.Answer)) return;
 
+            AudioStopPlayback();
+
             var answer_result = await _textService.ProcessAndCompareAsync(CurrentCard.Answer, CurrentCard.Card.FrontText);
 
             if (answer_result)
             {
-                await _overlayService.ShowAndHideAsync(OverlayType.Success, 500);
+                _notificationService.Play(Notification.Success);
+                await _overlayService.ShowAndHideAsync(OverlayType.Success, 400);
+
                 if (!CurrentCard.Hint)
                 {
                     CurrentCard.CardStatus = TrainingCardState.Success;
                     if (CurrentCard.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
                     {
-                        await _overlayService.ShowAndHideAsync(OverlayType.Archived, 1000);
+                        await _overlayService.ShowAndHideAsync(OverlayType.Archived, 800);
                         //await _host.OpenMessageBox("Card moved to archive!", ["Ok"], "Congratulations!", new SolidColorBrush(Colors.GreenYellow));
                     }
 
@@ -197,8 +204,9 @@ namespace FancyCards.ViewModels
             }
             else
             {
-                await _overlayService.ShowAndHideAsync(OverlayType.Error, 500);
-                //из сновного списка
+                _notificationService.Play(Notification.Failure);
+                await _overlayService.ShowAndHideAsync(OverlayType.Error, 400);
+                //из основного списка
                 if (CurrentCard.ShowCount == 1)
                 {
                     _cardManager.AddCard(CurrentCard);
@@ -325,7 +333,9 @@ namespace FancyCards.ViewModels
                 DeckId = _host.Deck.Deck.Id
             };
 
-            await _host.StartLoading(false);
+            await _host.OpenTrainingResult(result_cards);
+
+            await _host.StartLoading(true);
 
             //TrainingSessionCards записываются автоматом через сессию
             await _dataService.CreateTrainingSessionAsync(training_session);
@@ -333,8 +343,6 @@ namespace FancyCards.ViewModels
             await _dataService.UpdateCardsAsync(result_cards.Select(r => r.Card));
 
             _host.StopLoading();
-
-            await _host.OpenTrainingResult(result_cards);
 
             Close();
 

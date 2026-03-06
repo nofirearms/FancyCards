@@ -15,6 +15,7 @@
     Width="500"
     Height="700"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
+    Icon="/Resources/Icons/main_icon.ico"
     IsHitTestVisible="{Binding Loading, Converter={StaticResource ReverseBoolConverter}}"
     KeyboardNavigation.ControlTabNavigation="None"
     KeyboardNavigation.DirectionalNavigation="None"

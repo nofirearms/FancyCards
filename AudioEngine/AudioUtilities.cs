@@ -1,6 +1,7 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.Wave;
-using System.Reflection.PortableExecutable;
+using System.Reflection;
+
 
 namespace FancyCards.Audio
 {
@@ -157,6 +158,7 @@ namespace FancyCards.Audio
         }
 
         #endregion
+
 
 
         /// <summary>
