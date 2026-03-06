@@ -40,6 +40,11 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private int _maxReviewCardsCount = 0;
 
+        //дефолтное значение, при даблклике
+        [ObservableProperty]
+        public int _defaultReviewCardsCount = 0;
+        [ObservableProperty]
+        public int _defaultLearnCardsCount = 0;
 
         public TrainingStartViewModel(MainWindowViewModel host, DataService dataService, SettingsService settingsService)
         {
@@ -53,15 +58,19 @@ namespace FancyCards.ViewModels
             InitializeAsync();
         }
 
-        private async void InitializeAsync()
+        private async Task InitializeAsync()
         {
-            _dbCardsOnDate = (await _dataService.GetCardsAsync(_host.Deck.Id)).Where(c => c.NextReviewDate.Date <= DateTime.Now);
+            var cards = await _dataService.GetCardsAsync(_host.Deck.Id);
+            _dbCardsOnDate = cards.Where(c => c.NextReviewDate.Date <= DateTime.Now);
 
             MaxReviewCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Reviewing).Count();
             MaxLearnCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Learning).Count();
 
             ReviewCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
             LearnCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
+
+            DefaultReviewCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
+            DefaultLearnCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
         }
 
         [RelayCommand(CanExecute = nameof(CanStartTraining))]

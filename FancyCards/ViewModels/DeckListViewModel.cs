@@ -4,6 +4,7 @@ using DynamicData;
 using FancyCards.Models;
 using FancyCards.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Xml.Linq;
 
@@ -43,7 +44,7 @@ namespace FancyCards.ViewModels
         {
             var db_decks = await _dataService.GetDecksAsync();
             var selected_id = _host.Deck.Id;
-
+            
             _sourceCache = new SourceCache<DeckSummaryViewModel, int>(o => o.Id);
             _sourceCache.AddOrUpdate(db_decks.Select(d => new DeckSummaryViewModel(d)) ?? new List<DeckSummaryViewModel>());
 

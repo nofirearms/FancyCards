@@ -25,8 +25,6 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
         private readonly OverlayService _overlayService;
 
-        private readonly LoadingCursorManager _cursorManager;
-
         public string Title => "Fancy Cards";
 
         [ObservableProperty]
@@ -76,8 +74,6 @@ namespace FancyCards.ViewModels
             _viewModelFactory = viewModelFactory;
             _settingsService = settingsService;
             _overlayService = overlayService;
-
-            _cursorManager = new LoadingCursorManager();
 
             OverlayViewModel = overlayViewModel;
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this, 0);
@@ -274,7 +270,6 @@ namespace FancyCards.ViewModels
             //unfreeze interface
             await Task.Delay(20);
 
-            //_cursorManager.OperationStarted();
             ChangeCursor(Cursors.Wait);
         }
         [RelayCommand]
@@ -283,9 +278,9 @@ namespace FancyCards.ViewModels
             Loading = false;
             ShowLoadingBackground = false;
 
-            //_cursorManager.OperationCompleted();
             ChangeCursor();
         }
+
 
         public void ChangeCursor(Cursor cursor = null)
         {
