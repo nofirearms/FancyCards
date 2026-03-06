@@ -1,16 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DynamicData;
 using FancyCards.Audio;
 using FancyCards.Models;
 using FancyCards.Models.Param;
 using FancyCards.Services;
-using Newtonsoft.Json.Linq;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -51,7 +45,6 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private bool _loading = false;
-
 
         [ObservableProperty]
         private bool _showLoadingBackground = false;

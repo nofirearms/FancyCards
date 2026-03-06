@@ -15,7 +15,7 @@
     Width="500"
     Height="700"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
-    Icon="/Resources/Icons/main_icon.ico"
+    Icon="/Resources/Icons/cards_icon.ico"
     IsHitTestVisible="{Binding Loading, Converter={StaticResource ReverseBoolConverter}}"
     KeyboardNavigation.ControlTabNavigation="None"
     KeyboardNavigation.DirectionalNavigation="None"
@@ -24,9 +24,6 @@
     mc:Ignorable="d">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
-
-
     </Window.Resources>
     <Grid>
         <!--  Модальные окна  -->
@@ -122,73 +119,31 @@
             Panel.ZIndex="12"
             DataContext="{Binding OverlayViewModel}" />
 
-        <!--<controls:AnimatedControl
-            Width="100"
-            Height="100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Panel.ZIndex="15"
-            AnimationType="SlideFromTop"
-            AutoHideDelay="0" Content="{Binding OverlayViewModel}">
-            <interaction:Interaction.Triggers>
-                <interaction:DataTrigger Binding="{Binding AnimationType}" Value="Success">
-                    <interaction:ChangePropertyAction PropertyName="Content">
-                        <interaction:ChangePropertyAction.Value>
-                            <materialDesign:PackIcon
-                                Width="100"
-                                Height="100"
-                                Kind="Check" />
-                        </interaction:ChangePropertyAction.Value>
-                    </interaction:ChangePropertyAction>
-                </interaction:DataTrigger>
-                <interaction:DataTrigger Binding="{Binding AnimationType}" Value="Hide">
-                    <interaction:ChangePropertyAction PropertyName="Content">
-                        <interaction:ChangePropertyAction.Value>
-                            <x:Null />
-                        </interaction:ChangePropertyAction.Value>
-                    </interaction:ChangePropertyAction>
-                </interaction:DataTrigger>
-            </interaction:Interaction.Triggers>
-
-        </controls:AnimatedControl>-->
-
         <DockPanel>
-
-            <!--<Grid Margin="5,5,5,0" DockPanel.Dock="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="School" />
-                    <materialDesign:PackIcon Kind="Refresh" />
-                </StackPanel>
-
-
-
-            </Grid>-->
 
             <StackPanel
                 Margin="10,5,5,5"
                 HorizontalAlignment="Center"
                 DockPanel.Dock="Top"
-                Orientation="Horizontal">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="{Binding Deck.Name}" />
-                <Button
-                    Width="35"
-                    VerticalAlignment="Center"
-                    Command="{Binding OpenDeckListCommand}"
-                    Style="{StaticResource CustomButtonStyleNoBg}">
-                    <materialDesign:PackIcon
-                        Width="25"
-                        Height="25"
-                        Kind="CardsPlaying" />
-                </Button>
+                Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                        Text="{Binding Deck.Name}" />
+                    <Button
+                        Width="35"
+                        VerticalAlignment="Center"
+                        Command="{Binding OpenDeckListCommand}"
+                        Style="{StaticResource CustomButtonStyleNoBg}">
+                        <materialDesign:PackIcon
+                            Width="25"
+                            Height="25"
+                            Kind="CardsPlaying" />
+                    </Button>
+                </StackPanel>
             </StackPanel>
+
 
 
 

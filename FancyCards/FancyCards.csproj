@@ -7,9 +7,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <Nullable>disable</Nullable>
+    <ApplicationIcon>Resources\Icons\cards_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\cards_icon.ico" />
+    <None Remove="Resources\Icons\cards_icon2.ico" />
     <None Remove="Resources\Icons\main_icon.ico" />
     <None Remove="Resources\Sounds\FailureSound.mp3" />
     <None Remove="Resources\Sounds\SuccessSound.mp3" />
@@ -35,7 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Icons\cards_icon2.ico" />
     <Resource Include="Resources\Icons\main_icon.ico" />
+    <Resource Include="Resources\Icons\cards_icon.ico" />
     <EmbeddedResource Include="Resources\Sounds\FailureSound.mp3" />
     <EmbeddedResource Include="Resources\Sounds\SuccessSound.mp3" />
   </ItemGroup>

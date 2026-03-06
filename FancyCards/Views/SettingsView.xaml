@@ -8,7 +8,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     Width="300"
-    Height="200"
     d:Background="White"
     d:DataContext="{d:DesignInstance vm:SettingsViewModel}"
     mc:Ignorable="d">
@@ -31,7 +30,7 @@
 
         <StackPanel
             Margin="0,5,0,0"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Right"
             Orientation="Horizontal">
             <Button
                 Grid.Row="2"

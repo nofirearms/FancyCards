@@ -47,7 +47,7 @@
         </DataTemplate>
         <DataTemplate x:Key="ArchivedTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Check" />
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="ArchiveOutline" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -115,7 +115,8 @@
 
         <Grid Grid.Row="1" Margin="0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
@@ -175,9 +176,24 @@
                 </ListView>
             </Border>
 
+            <StackPanel
+                Grid.Column="1"
+                Margin="5,5,80,5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                Orientation="Vertical"
+                ToolTip="All">
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="CardsPlayingDiamondMultipleOutline" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="{Binding AllCount}" />
+            </StackPanel>
 
             <controls:HintControl
-                Grid.Column="1"
+                Grid.Column="2"
                 Margin="0,0,-1,0"
                 HintBackground="{Binding ElementName=root, Path=Background}">
                 <controls:HintControl.Hint>

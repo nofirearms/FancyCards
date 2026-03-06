@@ -40,7 +40,8 @@ namespace FancyCards.ViewModels
         private int _learningCount;
         [ObservableProperty]
         private int _archivedCount;
-
+        [ObservableProperty]
+        private int _allCount;
 
 
         public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
@@ -71,6 +72,7 @@ namespace FancyCards.ViewModels
                     ReviewingCount = _sourceCache.Items.Count(o => o.State == CardState.Reviewing && o.NextReviewDate <= DateTime.Now);
                     LearningCount = _sourceCache.Items.Count(o => o.State == CardState.Learning && o.NextReviewDate <= DateTime.Now);
                     ArchivedCount = _sourceCache.Items.Count(o => o.State == CardState.Archived);
+                    AllCount = _sourceCache.Items.Count;
 
                 });
 
