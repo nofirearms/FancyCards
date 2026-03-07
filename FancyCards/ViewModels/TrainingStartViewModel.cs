@@ -15,6 +15,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly SettingsService _settingsService;
         private readonly MainWindowViewModel _host;
+        private readonly ModalService _modalService;
 
         private IEnumerable<Card> _dbCardsOnDate;
 
@@ -46,9 +47,10 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         public int _defaultLearnCardsCount = 0;
 
-        public TrainingStartViewModel(MainWindowViewModel host, DataService dataService, SettingsService settingsService)
+        public TrainingStartViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, SettingsService settingsService)
         {
             _host = host;
+            _modalService = modalService;
 
             _dataService = dataService;
             _settingsService = settingsService;
@@ -104,7 +106,7 @@ namespace FancyCards.ViewModels
                 //чтобы message box открылся после загрузки
                 await App.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, async () =>
                 {
-                    await _host.OpenMessageBox("No cards available for training", ["Ok"], background: new SolidColorBrush(Colors.LightPink));
+                    await _modalService.OpenMessageBox("No cards available for training", ["Ok"], background: new SolidColorBrush(Colors.LightPink));
                     return;
                 });
 

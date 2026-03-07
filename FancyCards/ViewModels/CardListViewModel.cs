@@ -17,6 +17,7 @@ namespace FancyCards.ViewModels
 {
     public partial class CardListViewModel : ObservableObject, IDisposable
     {
+        private readonly ModalService _modalService;
         private readonly DataService _dataService;
         private readonly MainWindowViewModel _host;
 
@@ -44,8 +45,9 @@ namespace FancyCards.ViewModels
         private int _allCount;
 
 
-        public CardListViewModel(MainWindowViewModel host, DataService dataService, int deckId)
+        public CardListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, int deckId)
         {
+            _modalService = modalService;
             _dataService = dataService;
             _host = host;
 
@@ -132,11 +134,11 @@ namespace FancyCards.ViewModels
             {
                 if(result.ButtonTag == "Edit")
                 {
-                    var edit_result = await _host.OpenCardModal(card);
+                    var edit_result = await _modalService.OpenCardModal(card);
                 }
                 else if(result.ButtonTag == "Remove")
                 {
-                    var mb_result = await _host.OpenMessageBox("Remove selected card?", ["Yes", "No"]);
+                    var mb_result = await _modalService.OpenMessageBox("Remove selected card?", ["Yes", "No"]);
                     if(mb_result.ButtonTag == "Yes")
                     {
                         await _host.StartLoading(false);
@@ -144,7 +146,7 @@ namespace FancyCards.ViewModels
                         _host.StopLoading();
                         if (!remove_result)
                         {
-                            await _host.OpenMessageBox("Failed to remove the file", ["OK"]);
+                            await _modalService.OpenMessageBox("Failed to remove the file", ["OK"]);
                         }
                     }
                 }

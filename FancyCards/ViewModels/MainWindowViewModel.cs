@@ -80,8 +80,11 @@ namespace FancyCards.ViewModels
 
             var _ = InitializeAsync();
 
+            _modalService.OnModalOpen += async () =>
+            {
+                StartLoading(true);
+            };
         }
-
 
 
         private async Task InitializeAsync()
@@ -90,7 +93,7 @@ namespace FancyCards.ViewModels
             var selected_deck_id = _settingsService.StartupSelectedDeckId;
             if(selected_deck_id == 0)
             {
-                var result = await OpenDeckModal(new Deck());
+                var result = await _modalService.OpenDeckModal(new Deck());
                 if (result.Success)
                 {
                     Deck = new DeckSummaryViewModel(result.Data);
@@ -143,116 +146,58 @@ namespace FancyCards.ViewModels
             StopLoading();
         }
 
-        [RelayCommand]
-        private async void OpenDeckList()
+        private AsyncRelayCommand _openDeckListModalCommand;
+        public IAsyncRelayCommand OpenDeckListModalCommand => _openDeckListModalCommand ??= new AsyncRelayCommand(OpenDeckList);
+        private async Task OpenDeckList()
         {
-            var result = await OpenDeckListModal();
+            var result = await _modalService.OpenDeckListModal();
             if (result.Success)
             {
                 Deck = new DeckSummaryViewModel(result.Data);
             }
         }
-
-        [RelayCommand]
-        private async void CreateCard()
+        private AsyncRelayCommand _openCardDetailModalCommand;
+        public IAsyncRelayCommand OpenCardDetailModalCommand => _openCardDetailModalCommand ??= new AsyncRelayCommand(CreateCard);
+        private async Task CreateCard()
         {
-            await OpenCardModal(null);
+            await _modalService.OpenCardModal(null);
         }
 
-        [RelayCommand]
-        private async void StartTraining()
+
+        private AsyncRelayCommand _openStartTrainingModalCommand;
+        public IAsyncRelayCommand OpenStartTrainingModalCommand => _openStartTrainingModalCommand ??= new AsyncRelayCommand(StartTraining);
+        private async Task StartTraining()
         {
-            await StartLoading();
-            var start_view_result = await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingStartViewModel>());
-            if(start_view_result.ButtonTag == "StartTraining")
+            var start_view_result = await _modalService.OpenTrainingStart();
+            if (start_view_result.ButtonTag == "StartTraining")
             {
-                await StartLoading();
-                await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingViewModel>(start_view_result.Data));
+                await _modalService.OpenTraining(start_view_result.Data);
             }
         }
 
-        [RelayCommand]
-        private async void OpenSettings()
+        private AsyncRelayCommand _openSettingsModalCommand;
+        public IAsyncRelayCommand OpenSettingsModalCommand => _openSettingsModalCommand ??= new AsyncRelayCommand(OpenSettings);
+        private async Task OpenSettings()
         {
-            await OpenSettingsModal();
+            await _modalService.OpenSettingsModal();
         }
 
-        [RelayCommand]
-        private async void OpenTextReplacementRules()
+        private AsyncRelayCommand _openTextReplacementRulesModalCommand;
+        public IAsyncRelayCommand OpenTextReplacementRulesModalCommand => _openTextReplacementRulesModalCommand ??= new AsyncRelayCommand(OpenTextReplacementRules);
+        private async Task OpenTextReplacementRules()
         {
-            await OpenTextReplacementRuleListModal();
+            await _modalService.OpenTextReplacementRuleListModal();
         }
 
-        [RelayCommand]
-        private async void OpenStatistics()
+        private AsyncRelayCommand _openStatisticsModalCommand;
+        public IAsyncRelayCommand OpenStatisticsModalCommand => _openStatisticsModalCommand ??= new AsyncRelayCommand(OpenStatistics);
+        private async Task OpenStatistics()
         {
-            await OpenStatisticsModal();
+            await _modalService.OpenStatisticsModal();
         }
 
-        public async Task<ModalResult<Deck>> OpenDeckModal(Deck deck)
-        {
-            await StartLoading();
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<DeckDetailViewModel>(deck ?? new Deck()));
 
-            return result;
-        }
 
-        public async Task<ModalResult<Card>> OpenCardModal(Card card)
-        {
-            await StartLoading();
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<CardDetailViewModel>(card ?? new Card()));
-
-            return result;
-        }
-
-        public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!", Brush background = null)
-        {
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<MessageBoxViewModel>(new MessageBoxParameters(header, message, buttons, background)));
-            return result;
-        }
-
-        public async Task<ModalResult<object>> OpenFailedAnswer(string answer, string correct)
-        {
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<TrainingFailedAnswerViewModel>(new TrainingFailedAnswerParameters(answer, correct)));
-            return result;
-        }
-
-        public async Task<ModalResult<object>> OpenTrainingResult(IEnumerable<TrainingCardViewModel> cards)
-        {
-            var result = await _modalService.ShowModalAsync(new TrainingResultViewModel(cards));
-            return result;
-        }
-
-        public async Task<ModalResult<object>> OpenSettingsModal()
-        {
-            await StartLoading();
-            var result = await _modalService.ShowModalAsync(_viewModelFactory.Create<SettingsViewModel>());
-            return result;
-        }
-
-        public async Task<ModalResult<Deck>> OpenDeckListModal()
-        {
-            await StartLoading();
-            return await _modalService.ShowModalAsync(_viewModelFactory.Create<DeckListViewModel>());
-        }
-
-        public async Task<ModalResult<object>> OpenTextReplacementRuleListModal()
-        {
-            await StartLoading();
-            return await _modalService.ShowModalAsync(_viewModelFactory.Create<TextReplacementRuleListViewModel>());
-        }
-
-        public async Task<ModalResult<TextReplacementRule>> OpenTextReplacementRuleDetailModal(TextReplacementRule rule)
-        {
-            await StartLoading();
-            return await _modalService.ShowModalAsync(_viewModelFactory.Create<TextReplacementRuleDetailViewModel>(rule ?? new TextReplacementRule("")));
-        }
-
-        public async Task<ModalResult<object>> OpenStatisticsModal()
-        {
-            await StartLoading();
-            return await _modalService.ShowModalAsync(_viewModelFactory.Create<StatisticsViewModel>());
-        }
 
         [RelayCommand]
         public async Task StartLoading(bool showBackground = true)
@@ -261,7 +206,7 @@ namespace FancyCards.ViewModels
             ShowLoadingBackground = showBackground;
 
             //unfreeze interface
-            await Task.Delay(20);
+            //await Task.Delay(20);
 
             ChangeCursor(Cursors.Wait);
         }

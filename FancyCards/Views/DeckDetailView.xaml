@@ -56,18 +56,23 @@
             </controls:HintControl>
 
             <controls:CustomNumericControl
-                Margin="0,0,0,5"
+                Margin="0,0,0,0"
                 DefaultValue="10"
                 Frequency="1"
                 MaxValue="100"
                 MinValue="0"
+                MouseOverBackgroundVisibility="Visible"
+                MouseOverOverlay="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
                 Value="{Binding TrainingLearnCards, Mode=TwoWay}">
                 <controls:CustomNumericControl.ContentTemplate>
                     <DataTemplate>
-                        <Border BorderThickness="1" CornerRadius="3">
+                        <Border
+                            Padding="3"
+                            BorderThickness="1"
+                            CornerRadius="3">
                             <TextBlock>
                                 <Run Text="Training learn cards:" />
-                                <Run Text="{Binding Path=.}" />
+                                <Run FontWeight="Bold" Text="{Binding Path=.}" />
                             </TextBlock>
                         </Border>
                     </DataTemplate>
@@ -75,18 +80,23 @@
             </controls:CustomNumericControl>
 
             <controls:CustomNumericControl
-                Margin="0,0,0,5"
+                Margin="0,0,0,0"
                 DefaultValue="10"
                 Frequency="1"
                 MaxValue="100"
                 MinValue="0"
+                MouseOverBackgroundVisibility="Visible"
+                MouseOverOverlay="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
                 Value="{Binding TrainingReviewCards, Mode=TwoWay}">
                 <controls:CustomNumericControl.ContentTemplate>
                     <DataTemplate>
-                        <Border BorderThickness="1" CornerRadius="3">
+                        <Border
+                            Padding="3"
+                            BorderThickness="1"
+                            CornerRadius="3">
                             <TextBlock>
                                 <Run Text="Training review cards:" />
-                                <Run Text="{Binding Path=.}" />
+                                <Run FontWeight="Bold" Text="{Binding Path=.}" />
                             </TextBlock>
                         </Border>
                     </DataTemplate>
@@ -94,18 +104,23 @@
             </controls:CustomNumericControl>
 
             <controls:CustomNumericControl
-                Margin="0,0,0,5"
+                Margin="0,0,0,0"
                 DefaultValue="2"
                 Frequency="1"
                 MaxValue="100"
                 MinValue="1"
+                MouseOverBackgroundVisibility="Visible"
+                MouseOverOverlay="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
                 Value="{Binding CorrectAnswersToFinishLearning, Mode=TwoWay}">
                 <controls:CustomNumericControl.ContentTemplate>
                     <DataTemplate>
-                        <Border BorderThickness="1" CornerRadius="3">
+                        <Border
+                            Padding="3"
+                            BorderThickness="1"
+                            CornerRadius="3">
                             <TextBlock>
                                 <Run Text="Correct answers to finish learning:" />
-                                <Run Text="{Binding Path=.}" />
+                                <Run FontWeight="Bold" Text="{Binding Path=.}" />
                             </TextBlock>
                         </Border>
                     </DataTemplate>
@@ -118,13 +133,18 @@
                 Frequency="1"
                 MaxValue="{x:Static sys:Int32.MaxValue}"
                 MinValue="1"
+                MouseOverBackgroundVisibility="Visible"
+                MouseOverOverlay="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
                 Value="{Binding MaxIntervalDays, Mode=TwoWay}">
                 <controls:CustomNumericControl.ContentTemplate>
                     <DataTemplate>
-                        <Border BorderThickness="1" CornerRadius="3">
+                        <Border
+                            Padding="3"
+                            BorderThickness="1"
+                            CornerRadius="3">
                             <TextBlock>
                                 <Run Text="Archive after (days):" />
-                                <Run Text="{Binding Path=.}" />
+                                <Run FontWeight="Bold" Text="{Binding Path=.}" />
                             </TextBlock>
                         </Border>
                     </DataTemplate>

@@ -134,7 +134,7 @@
                     <Button
                         Width="35"
                         VerticalAlignment="Center"
-                        Command="{Binding OpenDeckListCommand}"
+                        Command="{Binding OpenDeckListModalCommand}"
                         Style="{StaticResource CustomButtonStyleNoBg}">
                         <materialDesign:PackIcon
                             Width="25"
@@ -152,11 +152,11 @@
                 DockPanel.Dock="Bottom"
                 Orientation="Horizontal">
 
-                <Button Command="{Binding StartTrainingCommand}" Content="{materialDesign:PackIcon Kind=PlayBox}" />
-                <Button Command="{Binding CreateCardCommand}" Content="{materialDesign:PackIcon Kind=Add}" />
-                <Button Command="{Binding OpenStatisticsCommand}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
-                <Button Command="{Binding OpenSettingsCommand}" Content="{materialDesign:PackIcon Kind=Settings}" />
-                <Button Command="{Binding OpenTextReplacementRulesCommand}" Content="{materialDesign:PackIcon Kind=Repeat}" />
+                <Button Command="{Binding OpenStartTrainingModalCommand}" Content="{materialDesign:PackIcon Kind=PlayBox}" />
+                <Button Command="{Binding OpenCardDetailModalCommand}" Content="{materialDesign:PackIcon Kind=Add}" />
+                <Button Command="{Binding OpenStatisticsModalCommand}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
+                <Button Command="{Binding OpenSettingsModalCommand}" Content="{materialDesign:PackIcon Kind=Settings}" />
+                <Button Command="{Binding OpenTextReplacementRulesModalCommand}" Content="{materialDesign:PackIcon Kind=Repeat}" />
             </StackPanel>
 
             <Border

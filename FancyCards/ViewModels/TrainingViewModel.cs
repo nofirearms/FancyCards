@@ -20,6 +20,7 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
         private readonly OverlayService _overlayService;
         private readonly NotificationService _notificationService;
+        private readonly ModalService _modalService;
 
         private TrainingCardListManager _cardManager;
         private DispatcherTimer _timer;
@@ -53,6 +54,7 @@ namespace FancyCards.ViewModels
             HotkeyService hotkeyService,
             OverlayService overlayService,
             NotificationService notificationService,
+            ModalService modalService,
             IEnumerable<Card> cards )
         {
             _host = host;
@@ -62,6 +64,7 @@ namespace FancyCards.ViewModels
             _settingsService = settingsService;
             _overlayService = overlayService;
             _notificationService = notificationService;
+            _modalService = modalService;
 
             Header = "Training";
 
@@ -121,7 +124,7 @@ namespace FancyCards.ViewModels
                 }
                 else
                 {
-                    await _host.OpenMessageBox("Audio file not found\nCard will be removed from list", ["Ok"]);
+                    await _modalService.OpenMessageBox("Audio file not found\nCard will be removed from list", ["Ok"]);
                     ShowNextCard();
                 }
                     
@@ -215,7 +218,7 @@ namespace FancyCards.ViewModels
                 else
                 {
                     CurrentCard.CardStatus = TrainingCardState.Failed;
-                    await _host.OpenFailedAnswer(CurrentCard.Answer, CurrentCard.Card.FrontText);
+                    await _modalService.OpenFailedAnswer(CurrentCard.Answer, CurrentCard.Card.FrontText);
                     //if(CurrentCard.Card.State == CardState.Reviewing)
                     //{
                     //    //messagebox с правильным ответом, result = failed
@@ -240,7 +243,7 @@ namespace FancyCards.ViewModels
 
         private async Task EditCard(Card card)
         {
-            var edit_result = await _host.OpenCardModal(CurrentCard.Card);
+            var edit_result = await _modalService.OpenCardModal(CurrentCard.Card);
             if (edit_result.Success)
             {
                 OnPropertyChanged(nameof(CurrentCard));
@@ -333,7 +336,7 @@ namespace FancyCards.ViewModels
                 DeckId = _host.Deck.Deck.Id
             };
 
-            await _host.OpenTrainingResult(result_cards);
+            await _modalService.OpenTrainingResult(result_cards);
 
             await _host.StartLoading(true);
 
@@ -461,7 +464,7 @@ namespace FancyCards.ViewModels
 
         protected override async void Cancel()
         {
-            var result = await _host.OpenMessageBox("Exit training? Progress won't be saved.", ["Yes", "No"]);
+            var result = await _modalService.OpenMessageBox("Exit training? Progress won't be saved.", ["Yes", "No"]);
             if(result.ButtonTag == "Yes")
             {
                 StopTraining();

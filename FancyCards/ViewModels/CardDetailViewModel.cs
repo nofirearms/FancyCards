@@ -15,7 +15,7 @@ namespace FancyCards.ViewModels
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
-
+        private readonly ModalService _modalService;
         private Card _card;
 
         [ObservableProperty]
@@ -62,11 +62,12 @@ namespace FancyCards.ViewModels
 
         public CardAction CardAction { get; } = CardAction.Create;
 
-        public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, Card card)
+        public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, ModalService modalService, Card card)
         {
             _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
+            _modalService = modalService;
 
             CardAction = card.Id == default ? CardAction.Create : CardAction.Update;
 
@@ -114,7 +115,7 @@ namespace FancyCards.ViewModels
             {
                 if(_audioEngine.Duration == TimeSpan.Zero && CardAction == CardAction.Update)
                 {
-                    await _host.OpenMessageBox("Audio file not found", ["OK"]);
+                    await _modalService.OpenMessageBox("Audio file not found", ["OK"]);
                 }
             });
         }

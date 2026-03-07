@@ -14,17 +14,18 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
-
+        private readonly ModalService _modalService;
 
         [ObservableProperty]
         private ReadOnlyObservableCollection<TextReplacementRule> _rules;
 
         private SourceCache<TextReplacementRule, int> _sourceCache;
 
-        public TextReplacementRuleListViewModel(MainWindowViewModel host, DataService dataService)
+        public TextReplacementRuleListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService)
         {
             _host = host;
             _dataService = dataService;
+            _modalService = modalService;
 
             Header = "Rules";
 
@@ -51,7 +52,7 @@ namespace FancyCards.ViewModels
             var result = await _host.OpenContext(new GeneralListContextViewModel<TextReplacementRule>(rule));
             if(result.ButtonTag == "Edit")
             {
-                var edit_result = await _host.OpenTextReplacementRuleDetailModal(rule);
+                var edit_result = await _modalService.OpenTextReplacementRuleDetailModal(rule);
                 if (edit_result.Success)
                 {
 
@@ -85,7 +86,7 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void Add()
         {
-            var create_result = await _host.OpenTextReplacementRuleDetailModal(null);
+            var create_result = await _modalService.OpenTextReplacementRuleDetailModal(null);
             
             if (create_result.Success)
             {

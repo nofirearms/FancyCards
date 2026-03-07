@@ -15,7 +15,7 @@ namespace FancyCards.ViewModels
         private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly SettingsService _settingsService;
-
+        private readonly ModalService _modalService;
         [ObservableProperty]
         private ReadOnlyObservableCollection<DeckSummaryViewModel> _decks;
 
@@ -26,12 +26,13 @@ namespace FancyCards.ViewModels
 
         private SourceCache<DeckSummaryViewModel, int> _sourceCache;
 
-        public DeckListViewModel(MainWindowViewModel host, DataService dataService, SettingsService settingsService)
+        public DeckListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, SettingsService settingsService)
         {
 
             _host = host;
             _dataService = dataService;
             _settingsService = settingsService;
+            _modalService = modalService;
 
             Header = "Decks";
 
@@ -103,7 +104,7 @@ namespace FancyCards.ViewModels
 
         private async Task CreateDeck(Deck deck)
         {
-            var result = await _host.OpenDeckModal(deck);
+            var result = await _modalService.OpenDeckModal(deck);
             if (result.Success)
             {
 
