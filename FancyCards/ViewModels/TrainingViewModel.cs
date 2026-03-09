@@ -238,6 +238,8 @@ namespace FancyCards.ViewModels
         }
 
 
+
+
         private AsyncRelayCommand<Card> _editCardCommand;
         public IAsyncRelayCommand EditCardCommand => _editCardCommand ??= new AsyncRelayCommand<Card>(EditCard);
 
@@ -246,6 +248,7 @@ namespace FancyCards.ViewModels
             var edit_result = await _modalService.OpenCardModal(CurrentCard.Card);
             if (edit_result.Success)
             {
+                CurrentCard.Update(edit_result.Data);
                 OnPropertyChanged(nameof(CurrentCard));
             }
         }

@@ -16,6 +16,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly ModalService _modalService;
+
         private Card _card;
 
         [ObservableProperty]
@@ -61,6 +62,8 @@ namespace FancyCards.ViewModels
         private DateTime _dateCreated;
 
         public CardAction CardAction { get; } = CardAction.Create;
+
+        
 
         public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, ModalService modalService, Card card)
         {

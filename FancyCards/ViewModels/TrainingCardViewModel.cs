@@ -7,9 +7,9 @@ using System.Text;
 
 namespace FancyCards.ViewModels
 {
-    public partial class TrainingCardViewModel : ObservableObject
+    public partial class TrainingCardViewModel : ModdedObservableObject
     {
-        private readonly Card _card;
+        private Card _card;
 
         [ObservableProperty]
         private TrainingCardState _cardStatus = TrainingCardState.Queue;
@@ -57,7 +57,11 @@ namespace FancyCards.ViewModels
         }
 
 
-
+        public void Update(Card card = null)
+        {
+            if (card != null) _card = card;
+            UpdateProperties();
+        }
 
 
     }
