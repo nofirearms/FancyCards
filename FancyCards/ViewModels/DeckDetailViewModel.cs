@@ -54,7 +54,7 @@ namespace FancyCards.ViewModels
 
             DeckAction = deck.Id == default ? DeckAction.Create : DeckAction.Update;
 
-            Profiles = _dataService.GetReivewProfilesAsync().Result;
+            Profiles = _dataService.GetReivewProfiles();
 
             if (DeckAction == DeckAction.Create)
             {
@@ -75,7 +75,7 @@ namespace FancyCards.ViewModels
                 _trainingReviewCards = _deck.Settings.TrainingReviewCards;
                 _correctAnswersToFinishLearning = _deck.Settings.СorrectAnswersToFinishLearning;
                 _maxIntervalDays = _deck.Settings.MaxIntervalDays;
-                _selectedProfile = Profiles.FirstOrDefault(p => p.Id == _deck.Settings.ReviewProfile.Id);
+                _selectedProfile = Profiles.FirstOrDefault(p => p.Id == _deck.Settings.ReviewProfileId);
             }
 
             var _ = InitializeAsync();
@@ -92,19 +92,18 @@ namespace FancyCards.ViewModels
         {
             _deck.Name = Name;
             _deck.Description = Description;
-            _deck.Cards = new List<Card>();
 
             _deck.Settings.TrainingLearnCards = TrainingLearnCards;
             _deck.Settings.TrainingReviewCards = TrainingReviewCards;
             _deck.Settings.СorrectAnswersToFinishLearning = CorrectAnswersToFinishLearning;
             _deck.Settings.MaxIntervalDays = MaxIntervalDays;
 
-            _deck.Settings.ReviewProfile = SelectedProfile;
+            _deck.Settings.ReviewProfileId = SelectedProfile.Id;
 
             await _host.StartLoading(false);
 
             //сначала сохраняем чтобы получить Id
-            await _dataService.AddOrUpdateDecks([_deck], DeckAction);
+            await _dataService.AddOrUpdateDecksAsync([_deck]);
 
             _host.StopLoading();
 

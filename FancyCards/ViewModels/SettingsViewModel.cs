@@ -92,7 +92,7 @@ namespace FancyCards.ViewModels
                 var old_attempts = PathHelper.ReadFile<List<Attempt>>("old_data/Attempts.json");
 
                 int[] intervals  = new int[] { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181 };
-                var deck_id = _host.Deck.Id;
+                var deck_id = _dataService.CurrentDeck.Id;
                 var cards = new List<Card>();
 
                 var audio_utilities = new AudioUtilities();
@@ -182,9 +182,9 @@ namespace FancyCards.ViewModels
                     rules.Add(rule);
                 }
 
-                await _dataService.CreateCardsAsync(cards);
-                await _dataService.CreateTrainingSessionsAsync(sessions);
-                await _dataService.AddOrUpdateTextReplacementRuleAsync(rules);
+                await _dataService.AddOrUpdateCardsAsync(cards);
+                await _dataService.AddOrUpdateTrainingSessionsAsync(sessions);
+                await _dataService.AddOrUpdateTextReplacementRulesAsync(rules);
             });
         }
 
@@ -204,7 +204,7 @@ namespace FancyCards.ViewModels
             await System.Threading.Tasks.Task.Run(async () =>
             {
 
-                var cards = await _dataService.GetCardsAsync(_host.Deck.Deck.Id);
+                var cards = _dataService.GetCardsByDeckId(_dataService.CurrentDeck.Id);
 
                 int[] intervals = new int[] { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181 };
 
@@ -255,7 +255,7 @@ namespace FancyCards.ViewModels
                     old_cards.Add(old_card);
                 }
 
-                var sessions = await _dataService.GetTrainingSessionsAsync(_host.Deck.Deck.Id);
+                var sessions = _dataService.GetTrainingSessions(_dataService.CurrentDeck.Id);
 
                 var old_sessions = sessions.Select(o => new Attempt { Date = o.Date, Duration = o.Duration });
 

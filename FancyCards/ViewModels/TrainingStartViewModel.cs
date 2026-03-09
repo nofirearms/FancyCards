@@ -62,17 +62,17 @@ namespace FancyCards.ViewModels
 
         private async Task InitializeAsync()
         {
-            var cards = await _dataService.GetCardsAsync(_host.Deck.Id);
+            var cards = _dataService.GetCardsByDeckId(_dataService.CurrentDeck.Id);
             _dbCardsOnDate = cards.Where(c => c.NextReviewDate.Date <= DateTime.Now);
 
             MaxReviewCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Reviewing).Count();
             MaxLearnCardsCount = _dbCardsOnDate.Where(c => c.State == CardState.Learning).Count();
 
-            ReviewCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
-            LearnCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
+            ReviewCardsCount = Math.Min(_dataService.CurrentDeck.Settings.TrainingReviewCards, MaxReviewCardsCount);
+            LearnCardsCount = Math.Min(_dataService.CurrentDeck.Settings.TrainingLearnCards, MaxLearnCardsCount);
 
-            DefaultReviewCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingReviewCards, MaxReviewCardsCount);
-            DefaultLearnCardsCount = Math.Min(_host.Deck.Deck.Settings.TrainingLearnCards, MaxLearnCardsCount);
+            DefaultReviewCardsCount = Math.Min(_dataService.CurrentDeck.Settings.TrainingReviewCards, MaxReviewCardsCount);
+            DefaultLearnCardsCount = Math.Min(_dataService.CurrentDeck.Settings.TrainingLearnCards, MaxLearnCardsCount);
         }
 
         [RelayCommand(CanExecute = nameof(CanStartTraining))]

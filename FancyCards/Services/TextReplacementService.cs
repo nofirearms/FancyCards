@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FancyCards.Services
+﻿namespace FancyCards.Services
 {
 
     public class TextReplacementService
@@ -16,7 +12,7 @@ namespace FancyCards.Services
 
         public async Task<string> ReplaceWithReplacementRules(string text)
         {
-            var rules = await _dataService.GetTextReplacementRules();
+            var rules = _dataService.GetTextReplacementRules();
 
             var result = text.ToLower();
 

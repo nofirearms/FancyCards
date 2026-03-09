@@ -1,17 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
-using FancyCards.Audio;
+using DynamicData.Binding;
 using FancyCards.Models;
 using FancyCards.Services;
-using System;
-using System.Collections.Generic;
+using System.Windows.Threading; // Обязательно для Dispatcher
+using System.Reactive.Concurrency;
+
 using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
-using System.Text;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
+using System.Reactive.Linq;
 
 namespace FancyCards.ViewModels
 {
@@ -23,15 +20,7 @@ namespace FancyCards.ViewModels
 
         [ObservableProperty]
         private ReadOnlyObservableCollection<Card> _cards;
-        
-        private SourceCache<Card, int> _sourceCache;
-        private IDisposable _cleanUp;
-
-
-        //[ObservableProperty]
-        //private int _learnCount;
-        //[ObservableProperty]
-        //private int _reviewCount;
+        private Deck _currentDeck => _dataService.CurrentDeck;
 
         [ObservableProperty]
         private int _scheduledCount;
@@ -42,82 +31,69 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private int _archivedCount;
         [ObservableProperty]
-        private int _allCount;
+        private int _totalCount;
 
 
-        public CardListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, int deckId)
+        public CardListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService)
         {
             _modalService = modalService;
             _dataService = dataService;
             _host = host;
 
-            
-            _dataService.CardEvent += OnCardEvent;
-
-            _ = InitializeAsync(deckId);
+            _ = InitializeAsync();
         }
 
-        private async Task InitializeAsync(int deckId)
+        private async Task InitializeAsync()
         {
-            if (deckId == 0) return;
-            //_cards = new ObservableCollection<Card>(_decks.First().Cards ?? new List<Card>());
-            _sourceCache = new SourceCache<Card, int>(o => o.Id);
 
-            var cards = await _dataService.GetCardsAsync(deckId);
-            _sourceCache.AddOrUpdate(cards ?? new List<Card>());
+            // 1. Захватываем UI-поток (здесь он еще доступен)
+            var uiContext = SynchronizationContext.Current;
 
-            // Подписываемся на изменения и пересчитываем свойства
-            _cleanUp = _sourceCache.Connect()
-                .Subscribe(cards =>
+            // 1. Создаем поток для текста
+            var textChanged = this.WhenPropertyChanged(x => x.FrontTextFilter)
+                .Select(_ => CreateFilter());
+
+            // 2. Создаем поток для стейта
+            var stateChanged = this.WhenPropertyChanged(x => x.SelectedState)
+                .Select(_ => CreateFilter());
+
+            // 3. Поток для смены колоды из DataService
+            var deckChanged = _dataService.SelectedDeckChanged
+                .Select(_ => CreateFilter());
+
+            // 4. Объединяем их (теперь оба потока возвращают Func<Card, bool>)
+            var filterTrigger = textChanged
+                .Merge(stateChanged)
+                .Merge(deckChanged)
+                .StartWith(CreateFilter()); // Чтобы фильтр применился сразу при загрузке
+
+
+
+            _dataService.ConnectCards()
+                .Filter(filterTrigger)
+                .DisposeMany()
+                .ObserveOn(uiContext)
+                .Bind(out _cards)
+                .Subscribe();
+
+
+            _dataService.ConnectCards()
+                .ToCollection()
+                // Объединяем поток изменений карт с потоком выбора колоды
+                .CombineLatest(_dataService.SelectedDeckChanged, (items, deck) => new { items, deck })
+                .Subscribe(x =>
                 {
-                    ScheduledCount = _sourceCache.Items.Count(o => o.NextReviewDate > DateTime.Now);
-                    ReviewingCount = _sourceCache.Items.Count(o => o.State == CardState.Reviewing && o.NextReviewDate <= DateTime.Now);
-                    LearningCount = _sourceCache.Items.Count(o => o.State == CardState.Learning && o.NextReviewDate <= DateTime.Now);
-                    ArchivedCount = _sourceCache.Items.Count(o => o.State == CardState.Archived);
-                    AllCount = _sourceCache.Items.Count;
+                    var now = DateTime.Now;
+                    var deck_id = x.deck?.Id;
 
+                    var filtered = x.items.Where(o => deck_id == null || o.DeckId == deck_id).ToList();
+
+                    ScheduledCount = filtered.Count(o => o.NextReviewDate > now);
+                    ReviewingCount = filtered.Count(o => o.State == CardState.Reviewing && o.NextReviewDate <= now);
+                    LearningCount = filtered.Count(o => o.State == CardState.Learning && o.NextReviewDate <= now);
+                    ArchivedCount = filtered.Count(o => o.State == CardState.Archived);
+                    TotalCount = filtered.Count;
                 });
-
-            _sourceCache.Connect()
-            .Filter(CreateFilter())
-            .Bind(out _cards)
-            .Subscribe();
-
-
-        }
-
-        private async void OnCardEvent(CardsEventArgs args)
-        {
-            App.Current.Dispatcher.Invoke(() => 
-            {
-
-                var cards = args.Cards;
-                var action = args.Action;
-
-                if (args.Action == CardAction.Create)
-                {
-                    foreach (var card in cards)
-                    {
-                        _sourceCache.AddOrUpdate(card);
-                    }
-                }
-                else if (args.Action == CardAction.Remove)
-                {
-                    foreach (var card in cards)
-                    {
-                        _sourceCache.Remove(card);
-                    }
-                }
-                else if (args.Action == CardAction.Update)
-                {
-                    foreach (var card in cards)
-                    {
-                        _sourceCache.AddOrUpdate(card);
-                    }
-                }
-
-
-            }, System.Windows.Threading.DispatcherPriority.Background);
         }
 
 
@@ -157,16 +133,11 @@ namespace FancyCards.ViewModels
         //--------------------------------------------------------------------------------------------FILTER--------------------------------------------------------------
         #region FILTER
 
+        [ObservableProperty]
         private string _frontTextFilter;
-        public string FrontTextFilter
-        {
-            get => _frontTextFilter;
-            set
-            {
-                SetProperty(ref _frontTextFilter, value);
-                UpdateFilter();
-            }
-        }
+
+        [ObservableProperty]
+        private CardState _selectedState = CardState.Reviewing;
 
         public List<CardState> States => new List<CardState>
         {
@@ -176,19 +147,18 @@ namespace FancyCards.ViewModels
             CardState.Archived
         };
 
-        [ObservableProperty]
-        private CardState _selectedState = CardState.Reviewing;
-
-        partial void OnSelectedStateChanged(CardState value)
-        {
-            UpdateFilter();
-        }
 
 
         private Func<Card, bool> CreateFilter()
         {
+
+
             return item =>
             {
+                // 1. Фильтр по колоде (если колода не выбрана - показываем все или ничего, как захочешь)
+                if (_currentDeck != null && item.DeckId != _currentDeck.Id)
+                    return false;
+
                 bool date_pass = SelectedState == CardState.Scheduled 
                     ? item.NextReviewDate > DateTime.Now && item.State != CardState.Archived
                     : item.NextReviewDate <= DateTime.Now && SelectedState == item.State;
@@ -201,24 +171,12 @@ namespace FancyCards.ViewModels
             };
         }
 
-        private void UpdateFilter()
-        {
-            // DynamicData автоматически применит новый фильтр
-            _sourceCache.Refresh(); // Перефильтрует существующие данные
-        }
-
-
 
         #endregion
 
         public void Dispose()
         {
-            _cleanUp?.Dispose();
-            _sourceCache?.Dispose();
-            _sourceCache = null;
-            _cleanUp = null;
-            _dataService.CardEvent -= OnCardEvent;
-
+            _cards = null;
         }
     }
 }

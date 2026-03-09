@@ -1,9 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using FancyCards.Models;
 using FancyCards.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace FancyCards.ViewModels
 {
@@ -28,12 +26,17 @@ namespace FancyCards.ViewModels
 
         private async Task InitializeAsync()
         {
-            var sessions = await _dataService.GetTrainingSessionsAsync(_host.Deck.Deck.Id);
+            var sessions = _dataService.GetTrainingSessions(_dataService.CurrentDeck.Id);
+            var session_cards = _dataService.GetTrainingSessionCards();
             var summaries = sessions.GroupBy(s => s.Date.Date).Select(g => new SessionsDailySummary
             {
                 Date = g.Key,
                 TotalTimeSpent = TimeSpan.FromSeconds(g.Sum(s => s.Duration.TotalSeconds)),
-                CardsCount = g.SelectMany(s => s.Cards).Select(c => c.CardId).Distinct().Count(),
+                CardsCount = session_cards
+                    .Where(sc => g.Select(s => s.Id).Contains(sc.TrainingSessionId))
+                    .Select(sc => sc.CardId)
+                    .Distinct()
+                    .Count(),
                 Attempts = g.Count(),
                 
             });

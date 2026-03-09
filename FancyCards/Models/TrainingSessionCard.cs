@@ -13,6 +13,7 @@ namespace FancyCards.Models
         public TimeSpan Duration { get; set; }
         public TrainingCardResult Result { get; set; }
         public CardState CardState { get; set; }
+        public int TrainingSessionId { get; set; }
 
     }
 }

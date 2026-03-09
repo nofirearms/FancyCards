@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
+using DynamicData.Binding;
 using FancyCards.Models;
 using FancyCards.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reactive.Linq;
 using System.Windows.Controls;
 using System.Xml.Linq;
 
@@ -21,10 +23,9 @@ namespace FancyCards.ViewModels
 
         [NotifyCanExecuteChangedFor(nameof(SelectCommand))]
         [ObservableProperty]
-        
         private DeckSummaryViewModel _selectedDeck;
 
-        private SourceCache<DeckSummaryViewModel, int> _sourceCache;
+
 
         public DeckListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, SettingsService settingsService)
         {
@@ -36,67 +37,32 @@ namespace FancyCards.ViewModels
 
             Header = "Decks";
 
-            _dataService.DeckEvent += OnDeckEvent;
-
             _ = InitializeAsync();
         }
 
         private async Task InitializeAsync()
         {
-            var db_decks = await _dataService.GetDecksAsync();
-            var selected_id = _host.Deck.Id;
-            
-            _sourceCache = new SourceCache<DeckSummaryViewModel, int>(o => o.Id);
-            _sourceCache.AddOrUpdate(db_decks.Select(d => new DeckSummaryViewModel(d)) ?? new List<DeckSummaryViewModel>());
-
-            _sourceCache.Connect()
-                .Filter(CreateFilter())
+            // 1. Захватываем UI-поток (здесь он еще доступен)
+            var uiContext = SynchronizationContext.Current;
+            // 1. Создаем поток для текста
+            var textChanged = this.WhenPropertyChanged(x => x.NameFilter)
+                .Select(_ => CreateFilter());
+                
+            _dataService.ConnectDecks()
+                .Filter(textChanged)
+                .Transform(d =>
+                {
+                    var count = _dataService.GetCardsByDeckId(d.Id).Count();
+                    return new DeckSummaryViewModel(d, count);
+                })
+                .DisposeMany()
+                .ObserveOn(uiContext)
                 .Bind(out _decks)
                 .Subscribe();
 
-            SelectedDeck = _decks.FirstOrDefault(d => d.Id == selected_id);
+            SelectedDeck = _decks.FirstOrDefault(d => d.Id == _dataService.CurrentDeck.Id);
         }
 
-        private void OnDeckEvent(DeckEventArgs args)
-        {
-            var decks = args.Decks;
-            var action = args.Action;
-
-            if (args.Action == DeckAction.Create)
-            {
-                foreach (var deck in decks)
-                {
-                    var d = new DeckSummaryViewModel(deck);
-                    _sourceCache.AddOrUpdate(d);
-                    SelectedDeck = d;
-                }
-            }
-            else if (args.Action == DeckAction.Remove)
-            {
-                foreach (var deck in decks)
-                {
-                    var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
-                    if (d != null)
-                    {
-                        _sourceCache.Remove(d);
-                    }
-
-                }
-            }
-            else if (args.Action == DeckAction.Update)
-            {
-                foreach (var deck in decks)
-                {
-                    var d = Decks.FirstOrDefault(o => o.Deck.Id == deck.Id);
-                    if (d != null)
-                    {
-                        //_sourceCache.AddOrUpdate(d);
-                        d.Update();
-                    }
-
-                }
-            }
-        }
 
 
         private AsyncRelayCommand<Deck> _createDeckCommand;
@@ -122,18 +88,10 @@ namespace FancyCards.ViewModels
 
         //----------------------------------------------------------------------------- FILTER --------------------------------------------------------------------------
 
+        [ObservableProperty]
         private string _nameFilter;
-        public string NameFilter
-        {
-            get => _nameFilter;
-            set
-            {
-                SetProperty(ref _nameFilter, value);
-                UpdateFilter();
-            }
-        }
 
-        private Func<DeckSummaryViewModel, bool> CreateFilter()
+        private Func<Deck, bool> CreateFilter()
         {
             return item =>
             {
@@ -144,11 +102,5 @@ namespace FancyCards.ViewModels
             };
         }
 
-
-        private void UpdateFilter()
-        {
-            // DynamicData автоматически применит новый фильтр
-            _sourceCache.Refresh(); // Перефильтрует существующие данные
-        }
     }
 }

@@ -189,7 +189,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="10"
-                    Text="{Binding AllCount}" />
+                    Text="{Binding TotalCount}" />
             </StackPanel>
 
             <controls:HintControl

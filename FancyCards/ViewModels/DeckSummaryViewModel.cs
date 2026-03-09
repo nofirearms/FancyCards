@@ -13,12 +13,12 @@ namespace FancyCards.ViewModels
 
         public int Id => _deck.Id;
         public string Name => _deck.Name;
-        public int CardsCount => _deck.Cards.Count;
-        public IEnumerable<Card> Cards => _deck.Cards;
+        public int CardsCount { get; } 
 
-        public DeckSummaryViewModel(Deck deck)
+        public DeckSummaryViewModel(Deck deck, int cardsCount)
         {
             _deck = deck;
+            CardsCount = cardsCount;
         }
 
         public void Update(Deck deck = null)

@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace FancyCards.ViewModels
 {
@@ -192,7 +192,7 @@ namespace FancyCards.ViewModels
                 if (!CurrentCard.Hint)
                 {
                     CurrentCard.CardStatus = TrainingCardState.Success;
-                    if (CurrentCard.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
+                    if (CurrentCard.Card.Scores.I >= _dataService.CurrentDeck.Settings.MaxIntervalDays - _dataService.CurrentDeck.Settings.MaxIntervalDays * TOLERANCE)
                     {
                         await _overlayService.ShowAndHideAsync(OverlayType.Archived, 800);
                         //await _host.OpenMessageBox("Card moved to archive!", ["Ok"], "Congratulations!", new SolidColorBrush(Colors.GreenYellow));
@@ -279,7 +279,7 @@ namespace FancyCards.ViewModels
                     if (card.Card.State == CardState.Learning)
                     {
                         //learning -> reviewing
-                        if (card.Card.Scores.CorrectCount >= _host.Deck.Deck.Settings.СorrectAnswersToFinishLearning)
+                        if (card.Card.Scores.CorrectCount >= _dataService.CurrentDeck.Settings.СorrectAnswersToFinishLearning)
                         {
                             card.Card.State = CardState.Reviewing;
                             ProcessScore(card);
@@ -292,7 +292,7 @@ namespace FancyCards.ViewModels
                     else if (card.Card.State == CardState.Reviewing)
                     {
                         //считается выученной
-                        if(card.Card.Scores.I >= _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
+                        if(card.Card.Scores.I >= _dataService.CurrentDeck.Settings.MaxIntervalDays - _dataService.CurrentDeck.Settings.MaxIntervalDays * TOLERANCE)
                         {
                             card.Card.State = CardState.Archived;
                         }
@@ -330,10 +330,9 @@ namespace FancyCards.ViewModels
 
             var training_session = new TrainingSession
             {
-                Cards = session_cards,
                 Date = DateTime.Now,
                 Duration = TrainingTime,
-                DeckId = _host.Deck.Deck.Id
+                DeckId = _dataService.CurrentDeck.Id
             };
 
             await _modalService.OpenTrainingResult(result_cards);
@@ -341,9 +340,13 @@ namespace FancyCards.ViewModels
             await _host.StartLoading(true);
 
             //TrainingSessionCards записываются автоматом через сессию
-            await _dataService.CreateTrainingSessionAsync(training_session);
+            await _dataService.AddOrUpdateTrainingSessionsAsync([training_session]);
 
-            await _dataService.UpdateCardsAsync(result_cards.Select(r => r.Card));
+            session_cards.ForEach(c => c.TrainingSessionId = training_session.Id);
+
+            await _dataService.AddOrUpdateTrainingSessionCardsAsync(session_cards);
+
+            await _dataService.AddOrUpdateCardsAsync(result_cards.Select(r => r.Card));
 
             _host.StopLoading();
 
@@ -353,7 +356,11 @@ namespace FancyCards.ViewModels
 
         private void ProcessScore(TrainingCardViewModel card)
         {
-            var profile = _host.Deck.Deck.Settings.ReviewProfile;
+            var profile = _dataService.GetReivewProfileById(_dataService.CurrentDeck.Settings.ReviewProfileId);
+            if(profile == null)
+            {
+                profile = _dataService.GetReivewProfiles().FirstOrDefault();
+            }
 
             double ef = 0;
             int second_interval = 0;
@@ -447,8 +454,8 @@ namespace FancyCards.ViewModels
 
                     //после этого карточка будет выучена
                     //делаем допуск - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE, чтобы если значение рядом, то тоже засчитывалось
-                    if (card.Card.Scores.I > _host.Deck.Deck.Settings.MaxIntervalDays - _host.Deck.Deck.Settings.MaxIntervalDays * TOLERANCE)
-                        card.Card.Scores.I = _host.Deck.Deck.Settings.MaxIntervalDays;
+                    if (card.Card.Scores.I > _dataService.CurrentDeck.Settings.MaxIntervalDays - _dataService.CurrentDeck.Settings.MaxIntervalDays * TOLERANCE)
+                        card.Card.Scores.I = _dataService.CurrentDeck.Settings.MaxIntervalDays;
                 }
 
                 card.Card.Scores.Error = false;

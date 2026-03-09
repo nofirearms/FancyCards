@@ -143,6 +143,7 @@ namespace FancyCards.ViewModels
                     DateCreated = DateTime.Now,
                     NextReviewDate = NextReviewDate.Date,
                     State = SelectedState,
+                    DeckId = _dataService.CurrentDeck.Id,
                     //Scores = new CardScores
                     //{
                     //    EF = _host.Deck.Deck.Settings.ReviewProfile.StartEF
@@ -163,7 +164,7 @@ namespace FancyCards.ViewModels
 
                 await _host.StartLoading(false);
 
-                await _dataService.CreateCardAsync(_host.Deck.Id, _card);
+                await _dataService.AddOrUpdateCardsAsync([_card]);
                 await _audioEngine.RenderToMp3Async(_card.Audio.Path);
 
                 _host.StopLoading();
@@ -189,7 +190,7 @@ namespace FancyCards.ViewModels
 
                 await _host.StartLoading(false);
 
-                await _dataService.UpdateCardAsync(_card);
+                await _dataService.AddOrUpdateCardsAsync([_card]);
 
                 if (_audioEngine.AudioChanged)
                 {

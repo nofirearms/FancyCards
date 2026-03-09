@@ -19,35 +19,12 @@ namespace FancyCards.Database
             _context = appDbContext;
         }
 
-
-        public async Task<Deck> GetDeckAsync(int id)
-        {
-            return await _context.Set<Deck>()
-                .Include(d => d.Cards)
-                .Include(d => d.Settings.ReviewProfile)
-                .FirstOrDefaultAsync(d => d.Id == id);
-        }
-
-        public async Task<IEnumerable<Deck>> GetAllDecksAsync()
-        {
-            return await _context.Set<Deck>()
-                .Include(d => d.Cards)
-                .Include(d => d.Settings.ReviewProfile)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<TrainingSession>> GetAllTrainingSessionsAsync()
-        {
-            return await _context.Set<TrainingSession>()
-                .Include(t => t.Cards)
-                .ToListAsync();
-        }
-
         //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public Task<T> GetAsync<T>(int id) where T : EntityBase => _context.Set<T>().FirstOrDefaultAsync(o => o.Id == id);
-        public async Task<IEnumerable<T>> GetAllAsync<T>() where T : EntityBase => await _context.Set<T>().ToListAsync();
+        public async Task<IEnumerable<T>> GetAllAsync<T>() where T : EntityBase => await _context.Set<T>().AsNoTracking().ToListAsync();
 
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public async Task<bool> AddAsync<T>(T entity) where T : EntityBase
         {
@@ -69,7 +46,7 @@ namespace FancyCards.Database
         {
             try
             {
-                var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
+                var db_entity = await _context.Set<T>().FindAsync(entity.Id);
                 if (db_entity != null)
                 {
                     UpdateValues(db_entity, entity);
@@ -91,7 +68,7 @@ namespace FancyCards.Database
             {
                 foreach(var entity in entities)
                 {
-                    var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
+                    var db_entity = await _context.Set<T>().FindAsync(entity.Id);
                     if (db_entity == null)
                     {
                         _context.Set<T>().Add(entity);
@@ -116,8 +93,9 @@ namespace FancyCards.Database
         {
             try
             {
-                var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
-                _context.Set<T>().Remove(db_entity);
+                //var db_entity = _context.Set<T>().FirstOrDefault(r => r.Id == entity.Id);
+                _context.Set<T>().Remove(entity);
+
                 await _context.SaveChangesAsync();
 
                 return true;

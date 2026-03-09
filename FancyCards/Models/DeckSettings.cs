@@ -13,7 +13,6 @@ namespace FancyCards.Models
         public int СorrectAnswersToFinishLearning { get; set; } = 2;
         //public int СorrectAnswersToFinishReviewing { get; set; } = 2;
         public int MaxIntervalDays { get; set; } = 120;
-
-        public ReviewProfile ReviewProfile { get; set; }
+        public int ReviewProfileId { get; set; }
     }
 }

@@ -130,7 +130,7 @@
                     <TextBlock
                         VerticalAlignment="Center"
                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                        Text="{Binding Deck.Name}" />
+                        Text="{Binding DeckName}" />
                     <Button
                         Width="35"
                         VerticalAlignment="Center"
