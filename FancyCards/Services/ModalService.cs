@@ -59,14 +59,14 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<object>> OpenMessageBox(string message, string[] buttons, string header = "Attention!", Brush background = null)
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<MessageBoxViewModel>(new MessageBoxParameters(header, message, buttons, background)));
         }
 
         public async Task<ModalResult<object>> OpenFailedAnswer(string answer, string correct)
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<TrainingFailedAnswerViewModel>(new TrainingFailedAnswerParameters(answer, correct)));
         }
@@ -80,7 +80,7 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<IEnumerable<Card>>> OpenTrainingStart()
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(30);
             return await ShowModalAsync(_factory.Create<TrainingStartViewModel>());
         }
@@ -94,7 +94,7 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<object>> OpenSettingsModal()
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<SettingsViewModel>());
         }
@@ -108,14 +108,14 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<object>> OpenTextReplacementRuleListModal()
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<TextReplacementRuleListViewModel>());
         }
 
         public async Task<ModalResult<TextReplacementRule>> OpenTextReplacementRuleDetailModal(TextReplacementRule rule)
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<TextReplacementRuleDetailViewModel>(rule ?? new TextReplacementRule("")));
         }
@@ -129,7 +129,7 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<object>> OpenComboBoxModal(IEnumerable source, object selectedItem, string header)
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<ComboBoxViewModel>(source, selectedItem, header));
         }

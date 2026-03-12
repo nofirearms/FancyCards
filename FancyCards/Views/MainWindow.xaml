@@ -156,11 +156,26 @@
                 DockPanel.Dock="Bottom"
                 Orientation="Horizontal">
 
-                <Button Command="{Binding OpenStartTrainingModalCommand}" Content="{materialDesign:PackIcon Kind=PlayBox}" />
-                <Button Command="{Binding OpenCardDetailModalCommand}" Content="{materialDesign:PackIcon Kind=Add}" />
-                <Button Command="{Binding OpenStatisticsModalCommand}" Content="{materialDesign:PackIcon Kind=ChartBar}" />
-                <Button Command="{Binding OpenSettingsModalCommand}" Content="{materialDesign:PackIcon Kind=Settings}" />
-                <Button Command="{Binding OpenTextReplacementRulesModalCommand}" Content="{materialDesign:PackIcon Kind=Repeat}" />
+                <Button
+                    ClickMode="Press"
+                    Command="{Binding OpenStartTrainingModalCommand}"
+                    Content="{materialDesign:PackIcon Kind=PlayBox}" />
+                <Button
+                    ClickMode="Press"
+                    Command="{Binding OpenCardDetailModalCommand}"
+                    Content="{materialDesign:PackIcon Kind=Add}" />
+                <Button
+                    ClickMode="Press"
+                    Command="{Binding OpenStatisticsModalCommand}"
+                    Content="{materialDesign:PackIcon Kind=ChartBar}" />
+                <Button
+                    ClickMode="Press"
+                    Command="{Binding OpenSettingsModalCommand}"
+                    Content="{materialDesign:PackIcon Kind=Settings}" />
+                <Button
+                    ClickMode="Press"
+                    Command="{Binding OpenTextReplacementRulesModalCommand}"
+                    Content="{materialDesign:PackIcon Kind=Repeat}" />
             </StackPanel>
 
             <Border
