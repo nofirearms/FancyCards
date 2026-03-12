@@ -45,7 +45,7 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<Deck>> OpenDeckModal(Deck deck)
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<DeckDetailViewModel>(deck ?? new Deck()));
         }
@@ -87,7 +87,7 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<object>> OpenTrainingResult(IEnumerable<TrainingCardViewModel> cards)
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(new TrainingResultViewModel(cards));
         }
@@ -101,7 +101,7 @@ namespace FancyCards.Services
 
         public async Task<ModalResult<Deck>> OpenDeckListModal()
         {
-            OnModalOpen?.Invoke();
+            //OnModalOpen?.Invoke();
             await Task.Delay(20);
             return await ShowModalAsync(_factory.Create<DeckListViewModel>());
         }
