@@ -23,7 +23,7 @@
 
         <DockPanel>
 
-
+            <!--  Volume, Speed Sliders  -->
             <Grid Margin="0,5" DockPanel.Dock="Top">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
@@ -107,6 +107,8 @@
 
             </Grid>
 
+
+            <!--  Control Buttons  -->
             <StackPanel
                 HorizontalAlignment="Center"
                 DockPanel.Dock="Bottom"
@@ -223,6 +225,8 @@
                 </StackPanel>
             </StackPanel>
 
+
+            <!--  Graph  -->
             <Border
                 Margin="1"
                 Padding="1"

@@ -12,6 +12,10 @@ namespace FancyCards.Services
 
         public int StartupSelectedDeckId { get; set; }
 
+        public string CaptureDeviceName { get; set; }
+        public string CaptureDeviceId { get; set; }
+
+
         public SettingsService(DataService dataService)
         {
             _dataService = dataService;

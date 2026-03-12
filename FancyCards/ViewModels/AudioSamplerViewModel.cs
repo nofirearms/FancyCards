@@ -4,6 +4,7 @@ using FancyCards.Audio;
 using FancyCards.Audio.Common;
 using FancyCards.Helpers;
 using FancyCards.Models;
+using FancyCards.Services;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace FancyCards.ViewModels
     {
         private readonly MainWindowViewModel _host;
         private readonly AudioEngine _audioEngine;
+        private readonly ModalService _modalService;
+
         private DispatcherTimer _recordingTimer;
         private Stopwatch _stopwatch;
 
@@ -91,9 +94,15 @@ namespace FancyCards.ViewModels
                 Tempo = card.Audio.Tempo;
                 AudioDuration = _audioEngine.Duration;
             }
+
+            _ = InitializeAsync();
         }
 
 
+        private async Task InitializeAsync()
+        {
+
+        }
 
         private async void OnAudioSourceChanged(AudioSourceChangedArgs args)
         {
@@ -134,6 +143,7 @@ namespace FancyCards.ViewModels
         {
             AudioSamplerState = state;
         }
+
 
         [RelayCommand(CanExecute = nameof(CanStartPlayback))]
         private void StartPlayback(PlaybackMode playbackMode)

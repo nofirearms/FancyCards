@@ -1,6 +1,7 @@
 ﻿using FancyCards.Models;
 using FancyCards.Models.Param;
 using FancyCards.ViewModels;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
@@ -30,7 +31,7 @@ namespace FancyCards.Services
                 try
                 {
                     _activeModals.Add(modalViewModel);
-                    var result = await modalViewModel.Task;
+                    var result = await modalViewModel.ResultTask;
                     return result;
                 }
                 finally
@@ -126,6 +127,12 @@ namespace FancyCards.Services
             return await ShowModalAsync(_factory.Create<StatisticsViewModel>());
         }
 
+        public async Task<ModalResult<object>> OpenComboBoxModal(IEnumerable source, object selectedItem, string header)
+        {
+            OnModalOpen?.Invoke();
+            await Task.Delay(20);
+            return await ShowModalAsync(_factory.Create<ComboBoxViewModel>(source, selectedItem, header));
+        }
 
         public void CloseAll()
         {

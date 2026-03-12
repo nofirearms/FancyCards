@@ -19,8 +19,8 @@ namespace FancyCards.Audio
 
         private readonly WaveOutEvent _outputDevice;
         private readonly AudioPipeline _audioPipeline;
-        private readonly MMDevice _captureDevice;
-        private readonly WasapiCapture _captureSource;
+        private MMDevice _captureDevice;
+        private WasapiCapture _captureSource;
         private AudioStateManager _audioStateManager;
 
         private List<byte[]> _audioChunks;
@@ -58,7 +58,7 @@ namespace FancyCards.Audio
             _outputDevice = new WaveOutEvent();
             _audioPipeline = new AudioPipeline();
 
-            _captureDevice = _utilities.GetDefaultOutputDevice();//_utilities.GetDeviceById(deviceId);
+            _captureDevice = _utilities.GetDefaultOutputDevice();
             _captureSource = _utilities.GetWasapiCaptureInstance(_captureDevice);
 
             _audioStateManager = new AudioStateManager(_captureSource.WaveFormat);
@@ -74,6 +74,17 @@ namespace FancyCards.Audio
             _audioStateManager.SourceChanged += (source) => AudioSourceChanged?.Invoke(source);
         }
 
+        public bool SetCaptureDevice(string deviceId)
+        {
+            _captureDevice =  string.IsNullOrEmpty(deviceId) ? _utilities.GetDefaultOutputDevice() : _utilities.GetDeviceById(deviceId);
+            _captureSource = _utilities.GetWasapiCaptureInstance(_captureDevice);
+
+            return true;
+        }
+
+        public MMDevice GetCaptureDevice() => _captureDevice;
+
+        public IEnumerable<MMDevice> GetCaptureDeviceList() => _utilities.GetRecordDevices();
 
         //createUndoPoint = true, чтобы определять было ли изменение аудио, чтобы экспортировать
         public bool OpenAudioAsync(string path, bool createUndoPoint = false, bool clearHistory = false)

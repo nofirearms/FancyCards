@@ -1,4 +1,5 @@
-﻿using NAudio.CoreAudioApi;
+﻿using FancyCards.Audio.Common;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System.Reflection;
 
@@ -23,6 +24,8 @@ namespace FancyCards.Audio
 
             return devices;
         }
+
+
         /// <summary>
         /// Get default input device
         /// </summary>

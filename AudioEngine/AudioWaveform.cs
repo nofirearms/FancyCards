@@ -8,9 +8,12 @@ using System.Text;
 
 namespace FancyCards.Audio
 {
+
     public class AudioWaveform
     {
-
+        /// <summary>
+        /// Generates graph-based visualizations from audio input data
+        /// </summary>
         public AudioWaveform()
         {
 

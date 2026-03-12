@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FancyCards.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -102,6 +103,9 @@ namespace FancyCards.Controls
         private void ModalBase_Loaded(object sender, RoutedEventArgs e)
         {
             ContentLoaded?.Execute(null);
+
+            var vm = (BaseModalViewModel)DataContext;
+            vm.Loaded();
         }
     }
 }

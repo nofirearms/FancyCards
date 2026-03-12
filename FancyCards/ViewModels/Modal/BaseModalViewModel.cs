@@ -8,6 +8,7 @@ namespace FancyCards.ViewModels
 {
     public abstract class BaseModalViewModel : ObservableObject
     {
+        public abstract void Loaded();
         public abstract void CancelObject();
     }
     public abstract partial class BaseModalViewModel<TResult> : BaseModalViewModel
@@ -22,14 +23,14 @@ namespace FancyCards.ViewModels
 
         private TaskCompletionSource<ModalResult<TResult>> _completionSource;
 
-        public Task<ModalResult<TResult>> Task => _completionSource.Task;
+        public Task<ModalResult<TResult>> ResultTask => _completionSource.Task;
 
         protected BaseModalViewModel()
         {
             _completionSource = new TaskCompletionSource<ModalResult<TResult>>(); 
         }
 
-        protected async void Close(bool success = true, TResult data = default, string buttonTag = "Close")
+        protected virtual async void Close(bool success = true, TResult data = default, string buttonTag = "Close")
         {
             
             _completionSource.TrySetResult(new ModalResult<TResult>
@@ -48,6 +49,11 @@ namespace FancyCards.ViewModels
                 Data = default,
                 ButtonTag = "Cancel"
             });
+        }
+
+        public override void Loaded()
+        {
+
         }
 
         public override void CancelObject()

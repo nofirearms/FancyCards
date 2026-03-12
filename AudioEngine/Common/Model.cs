@@ -10,4 +10,6 @@ namespace FancyCards.Audio.Common
         public double TotalLength { get; set; }
         public double StartPosition { get; set; }
     }
+
+
 }

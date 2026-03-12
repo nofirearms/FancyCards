@@ -2,11 +2,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FancyCards.Audio;
+using FancyCards.Audio.Common;
 using FancyCards.Helpers;
 using FancyCards.Models;
 using FancyCards.Services;
 using FancyPhrases.Models;
-
+using NAudio.CoreAudioApi;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -24,16 +26,35 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
         private readonly DataService _dataService;
 
+        [ObservableProperty]
+        private bool _devicesLoaded = false;
 
+        private string _caputreDeviceId;
+        [Setting]
+        public string CaptureDeviceId
+        {
+            get => _caputreDeviceId;
+            set
+            {
+                SetProperty(ref _caputreDeviceId, value);
+                if (CaptureDevices.Any()) 
+                {
+                    CaptureDeviceName = CaptureDevices.Find(o => o.ID == value).Name;
+                }
+            }
+        }
 
+        private string _captureDeviceName;
+        [Setting]
+        public string CaptureDeviceName
+        {
+            get => _captureDeviceName;
+            set => SetProperty(ref _captureDeviceName, value);
+        }
 
-        //private int _correctAnswersToFinishReviewing = 10;
-        //[Setting]
-        //public int СorrectAnswersToFinishReviewing
-        //{
-        //    get => _correctAnswersToFinishReviewing;
-        //    set => SetProperty(ref _correctAnswersToFinishReviewing, value);
-        //}
+        [ObservableProperty]
+        private List<CaptureDeviceSummary> _captureDevices = new();
+
 
         [ObservableProperty]
         private string _info;
@@ -46,10 +67,35 @@ namespace FancyCards.ViewModels
 
             Header = "Settings";
 
-            var _ = LoadSettings();
+            LoadSettings();
+
+            var audio_utilities = new AudioUtilities();
+            var default_device = audio_utilities.GetDefaultInputDevice();
+            CaptureDeviceId = string.IsNullOrEmpty(CaptureDeviceId) ? default_device.ID : CaptureDeviceId;
+            CaptureDeviceName = string.IsNullOrEmpty(CaptureDeviceName) ? default_device.FriendlyName : CaptureDeviceName;
+
+            _ = InitializeAsync();
+
         }
 
-        private async Task LoadSettings()
+        private async Task InitializeAsync()
+        {
+            await System.Threading.Tasks.Task.Delay(20);
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                var audio_utilities = new AudioUtilities();
+
+                CaptureDevices = audio_utilities.GetRecordDevices().Select(d => new CaptureDeviceSummary { Name = d.FriendlyName, ID = d.ID }).ToList();
+            });
+            DevicesLoaded = true;
+        }
+
+        public override void Loaded()
+        {
+
+        }
+
+        private void LoadSettings()
         {
 
             var properties = this.GetType().GetProperties().Where(p => p.GetCustomAttribute<SettingAttribute>() != null);

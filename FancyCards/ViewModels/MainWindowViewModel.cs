@@ -120,7 +120,7 @@ namespace FancyCards.ViewModels
             {
                 ContextMenu = context;
 
-                var result = await context.Task;
+                var result = await context.ResultTask;
 
                 ContextMenu = null;
 

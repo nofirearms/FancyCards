@@ -64,8 +64,9 @@
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
+                    Style="{StaticResource CustomTextbox}"
                     Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextAlignment="Left" Style="{StaticResource CustomTextbox}"
+                    TextAlignment="Left"
                     TextWrapping="Wrap" />
             </controls:HintControl>
 
@@ -169,9 +170,22 @@
                 </StackPanel>
             </Grid>
 
-            <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}" />
-
-
+            <Grid>
+                <local:AudioSamplerView DataContext="{Binding AudioSamplerViewModel}" />
+                <StackPanel
+                    Margin="5,50"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top">
+                    <Button
+                        Width="auto"
+                        Height="15"
+                        Command="{Binding ChooseCaptureDeviceCommand}"
+                        Content="{Binding CaptureDeviceName}"
+                        FontSize="12"
+                        FontWeight="Normal"
+                        Style="{StaticResource CustomButtonStyleNoBg}" />
+                </StackPanel>
+            </Grid>
 
         </StackPanel>
         <StackPanel

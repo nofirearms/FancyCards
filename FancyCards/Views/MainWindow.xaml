@@ -77,6 +77,10 @@
                     <local:StatisticsView />
                 </DataTemplate>
 
+                <DataTemplate DataType="{x:Type vm:ComboBoxViewModel}">
+                    <local:ComboBoxView />
+                </DataTemplate>
+
             </ItemsControl.Resources>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

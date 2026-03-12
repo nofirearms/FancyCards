@@ -4,8 +4,6 @@ using FancyCards.Audio;
 using FancyCards.Extensions;
 using FancyCards.Models;
 using FancyCards.Services;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace FancyCards.ViewModels
@@ -16,7 +14,7 @@ namespace FancyCards.ViewModels
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly ModalService _modalService;
-
+        private readonly SettingsService _settingsService;
         private Card _card;
 
         [ObservableProperty]
@@ -63,14 +61,21 @@ namespace FancyCards.ViewModels
 
         public CardAction CardAction { get; } = CardAction.Create;
 
-        
 
-        public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, ModalService modalService, Card card)
+        [ObservableProperty]
+        private string _captureDeviceName;
+        [ObservableProperty]
+        private string _captureDeviceId;
+
+        private List<CaptureDeviceSummary> _captureDevices;
+
+        public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, ModalService modalService, SettingsService settingsService, Card card)
         {
             _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _modalService = modalService;
+            _settingsService = settingsService;
 
             CardAction = card.Id == default ? CardAction.Create : CardAction.Update;
 
@@ -95,8 +100,17 @@ namespace FancyCards.ViewModels
                 SelectedState = _card.State;
             }
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(_host, _audioEngine, _card);
+            var deviceId = _settingsService.CaptureDeviceId;
+            _audioEngine.SetCaptureDevice(deviceId);
 
+            //может быть так что в настройках нет записи, поэтому заполняем из сервиса
+            var device = _audioEngine.GetCaptureDevice();
+            _captureDeviceName = device.FriendlyName;
+            _captureDeviceId = device.ID;
+
+
+            _audioSamplerViewModel = new AudioSamplerViewModel(_host, _audioEngine, _card);
+    
             _audioEngine.AudioSourceChanged += (source) =>
             {
                 App.Current.Dispatcher.Invoke(() =>
@@ -121,12 +135,43 @@ namespace FancyCards.ViewModels
                     await _modalService.OpenMessageBox("Audio file not found", ["OK"]);
                 }
             });
+
+
+
+
+            _ = InitializeAsync();
         }
 
-        private async void InitializeAsync()
+        private async Task InitializeAsync()
         {
+            await Task.Delay(20);
+            await Task.Run(() =>
+            {
+                var audio_utilities = new AudioUtilities();
 
+                _captureDevices = audio_utilities.GetRecordDevices().Select(d => new CaptureDeviceSummary { Name = d.FriendlyName, ID = d.ID }).ToList();
+            });
         }
+
+
+        [RelayCommand]
+        private async void ChooseCaptureDevice()
+        {
+            var result = await _modalService.OpenComboBoxModal(_captureDevices, _captureDevices.FirstOrDefault(d => d.ID == _captureDeviceId), "Capture Devices");
+            if (result.Success)
+            {
+                var device = (CaptureDeviceSummary)result.Data;
+                _audioEngine.SetCaptureDevice(device.ID);
+
+                CaptureDeviceName = device.Name;
+                CaptureDeviceId = device.ID; 
+            }
+        }
+
+
+        
+
+
 
         private AsyncRelayCommand _saveCardCommand;
         public IAsyncRelayCommand SaveCardCommand => _saveCardCommand ??= new AsyncRelayCommand(SaveCard, CanSaveCard);
