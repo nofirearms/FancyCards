@@ -9,7 +9,15 @@ namespace FancyCards.Models
         Learning,   // В процессе изучения
         Reviewing,  // На повторении
         Archived, // Выучена
-        Scheduled
+    }
+
+    public enum CardFilterState
+    {
+        Learning,   // В процессе изучения
+        Reviewing,  // На повторении
+        Archived, // Выучена
+        Scheduled,
+        Total
     }
 
     public enum Difficulty

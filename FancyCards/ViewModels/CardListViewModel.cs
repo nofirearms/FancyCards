@@ -19,7 +19,7 @@ namespace FancyCards.ViewModels
         private readonly MainWindowViewModel _host;
 
         [ObservableProperty]
-        private ReadOnlyObservableCollection<Card> _cards;
+        private ReadOnlyObservableCollection<CardSummaryViewModel> _cards;
         private Deck _currentDeck => _dataService.CurrentDeck;
 
         [ObservableProperty]
@@ -69,42 +69,51 @@ namespace FancyCards.ViewModels
 
 
 
-            _dataService.ConnectCards()
-                .Filter(filterTrigger)
+            // Общий источник данных
+            var all_сards = _dataService.ConnectCards()
+                .Transform(c => new CardSummaryViewModel(c))
                 .DisposeMany()
+                .Publish();
+
+            // Для UI с фильтром
+            all_сards
+                .Filter(filterTrigger)
                 .ObserveOn(uiContext)
                 .Bind(out _cards)
                 .Subscribe();
 
-
-            _dataService.ConnectCards()
+            // Для счетчиков без фильтра
+            all_сards
                 .ToCollection()
-                // Объединяем поток изменений карт с потоком выбора колоды
                 .CombineLatest(_dataService.SelectedDeckChanged, (items, deck) => new { items, deck })
+                .ObserveOn(uiContext)
                 .Subscribe(x =>
                 {
                     var now = DateTime.Now;
                     var deck_id = x.deck?.Id;
 
-                    var filtered = x.items.Where(o => deck_id == null || o.DeckId == deck_id).ToList();
+                    var filtered = x.items.Where(o => deck_id == null || o.Card.DeckId == deck_id).ToList();
 
-                    ScheduledCount = filtered.Count(o => o.NextReviewDate > now);
-                    ReviewingCount = filtered.Count(o => o.State == CardState.Reviewing && o.NextReviewDate <= now);
-                    LearningCount = filtered.Count(o => o.State == CardState.Learning && o.NextReviewDate <= now);
-                    ArchivedCount = filtered.Count(o => o.State == CardState.Archived);
+                    ScheduledCount = filtered.Count(o => o.State == CardFilterState.Scheduled);
+                    ReviewingCount = filtered.Count(o => o.State == CardFilterState.Reviewing);
+                    LearningCount = filtered.Count(o => o.State == CardFilterState.Learning);
+                    ArchivedCount = filtered.Count(o => o.State == CardFilterState.Archived);
                     TotalCount = filtered.Count;
                 });
+
+            // Запускаем общий источник
+            all_сards.Connect();
         }
 
-
         [RelayCommand]
-        private async void OpenCardContext(Card card)
+        private async void OpenCardContext(CardSummaryViewModel cardVM)
         {
-            if (card is null) return;
+            if (cardVM is null) return;
 
             //await _host.OpenMessageBox($"I:{card.Scores.I}; Last Review:{card.LastReviewDate}", ["Ok"], background: new SolidColorBrush(Colors.Azure));
 
             //return;
+            var card = cardVM.Card;
             var result = await _host.OpenContext(new CardContextViewModel(card));
             if (result.Success)
             {
@@ -137,37 +146,38 @@ namespace FancyCards.ViewModels
         private string _frontTextFilter;
 
         [ObservableProperty]
-        private CardState _selectedState = CardState.Reviewing;
+        private CardFilterState _selectedState = CardFilterState.Reviewing;
 
-        public List<CardState> States => new List<CardState>
+        public List<CardFilterState> States => new List<CardFilterState>
         {
-            CardState.Scheduled,
-            CardState.Learning,
-            CardState.Reviewing,
-            CardState.Archived
+            CardFilterState.Scheduled,
+            CardFilterState.Learning,
+            CardFilterState.Reviewing,
+            CardFilterState.Archived,
+            CardFilterState.Total
         };
 
 
 
-        private Func<Card, bool> CreateFilter()
+        private Func<CardSummaryViewModel, bool> CreateFilter()
         {
 
 
             return item =>
             {
                 // 1. Фильтр по колоде (если колода не выбрана - показываем все или ничего, как захочешь)
-                if (_currentDeck != null && item.DeckId != _currentDeck.Id)
+                if (_currentDeck != null && item.Card.DeckId != _currentDeck.Id)
                     return false;
 
-                bool date_pass = SelectedState == CardState.Scheduled 
-                    ? item.NextReviewDate > DateTime.Now && item.State != CardState.Archived
-                    : item.NextReviewDate <= DateTime.Now && SelectedState == item.State;
+                bool state_pass = SelectedState == CardFilterState.Total
+                    ? true
+                    : SelectedState == item.State;
 
                  var text_pass = string.IsNullOrEmpty(FrontTextFilter) ||
                                   item.FrontText.Contains(FrontTextFilter, StringComparison.OrdinalIgnoreCase) ||
                                   item.BackText.Contains(FrontTextFilter, StringComparison.OrdinalIgnoreCase);
 
-                return date_pass && text_pass; //&& categoryPass && pricePass;
+                return state_pass && text_pass; //&& categoryPass && pricePass;
             };
         }
 

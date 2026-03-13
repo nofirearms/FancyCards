@@ -66,12 +66,24 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="TotalTemplate">
+            <StackPanel Orientation="Vertical">
+                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="CardsPlayingDiamondMultipleOutline" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TotalCount}" />
+            </StackPanel>
+        </DataTemplate>
+
         <helpers:CardStateTemplateSelector
             x:Key="CardStateTemplateSelector"
             ArchivedTemplate="{StaticResource ArchivedTemplate}"
             LearningTemplate="{StaticResource LearningTemplate}"
             ReviewingTemplate="{StaticResource ReviewingTemplate}"
-            ScheduledTemplate="{StaticResource ScheduledTemplate}" />
+            ScheduledTemplate="{StaticResource ScheduledTemplate}"
+            TotalTemplate="{StaticResource TotalTemplate}" />
     </UserControl.Resources>
 
     <Grid>
@@ -116,8 +128,8 @@
         <Grid Grid.Row="1" Margin="0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Border
@@ -135,6 +147,7 @@
 
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
+                            <Setter Property="Margin" Value="1,0" />
                             <Setter Property="Padding" Value="0" />
                             <Setter Property="Focusable" Value="True" />
                             <Setter Property="Template">
@@ -176,24 +189,9 @@
                 </ListView>
             </Border>
 
-            <StackPanel
-                Grid.Column="1"
-                Margin="5,5,80,5"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Background="Transparent"
-                Orientation="Vertical"
-                ToolTip="All">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="CardsPlayingDiamondMultipleOutline" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontSize="10"
-                    Text="{Binding TotalCount}" />
-            </StackPanel>
-
             <controls:HintControl
                 Grid.Column="2"
+                Width="{Binding ElementName=StatesBorder, Path=ActualWidth}"
                 Margin="0,0,-1,0"
                 HintBackground="{Binding ElementName=root, Path=Background}">
                 <controls:HintControl.Hint>

@@ -31,17 +31,19 @@ namespace FancyCards.Helpers
         public DataTemplate LearningTemplate { get; set; }
         public DataTemplate ArchivedTemplate { get; set; }
         public DataTemplate ScheduledTemplate { get; set; }
+        public DataTemplate TotalTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var type = (CardState)item;
+            var type = (CardFilterState)item;
 
             return type switch
             {
-                CardState.Reviewing => ReviewingTemplate,
-                CardState.Learning => LearningTemplate,
-                CardState.Archived => ArchivedTemplate,
-                CardState.Scheduled => ScheduledTemplate,
+                CardFilterState.Reviewing => ReviewingTemplate,
+                CardFilterState.Learning => LearningTemplate,
+                CardFilterState.Archived => ArchivedTemplate,
+                CardFilterState.Scheduled => ScheduledTemplate,
+                CardFilterState.Total => TotalTemplate,
                 _ => null
             };
         }

@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+
+    <Geometry x:Key="Archive">M172-132v-500h-40v-196h696v196h-40v500H172Zm28-28h560v-472H200v472Zm-40-500h640v-140H160v140Zm220 201h200v-21H380v21Zm100 63Z</Geometry>
+    <Geometry x:Key="Cards">M416-626h268v-28H416v28Zm0 128h148v-28H416v28Zm309 235h35l3 24-583 72-59-419 31-4 52 392 521-65ZM272-363v-425h556v425H272Zm28-28h500v-369H300v369Zm0 0v-369 369Zm-96 193Z</Geometry>
+
+</ResourceDictionary>
