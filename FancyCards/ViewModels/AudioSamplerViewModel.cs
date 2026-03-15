@@ -20,7 +20,6 @@ namespace FancyCards.ViewModels
 {
     public partial class AudioSamplerViewModel : ObservableObject, IDisposable
     {
-        private readonly MainWindowViewModel _host;
         private readonly AudioEngine _audioEngine;
         private readonly ModalService _modalService;
 
@@ -64,10 +63,10 @@ namespace FancyCards.ViewModels
         private bool _canUndo = false;
 
 
-        public AudioSamplerViewModel(MainWindowViewModel host, AudioEngine audioEngine, Card card)
+        public AudioSamplerViewModel(AudioEngine audioEngine, ModalService modalService, Card card)
         {
-            _host = host;
             _audioEngine = audioEngine;
+            _modalService = modalService;
 
             _audioEngine.StateChanged += OnAudioEngineStateChanged;
             _audioEngine.GraphChanged += OnGraphChanged;
@@ -237,7 +236,7 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void OpenAudioGraphContext()
         {
-            var context_result = await _host.OpenContext(new AudioGraphContextViewModel());
+            var context_result = await _modalService.OpenContext(new AudioGraphContextViewModel());
             if(context_result.ButtonTag == "ResetSelection")
             {
                 ResetSelection();

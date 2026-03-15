@@ -7,16 +7,14 @@ namespace FancyCards.ViewModels
 {
     public partial class StatisticsViewModel : BaseModalViewModel<object>
     {
-        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
 
 
         [ObservableProperty]
         private List<SessionsDailySummary> _sessions;
 
-        public StatisticsViewModel(MainWindowViewModel host, DataService dataService)
+        public StatisticsViewModel(DataService dataService)
         {
-            _host = host;
             _dataService = dataService;
 
             Header = "Statistics";

@@ -13,7 +13,6 @@ namespace FancyCards.ViewModels
 {
     public partial class TrainingViewModel : BaseModalViewModel<object>
     {
-        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly TextReplacementService _textService;
@@ -21,6 +20,7 @@ namespace FancyCards.ViewModels
         private readonly OverlayService _overlayService;
         private readonly NotificationService _notificationService;
         private readonly ModalService _modalService;
+        private readonly LoadingService _loadingService;
 
         private TrainingCardListManager _cardManager;
         private DispatcherTimer _timer;
@@ -46,7 +46,7 @@ namespace FancyCards.ViewModels
 
         public IEnumerable<Difficulty> Difficulties => Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>();
 
-        public TrainingViewModel(MainWindowViewModel host,
+        public TrainingViewModel(
             DataService dataService,
             TextReplacementService textService,
             AudioEngine audioEngine,
@@ -55,9 +55,9 @@ namespace FancyCards.ViewModels
             OverlayService overlayService,
             NotificationService notificationService,
             ModalService modalService,
+            LoadingService loadingService,
             IEnumerable<Card> cards )
         {
-            _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _textService = textService;
@@ -65,6 +65,7 @@ namespace FancyCards.ViewModels
             _overlayService = overlayService;
             _notificationService = notificationService;
             _modalService = modalService;
+            _loadingService = loadingService;
 
             Header = "Training";
 
@@ -340,18 +341,18 @@ namespace FancyCards.ViewModels
 
             await _modalService.OpenTrainingResult(result_cards);
 
-            await _host.StartLoading(true);
 
-            //TrainingSessionCards записываются автоматом через сессию
-            await _dataService.AddOrUpdateTrainingSessionsAsync([training_session]);
+            await _loadingService.ShowLoadingAsync(async () =>
+            {
+                //TrainingSessionCards записываются автоматом через сессию
+                await _dataService.AddOrUpdateTrainingSessionsAsync([training_session]);
 
-            session_cards.ForEach(c => c.TrainingSessionId = training_session.Id);
+                session_cards.ForEach(c => c.TrainingSessionId = training_session.Id);
 
-            await _dataService.AddOrUpdateTrainingSessionCardsAsync(session_cards);
+                await _dataService.AddOrUpdateTrainingSessionCardsAsync(session_cards);
 
-            await _dataService.AddOrUpdateCardsAsync(result_cards.Select(r => r.Card));
-
-            _host.StopLoading();
+                await _dataService.AddOrUpdateCardsAsync(result_cards.Select(r => r.Card));
+            }, true, true);
 
             Close();
 

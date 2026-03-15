@@ -88,10 +88,43 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
+
+        <!--  SELECTED DECK  -->
+        <Button
+            Grid.Row="0"
+            Width="auto"
+            VerticalAlignment="Center"
+            Command="{Binding OpenDeckListModalCommand}"
+            Style="{StaticResource CustomButtonStyleNoBg}">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding DeckName}" />
+        </Button>
+
+
+        <!--  MENU  -->
+        <StackPanel
+            Grid.Row="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <Button Padding="10,0" ClickMode="Press" Style="{StaticResource   CustomButtonStyleNoBg }">
+                <interation:Interaction.Behaviors>
+                    <behaviors:OpenContextMenuBehavior Button="Left" Command="{Binding OpenMenuCommand}" />
+                </interation:Interaction.Behaviors>
+                <materialDesign:PackIcon
+                    Width="20"
+                    Height="20"
+                    Kind="Menu" />
+            </Button>
+        </StackPanel>
+
+
+        <!--  CARDS  -->
         <Border
+            Grid.Row="1"
             Margin="0,5"
             BorderBrush="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
             BorderThickness="1"
@@ -125,17 +158,85 @@
         </Border>
 
 
-        <Grid Grid.Row="1" Margin="0,0">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
+            <!--  BUTTONS  -->
+            <StackPanel
+                x:Name="ButtonsPanel"
+                Grid.Row="2"
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
+
+                <Button
+                    Margin="0,0,5,0"
+                    Padding="10,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    ClickMode="Press"
+                    Command="{Binding OpenStartTrainingModalCommand}"
+                    SnapsToDevicePixels="True">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="18"
+                            Height="18"
+                            Kind="Dumbbell" />
+                        <TextBlock
+                            Margin="2,0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Text="Start" />
+                    </StackPanel>
+
+                </Button>
+
+                <Button
+                    Padding="10"
+                    ClickMode="Press"
+                    Command="{Binding OpenCardDetailModalCommand}"
+                    Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                    SnapsToDevicePixels="True">
+                    <StackPanel Orientation="Horizontal">
+
+                        <!--<materialDesign:PackIcon
+                        Width="20"
+                        Height="20"
+                        Kind="CardPlusOutline" />
+                    <TextBlock
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="16"
+                        Text="&#xED0E;" />-->
+                        <materialDesign:PackIcon
+                            Width="20"
+                            Height="20"
+                            Margin="-5,0,0,0"
+                            VerticalAlignment="Center"
+                            Kind="Add" />
+                        <TextBlock
+                            Margin="1,0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Text="Create" />
+
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!--  STATES  -->
             <Border
                 x:Name="StatesBorder"
+                Grid.Row="2"
+                Grid.Column="1"
                 Padding="1"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Style="{StaticResource CustomBorderSimpleStyle}">
                 <ListView
@@ -144,7 +245,6 @@
                     ItemTemplateSelector="{StaticResource CardStateTemplateSelector}"
                     ItemsSource="{Binding States}"
                     SelectedValue="{Binding SelectedState, Mode=TwoWay}">
-
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Margin" Value="1,0" />
@@ -161,7 +261,9 @@
                                             BorderBrush="Transparent"
                                             BorderThickness="1"
                                             CornerRadius="2"
-                                            ToolTip="{Binding}">
+                                            SnapsToDevicePixels="True"
+                                            ToolTip="{Binding}"
+                                            UseLayoutRounding="True">
                                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
 
@@ -189,15 +291,20 @@
                 </ListView>
             </Border>
 
+            <!--  SEARCH  -->
             <controls:HintControl
+                Grid.Row="2"
                 Grid.Column="2"
-                Width="{Binding ElementName=StatesBorder, Path=ActualWidth}"
-                Margin="0,0,-1,0"
+                Width="{Binding ElementName=ButtonsPanel, Path=ActualWidth}"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
                 HintBackground="{Binding ElementName=root, Path=Background}">
                 <controls:HintControl.Hint>
                     <materialDesign:PackIcon Kind="Search" />
                 </controls:HintControl.Hint>
                 <TextBox
+                    Padding="5,7"
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     materialDesign:TextFieldAssist.HasClearButton="True"

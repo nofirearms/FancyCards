@@ -11,8 +11,9 @@ namespace FancyCards.ViewModels
 {
     public partial class DeckDetailViewModel : BaseModalViewModel<Deck>
     {
-        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
+        private readonly LoadingService _loadingService;
+
         private Deck _deck;
 
         public DeckAction DeckAction { get; }
@@ -47,10 +48,10 @@ namespace FancyCards.ViewModels
         private int _maxIntervalDays = 90;
 
 
-        public DeckDetailViewModel(MainWindowViewModel host, DataService dataService, Deck deck) 
+        public DeckDetailViewModel(DataService dataService, LoadingService loadingService, Deck deck) 
         {
-            _host = host;
             _dataService = dataService;
+            _loadingService = loadingService;
 
             DeckAction = deck.Id == default ? DeckAction.Create : DeckAction.Update;
 
@@ -100,12 +101,10 @@ namespace FancyCards.ViewModels
 
             _deck.Settings.ReviewProfileId = SelectedProfile.Id;
 
-            await _host.StartLoading(false);
-
-            //сначала сохраняем чтобы получить Id
-            await _dataService.AddOrUpdateDecksAsync([_deck]);
-
-            _host.StopLoading();
+            await _loadingService.ShowLoadingAsync(async () =>
+            {
+                await _dataService.AddOrUpdateDecksAsync([_deck]);
+            }, true, false);
 
             Close(true, _deck, "Save");
             

@@ -10,11 +10,12 @@ namespace FancyCards.ViewModels
 {
     public partial class CardDetailViewModel : BaseModalViewModel<Card>
     {
-        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly AudioEngine _audioEngine;
         private readonly ModalService _modalService;
         private readonly SettingsService _settingsService;
+        private readonly LoadingService _loadingService;
+
         private Card _card;
 
         [ObservableProperty]
@@ -69,13 +70,19 @@ namespace FancyCards.ViewModels
 
         private List<CaptureDeviceSummary> _captureDevices;
 
-        public CardDetailViewModel(MainWindowViewModel host, AudioEngine audioEngine, DataService dataService, ModalService modalService, SettingsService settingsService, Card card)
+        public CardDetailViewModel(
+            AudioEngine audioEngine, 
+            DataService dataService, 
+            ModalService modalService, 
+            SettingsService settingsService, 
+            LoadingService loadingService, 
+            Card card)
         {
-            _host = host;
             _dataService = dataService;
             _audioEngine = audioEngine;
             _modalService = modalService;
             _settingsService = settingsService;
+            _loadingService = loadingService;
 
             CardAction = card.Id == default ? CardAction.Create : CardAction.Update;
 
@@ -109,7 +116,7 @@ namespace FancyCards.ViewModels
             _captureDeviceId = device.ID;
 
 
-            _audioSamplerViewModel = new AudioSamplerViewModel(_host, _audioEngine, _card);
+            _audioSamplerViewModel = new AudioSamplerViewModel(_audioEngine, _modalService, _card);
     
             _audioEngine.AudioSourceChanged += (source) =>
             {
@@ -169,9 +176,6 @@ namespace FancyCards.ViewModels
         }
 
 
-        
-
-
 
         private AsyncRelayCommand _saveCardCommand;
         public IAsyncRelayCommand SaveCardCommand => _saveCardCommand ??= new AsyncRelayCommand(SaveCard, CanSaveCard);
@@ -210,12 +214,11 @@ namespace FancyCards.ViewModels
 
                 _card = card;
 
-                await _host.StartLoading(false);
-
-                await _dataService.AddOrUpdateCardsAsync([_card]);
-                await _audioEngine.RenderToMp3Async(_card.Audio.Path);
-
-                _host.StopLoading();
+                await _loadingService.ShowLoadingAsync(async () =>
+                {
+                    await _dataService.AddOrUpdateCardsAsync([_card]);
+                    await _audioEngine.RenderToMp3Async(_card.Audio.Path);
+                }, true, false);
 
                 Close(true, _card);
             }
@@ -236,16 +239,16 @@ namespace FancyCards.ViewModels
                 _card.Audio.EndPosition = _audioSamplerViewModel.Selection.End;
                 _card.Audio.Tempo = _audioSamplerViewModel.Tempo;
 
-                await _host.StartLoading(false);
 
-                await _dataService.AddOrUpdateCardsAsync([_card]);
-
-                if (_audioEngine.AudioChanged)
+                await _loadingService.ShowLoadingAsync(async () =>
                 {
-                    await _audioEngine.RenderToMp3Async(_card.Audio.Path);
-                }
+                    await _dataService.AddOrUpdateCardsAsync([_card]);
 
-                _host.StopLoading();
+                    if (_audioEngine.AudioChanged)
+                    {
+                        await _audioEngine.RenderToMp3Async(_card.Audio.Path);
+                    }
+                }, true, false);
 
                 Close(true, _card);
             }

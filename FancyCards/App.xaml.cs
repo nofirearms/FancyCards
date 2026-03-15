@@ -50,13 +50,12 @@ namespace FancyCards
             services.AddSingleton<OverlayService>();
             services.AddSingleton<HotkeyService>();
             services.AddSingleton<NotificationService>();
+            services.AddSingleton<LoadingService>();
 
             services.AddSingleton<ViewModelFactory>();
 
             services.AddTransient<AudioEngine>();
-            services.AddTransient<ReviewIntervalEngine>();
-
-
+            
 
             return services.BuildServiceProvider();
         }

@@ -103,8 +103,12 @@ namespace FancyCards.Controls
 
             //if (context_view.Position == DialogPosition.MouseCenter)
             //{
-            content_x = Math.Min(Math.Max(5, mouse_point.X - (content_w / 2)), this.ActualWidth - (content_w) - 5);
-            content_y = Math.Min(Math.Max(5, mouse_point.Y - (content_h / 2)), this.ActualHeight - (content_h) - 5);
+
+            content_x = Math.Clamp(mouse_point.X - (content_w / 2), 5, this.ActualWidth - (content_w) - 5);
+            content_y = Math.Clamp(mouse_point.Y - (content_h / 2), 5, this.ActualHeight - (content_h) - 10);
+
+            //content_x = Math.Min(Math.Max(5, mouse_point.X - (content_w / 2)), this.ActualWidth - (content_w) - 5);
+            //content_y = Math.Min(Math.Max(5, mouse_point.Y - (content_h / 2)), this.ActualHeight - (content_h) - 5);
             //}
             //var window = control.FindVisualParent<Window>();
             //var window_w = window.ActualWidth;

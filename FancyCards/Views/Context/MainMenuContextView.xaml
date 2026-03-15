@@ -1,0 +1,44 @@
+﻿<UserControl
+    x:Class="FancyCards.Views.MainMenuContextView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:FancyCards.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:FancyCards.ViewModels"
+    d:DataContext="{d:DesignInstance vm:MainMenuContextViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Vertical">
+        <StackPanel.Resources>
+            <Style BasedOn="{StaticResource TransparentSquareButton}" TargetType="Button">
+                <Setter Property="Width" Value="130" />
+                <Setter Property="Height" Value="30" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+            </Style>
+        </StackPanel.Resources>
+        <Button Command="{Binding ButtonClickCommand}" CommandParameter="Statistics">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Margin="5,0,5,0" Kind="ChartBar" />
+                <TextBlock Text="Statistics" />
+            </StackPanel>
+        </Button>
+        <Button Command="{Binding ButtonClickCommand}" CommandParameter="Text rules">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Margin="5,0,5,0" Kind="Repeat" />
+                <TextBlock Text="Text rules" />
+            </StackPanel>
+        </Button>
+        <Button Command="{Binding ButtonClickCommand}" CommandParameter="Settings">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Margin="5,0,5,0" Kind="Settings" />
+                <TextBlock Text="Settings" />
+            </StackPanel>
+        </Button>
+
+    </StackPanel>
+</UserControl>

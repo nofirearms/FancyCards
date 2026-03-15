@@ -14,18 +14,18 @@ namespace FancyCards.ViewModels
 {
     public partial class TextReplacementRuleListViewModel : BaseModalViewModel<object>
     {
-        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly ModalService _modalService;
+        private readonly LoadingService _loadingService;
 
         [ObservableProperty]
         private ReadOnlyObservableCollection<TextReplacementRule> _rules;
 
-        public TextReplacementRuleListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService)
+        public TextReplacementRuleListViewModel(DataService dataService, ModalService modalService, LoadingService loadingService)
         {
-            _host = host;
             _dataService = dataService;
             _modalService = modalService;
+            _loadingService = loadingService;
 
             Header = "Rules";
 
@@ -53,7 +53,7 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void OpenContext(TextReplacementRule rule)
         {
-            var result = await _host.OpenContext(new GeneralListContextViewModel<TextReplacementRule>(rule));
+            var result = await _modalService.OpenContext(new GeneralListContextViewModel<TextReplacementRule>(rule));
             if(result.ButtonTag == "Edit")
             {
                 var edit_result = await _modalService.OpenTextReplacementRuleDetailModal(rule);
@@ -66,16 +66,18 @@ namespace FancyCards.ViewModels
                         Original = edit_result.Data.Original,
                         Replacement= edit_result.Data.Replacement
                     };
-                    await _host.StartLoading(false);
-                    await _dataService.AddOrUpdateTextReplacementRulesAsync([edited]);
-                    _host.StopLoading();
+                    await _loadingService.ShowLoadingAsync(async () =>
+                    {
+                        await _dataService.AddOrUpdateTextReplacementRulesAsync([edited]);
+                    }, true, false);
                 }
             }
             else if(result.ButtonTag == "Remove")
             {
-                await _host.StartLoading(false);
-                await _dataService.RemoveTextReplacementRuleAsync(rule);
-                _host.StopLoading();
+                await _loadingService.ShowLoadingAsync(async () =>
+                {
+                    await _dataService.RemoveTextReplacementRuleAsync(rule);
+                }, true, false);
             }
         }
 
@@ -86,9 +88,11 @@ namespace FancyCards.ViewModels
             var create_result = await _modalService.OpenTextReplacementRuleDetailModal(null);
             if (create_result.Success)
             {
-                await _host.StartLoading(false);
-                await _dataService.AddOrUpdateTextReplacementRulesAsync([create_result.Data]);
-                _host.StopLoading();
+                await _loadingService.ShowLoadingAsync(async () =>
+                {
+                    await _dataService.AddOrUpdateTextReplacementRulesAsync([create_result.Data]);
+                }, true, false);
+
             }
         }
 

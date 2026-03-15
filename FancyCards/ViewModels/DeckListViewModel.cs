@@ -14,10 +14,10 @@ namespace FancyCards.ViewModels
 {
     public partial class DeckListViewModel : BaseModalViewModel<Deck>
     {
-        private readonly MainWindowViewModel _host;
         private readonly DataService _dataService;
         private readonly SettingsService _settingsService;
         private readonly ModalService _modalService;
+
         [ObservableProperty]
         private ReadOnlyObservableCollection<DeckSummaryViewModel> _decks;
 
@@ -27,10 +27,9 @@ namespace FancyCards.ViewModels
 
 
 
-        public DeckListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, SettingsService settingsService)
+        public DeckListViewModel(DataService dataService, ModalService modalService, SettingsService settingsService)
         {
 
-            _host = host;
             _dataService = dataService;
             _settingsService = settingsService;
             _modalService = modalService;

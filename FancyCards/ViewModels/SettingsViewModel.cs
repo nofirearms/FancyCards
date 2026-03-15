@@ -22,9 +22,9 @@ namespace FancyCards.ViewModels
 
     public partial class SettingsViewModel : BaseModalViewModel<object>
     {
-        private readonly MainWindowViewModel _host;
         private readonly SettingsService _settingsService;
         private readonly DataService _dataService;
+        private readonly LoadingService _loadingService;
 
         [ObservableProperty]
         private bool _devicesLoaded = false;
@@ -59,11 +59,11 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         private string _info;
 
-        public SettingsViewModel(MainWindowViewModel host, SettingsService settingsService, DataService dataService)
+        public SettingsViewModel(SettingsService settingsService, DataService dataService, LoadingService loadingService)
         {
-            _host = host;
             _settingsService = settingsService;
             _dataService = dataService;
+            _loadingService = loadingService;
 
             Header = "Settings";
 
@@ -80,8 +80,8 @@ namespace FancyCards.ViewModels
 
         private async Task InitializeAsync()
         {
-            await System.Threading.Tasks.Task.Delay(20);
-            await System.Threading.Tasks.Task.Run(() =>
+            await Task.Delay(20);
+            await Task.Run(() =>
             {
                 var audio_utilities = new AudioUtilities();
 
@@ -237,9 +237,11 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void RunScript()
         {
-            await _host.StartLoading(false);
-            await Script();
-            _host.StopLoading();
+
+            await _loadingService.ShowLoadingAsync(async () =>
+            {
+                await Script();
+            }, true, false);
         }
 
         private AsyncRelayCommand _exportOldDataCommand;
@@ -318,11 +320,11 @@ namespace FancyCards.ViewModels
         [RelayCommand]
         private async void Save()
         {
-            await _host.StartLoading(false);
 
-            await SaveSettings();
-
-            _host.StopLoading();
+            await _loadingService.ShowLoadingAsync(async () =>
+            {
+                await SaveSettings();
+            }, true, false);
 
             Close();
         }

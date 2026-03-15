@@ -2,18 +2,21 @@
     x:Class="FancyCards.Views.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:FancyCards.Behaviors"
     xmlns:controls="clr-namespace:FancyCards.Controls"
     xmlns:converters="clr-namespace:FancyCards.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:interation="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
     x:Name="root"
     Title="{Binding Title}"
-    Width="500"
+    Width="510"
     Height="700"
+    MinWidth="510"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
     Icon="/Resources/Icons/cards_icon.ico"
     IsHitTestVisible="{Binding Loading, Converter={StaticResource ReverseBoolConverter}}"
@@ -26,8 +29,15 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
     <Grid>
+        <Border
+            Margin="7"
+            BorderThickness="1"
+            CornerRadius="3">
+            <local:CardListView DataContext="{Binding CardListViewModel}" />
+        </Border>
+
         <!--  Модальные окна  -->
-        <ItemsControl Panel.ZIndex="10" ItemsSource="{Binding ActiveModals}">
+        <ItemsControl d:Visibility="Collapsed" ItemsSource="{Binding ActiveModals}">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type vm:CardDetailViewModel}">
                     <ContentControl Content="{StaticResource CardDetailView}" />
@@ -100,7 +110,6 @@
 
         <!--  Контекстное меню  -->
         <controls:ContextBase
-            Panel.ZIndex="11"
             d:Visibility="Collapsed"
             Content="{Binding ContextMenu}"
             Visibility="{Binding ContextMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -114,86 +123,19 @@
                 <DataTemplate DataType="{x:Type vm:GeneralListContextViewModel}">
                     <local:GeneralListContextView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:MainMenuContextViewModel}">
+                    <local:MainMenuContextView />
+                </DataTemplate>
             </controls:ContextBase.Resources>
         </controls:ContextBase>
 
+        <!--  Иконки анимации  -->
         <controls:OverlayControl
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Panel.ZIndex="12"
             DataContext="{Binding OverlayViewModel}" />
 
-        <DockPanel>
-
-            <StackPanel
-                Margin="10,5,5,5"
-                HorizontalAlignment="Center"
-                DockPanel.Dock="Top"
-                Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                        Text="{Binding DeckName}" />
-                    <Button
-                        Width="35"
-                        VerticalAlignment="Center"
-                        Command="{Binding OpenDeckListModalCommand}"
-                        Style="{StaticResource CustomButtonStyleNoBg}">
-                        <materialDesign:PackIcon
-                            Width="25"
-                            Height="25"
-                            Kind="CardsPlaying" />
-                    </Button>
-                </StackPanel>
-            </StackPanel>
-
-
-
-
-            <StackPanel
-                HorizontalAlignment="Center"
-                DockPanel.Dock="Bottom"
-                Orientation="Horizontal">
-
-                <Button
-                    ClickMode="Press"
-                    Command="{Binding OpenStartTrainingModalCommand}"
-                    Content="{materialDesign:PackIcon Kind=PlayBox}" />
-                <Button
-                    ClickMode="Press"
-                    Command="{Binding OpenCardDetailModalCommand}"
-                    Content="{materialDesign:PackIcon Kind=Add}" />
-                <Button
-                    ClickMode="Press"
-                    Command="{Binding OpenStatisticsModalCommand}"
-                    Content="{materialDesign:PackIcon Kind=ChartBar}" />
-                <Button
-                    ClickMode="Press"
-                    Command="{Binding OpenSettingsModalCommand}"
-                    Content="{materialDesign:PackIcon Kind=Settings}" />
-                <Button
-                    ClickMode="Press"
-                    Command="{Binding OpenTextReplacementRulesModalCommand}"
-                    Content="{materialDesign:PackIcon Kind=Repeat}" />
-            </StackPanel>
-
-            <Border
-                Margin="7"
-                BorderThickness="1"
-                CornerRadius="3"
-                DockPanel.Dock="Top">
-
-                <local:CardListView DataContext="{Binding CardListViewModel}" />
-            </Border>
-
-        </DockPanel>
-
-
-        <Grid
-            Panel.ZIndex="13"
-            d:Visibility="Collapsed"
-            Visibility="{Binding ShowLoadingBackground, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Grid d:Visibility="Collapsed" Visibility="{Binding ShowLoadingBackground, Converter={StaticResource BoolToVisibilityConverter}}">
             <!--<ProgressBar IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
             <TextBlock
                 HorizontalAlignment="Center"

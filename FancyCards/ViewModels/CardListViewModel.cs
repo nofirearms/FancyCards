@@ -16,7 +16,11 @@ namespace FancyCards.ViewModels
     {
         private readonly ModalService _modalService;
         private readonly DataService _dataService;
-        private readonly MainWindowViewModel _host;
+        private readonly SettingsService _settingsService;
+        private readonly LoadingService _loadingService;
+
+        [ObservableProperty]
+        private string _deckName;
 
         [ObservableProperty]
         private ReadOnlyObservableCollection<CardSummaryViewModel> _cards;
@@ -34,16 +38,31 @@ namespace FancyCards.ViewModels
         private int _totalCount;
 
 
-        public CardListViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService)
+        public CardListViewModel(DataService dataService, ModalService modalService, SettingsService settingsService, LoadingService loadingService)
         {
             _modalService = modalService;
             _dataService = dataService;
-            _host = host;
+            _settingsService = settingsService;
+            _loadingService = loadingService;
 
             _ = InitializeAsync();
         }
 
         private async Task InitializeAsync()
+        {
+            _dataService.SelectedDeckChanged
+                .Where(deck => deck != null)
+                .ObserveOn(SynchronizationContext.Current)// Чтобы менять UI-свойства безопасно
+                .Subscribe(deck =>
+                {
+                    DeckName = deck.Name;
+                    _ = StoreStartupDeckAsync(deck.Id);
+                });
+
+            InitializeCardList();
+        }
+
+        private void InitializeCardList()
         {
 
             // 1. Захватываем UI-поток (здесь он еще доступен)
@@ -105,6 +124,96 @@ namespace FancyCards.ViewModels
             all_сards.Connect();
         }
 
+
+
+        private async Task StoreStartupDeckAsync(int deckId)
+        {
+            await _loadingService.ShowLoadingAsync(async() =>
+            {
+                _settingsService.StartupSelectedDeckId = deckId;
+                //TODO возможно сохранять только при закрытии программы
+                await _settingsService.SaveAsync();
+
+            }, true, true);
+        }
+
+
+        private AsyncRelayCommand _openMenuCommand;
+        public IAsyncRelayCommand OpenMenuCommand => _openMenuCommand ??= new AsyncRelayCommand(OpenMainMenu);
+        private async Task OpenMainMenu()
+        {
+            var result = await _modalService.OpenContext(new MainMenuContextViewModel());
+            if (result.Success)
+            {
+                if (result.ButtonTag == "Settings")
+                {
+                    OpenSettingsModalCommand?.Execute(null);
+                }
+                else if (result.ButtonTag == "Statistics")
+                {
+                    OpenStatisticsModalCommand?.Execute(null);
+                }
+                else if (result.ButtonTag == "Text rules")
+                {
+                    OpenTextReplacementRulesModalCommand?.Execute(null);
+                }
+            }
+        }
+
+
+        private AsyncRelayCommand _openDeckListModalCommand;
+        public IAsyncRelayCommand OpenDeckListModalCommand => _openDeckListModalCommand ??= new AsyncRelayCommand(OpenDeckList);
+        private async Task OpenDeckList()
+        {
+            var result = await _modalService.OpenDeckListModal();
+            if (result.Success)
+            {
+                _dataService.CurrentDeck = result.Data;
+            }
+        }
+        private AsyncRelayCommand _openCardDetailModalCommand;
+        public IAsyncRelayCommand OpenCardDetailModalCommand => _openCardDetailModalCommand ??= new AsyncRelayCommand(CreateCard);
+        private async Task CreateCard()
+        {
+            await _modalService.OpenCardModal(null);
+        }
+
+
+        private AsyncRelayCommand _openStartTrainingModalCommand;
+        public IAsyncRelayCommand OpenStartTrainingModalCommand => _openStartTrainingModalCommand ??= new AsyncRelayCommand(StartTraining);
+        private async Task StartTraining()
+        {
+            var start_view_result = await _modalService.OpenTrainingStart();
+            if (start_view_result.ButtonTag == "StartTraining")
+            {
+                await _modalService.OpenTraining(start_view_result.Data);
+            }
+        }
+
+        private AsyncRelayCommand _openSettingsModalCommand;
+        public IAsyncRelayCommand OpenSettingsModalCommand => _openSettingsModalCommand ??= new AsyncRelayCommand(OpenSettings);
+        private async Task OpenSettings()
+        {
+            await _modalService.OpenSettingsModal();
+        }
+
+        private AsyncRelayCommand _openTextReplacementRulesModalCommand;
+        public IAsyncRelayCommand OpenTextReplacementRulesModalCommand => _openTextReplacementRulesModalCommand ??= new AsyncRelayCommand(OpenTextReplacementRules);
+        private async Task OpenTextReplacementRules()
+        {
+            await _modalService.OpenTextReplacementRuleListModal();
+        }
+
+        private AsyncRelayCommand _openStatisticsModalCommand;
+        public IAsyncRelayCommand OpenStatisticsModalCommand => _openStatisticsModalCommand ??= new AsyncRelayCommand(OpenStatistics);
+        private async Task OpenStatistics()
+        {
+            await _modalService.OpenStatisticsModal();
+        }
+
+
+
+
         [RelayCommand]
         private async void OpenCardContext(CardSummaryViewModel cardVM)
         {
@@ -114,7 +223,7 @@ namespace FancyCards.ViewModels
 
             //return;
             var card = cardVM.Card;
-            var result = await _host.OpenContext(new CardContextViewModel(card));
+            var result = await _modalService.OpenContext(new CardContextViewModel(card));
             if (result.Success)
             {
                 if(result.ButtonTag == "Edit")
@@ -126,9 +235,13 @@ namespace FancyCards.ViewModels
                     var mb_result = await _modalService.OpenMessageBox("Remove selected card?", ["Yes", "No"]);
                     if(mb_result.ButtonTag == "Yes")
                     {
-                        await _host.StartLoading(false);
-                        var remove_result = await _dataService.RemoveCardAsync(card);
-                        _host.StopLoading();
+
+                        var remove_result = await _loadingService.ShowLoadingAsync(async () =>
+                        {
+                             return await _dataService.RemoveCardAsync(card);
+                        }, true, false);
+
+
                         if (!remove_result)
                         {
                             await _modalService.OpenMessageBox("Failed to remove the file", ["OK"]);

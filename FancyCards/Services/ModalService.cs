@@ -11,16 +11,23 @@ namespace FancyCards.Services
 {
     public class ModalService
     {
+        public event Action OnModalOpen;
+        public event Action<BaseModalViewModel> OnContextChanged;
+
         private readonly ViewModelFactory _factory;
         private readonly ObservableCollection<BaseModalViewModel> _activeModals;
         public IReadOnlyList<BaseModalViewModel> ActiveModals => _activeModals;
 
-        public event Action OnModalOpen;
+
+        private readonly BaseModalViewModel _contextMenu;
+        public BaseModalViewModel ContextMenu => _contextMenu;
+
 
         public ModalService(ViewModelFactory factory)
         {
             _factory = factory;
             _activeModals = new ObservableCollection<BaseModalViewModel>();
+
         }
 
         public async Task<ModalResult<TResult>> ShowModalAsync<TResult>(BaseModalViewModel<TResult> modalViewModel)
@@ -40,6 +47,17 @@ namespace FancyCards.Services
                 }
             });
 
+        }
+
+        public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)
+        {
+            OnContextChanged?.Invoke(context);
+
+            var result = await context.ResultTask;
+
+            OnContextChanged?.Invoke(null);
+
+            return result;
         }
 
 

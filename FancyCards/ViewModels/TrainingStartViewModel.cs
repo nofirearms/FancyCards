@@ -14,7 +14,6 @@ namespace FancyCards.ViewModels
     {
         private readonly DataService _dataService;
         private readonly SettingsService _settingsService;
-        private readonly MainWindowViewModel _host;
         private readonly ModalService _modalService;
 
         private IEnumerable<Card> _dbCardsOnDate;
@@ -47,9 +46,8 @@ namespace FancyCards.ViewModels
         [ObservableProperty]
         public int _defaultLearnCardsCount = 0;
 
-        public TrainingStartViewModel(MainWindowViewModel host, DataService dataService, ModalService modalService, SettingsService settingsService)
+        public TrainingStartViewModel(DataService dataService, ModalService modalService, SettingsService settingsService)
         {
-            _host = host;
             _modalService = modalService;
 
             _dataService = dataService;

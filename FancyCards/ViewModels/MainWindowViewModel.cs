@@ -22,8 +22,6 @@ namespace FancyCards.ViewModels
 
         public string Title => "Fancy Cards";
 
-        [ObservableProperty]
-        private string _deckName;
 
         [ObservableProperty]
         private CardListViewModel _cardListViewModel;
@@ -63,7 +61,7 @@ namespace FancyCards.ViewModels
             _overlayService = overlayService;
 
             OverlayViewModel = overlayViewModel;
-            CardListViewModel = _viewModelFactory.Create<CardListViewModel>(this);
+            CardListViewModel = _viewModelFactory.Create<CardListViewModel>();
 
             // Подписываемся на изменение коллекции модальных окон
             ((INotifyCollectionChanged)_modalService.ActiveModals).CollectionChanged += (s, e) =>
@@ -72,12 +70,17 @@ namespace FancyCards.ViewModels
                 OnPropertyChanged(nameof(ActiveModals));
             };
 
-            var _ = InitializeAsync();
-
             _modalService.OnModalOpen += async () =>
             {
                 StartLoading(true);
             };
+
+            _modalService.OnContextChanged += (context) =>
+            {
+                ContextMenu = context;
+            };
+
+            _ = InitializeAsync();
         }
 
 
@@ -85,17 +88,14 @@ namespace FancyCards.ViewModels
         {
             await _dataService.InitializeAsync();
 
-            _dataService.SelectedDeckChanged
-                .Where(deck => deck != null)
-                .ObserveOn(SynchronizationContext.Current)// Чтобы менять UI-свойства безопасно
-                .Subscribe(deck =>
-                {
-                    DeckName = deck.Name;
-                    _ = StoreStartupDeckAsync(deck.Id);
-                });
+            await LoadDeckAsync();
+        }
 
+        //загружаем деку по id из настроек, если в настройках нет деки, то через модалку создаём
+        private async Task LoadDeckAsync()
+        {
             var selected_deck_id = _settingsService.StartupSelectedDeckId;
-            if(selected_deck_id == 0)
+            if (selected_deck_id == 0)
             {
                 var result = await _modalService.OpenDeckModal(new Deck());
                 if (result.Success)
@@ -104,95 +104,14 @@ namespace FancyCards.ViewModels
                 }
                 else
                 {
-                    InitializeAsync();
+                    LoadDeckAsync();
                 }
             }
             else
             {
                 _dataService.CurrentDeck = _dataService.GetDeckById(selected_deck_id);
             }
-            
         }
-
-        public async Task<ModalResult<T>> OpenContext<T>(BaseModalViewModel<T> context)
-        {
-            try
-            {
-                ContextMenu = context;
-
-                var result = await context.ResultTask;
-
-                ContextMenu = null;
-
-                return result;
-            }
-            finally
-            {
-                ////unfreeze ui
-                //await Task.Delay(15);
-            }
-        }
-
-        private async Task StoreStartupDeckAsync(int deckId)
-        {
-            await StartLoading(false);
-            _settingsService.StartupSelectedDeckId = deckId;
-            //TODO возможно сохранять только при закрытии программы
-            var _ = _settingsService.SaveAsync();
-            StopLoading();
-        }
-
-        private AsyncRelayCommand _openDeckListModalCommand;
-        public IAsyncRelayCommand OpenDeckListModalCommand => _openDeckListModalCommand ??= new AsyncRelayCommand(OpenDeckList);
-        private async Task OpenDeckList()
-        {
-            var result = await _modalService.OpenDeckListModal();
-            if (result.Success)
-            {
-                _dataService.CurrentDeck = result.Data;
-            }
-        }
-        private AsyncRelayCommand _openCardDetailModalCommand;
-        public IAsyncRelayCommand OpenCardDetailModalCommand => _openCardDetailModalCommand ??= new AsyncRelayCommand(CreateCard);
-        private async Task CreateCard()
-        {
-            await _modalService.OpenCardModal(null);
-        }
-
-
-        private AsyncRelayCommand _openStartTrainingModalCommand;
-        public IAsyncRelayCommand OpenStartTrainingModalCommand => _openStartTrainingModalCommand ??= new AsyncRelayCommand(StartTraining);
-        private async Task StartTraining()
-        {
-            var start_view_result = await _modalService.OpenTrainingStart();
-            if (start_view_result.ButtonTag == "StartTraining")
-            {
-                await _modalService.OpenTraining(start_view_result.Data);
-            }
-        }
-
-        private AsyncRelayCommand _openSettingsModalCommand;
-        public IAsyncRelayCommand OpenSettingsModalCommand => _openSettingsModalCommand ??= new AsyncRelayCommand(OpenSettings);
-        private async Task OpenSettings()
-        {
-            await _modalService.OpenSettingsModal();
-        }
-
-        private AsyncRelayCommand _openTextReplacementRulesModalCommand;
-        public IAsyncRelayCommand OpenTextReplacementRulesModalCommand => _openTextReplacementRulesModalCommand ??= new AsyncRelayCommand(OpenTextReplacementRules);
-        private async Task OpenTextReplacementRules()
-        {
-            await _modalService.OpenTextReplacementRuleListModal();
-        }
-
-        private AsyncRelayCommand _openStatisticsModalCommand;
-        public IAsyncRelayCommand OpenStatisticsModalCommand => _openStatisticsModalCommand ??= new AsyncRelayCommand(OpenStatistics);
-        private async Task OpenStatistics()
-        {
-            await _modalService.OpenStatisticsModal();
-        }
-
-
 
 
         [RelayCommand]
@@ -206,6 +125,7 @@ namespace FancyCards.ViewModels
 
             ChangeCursor(Cursors.Wait);
         }
+
         [RelayCommand]
         public void StopLoading()
         {
