@@ -2,6 +2,7 @@
 
 
 using FancyCards.Models;
+using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json;
 
 namespace FancyCards.Services
@@ -14,7 +15,7 @@ namespace FancyCards.Services
 
         public string CaptureDeviceName { get; set; }
         public string CaptureDeviceId { get; set; }
-
+        public BaseTheme Theme { get; set; } = BaseTheme.Light;
 
         public SettingsService(DataService dataService)
         {

@@ -4,7 +4,6 @@
     <SolidColorBrush x:Key="InactiveForeground" Color="Gray" />
 
 
-
     <DrawingBrush
         x:Key="CustomBrush"
         Stretch="UniformToFill"

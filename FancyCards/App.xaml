@@ -10,16 +10,16 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme
-                    BaseTheme="Light"
+                    BaseTheme="Dark"
                     PrimaryColor="LightBlue"
                     SecondaryColor="Amber" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Controls.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Properties.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Icons.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
             <views:CardDetailView x:Key="CardDetailView" />
-
             <converters:ReverseBoolConverter x:Key="ReverseBoolConverter" />
         </ResourceDictionary>
 

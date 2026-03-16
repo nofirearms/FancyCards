@@ -35,14 +35,26 @@
             <TextBlock
                 Margin="12,11,20,11"
                 Text="{Binding CaptureDeviceName}"
-                Visibility="{Binding DevicesLoaded, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Reversed}" />        
+                Visibility="{Binding DevicesLoaded, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Reversed}" />
         </Grid>
 
 
+        <Grid Margin="0,5,0,0">
+            <controls:HintControl Hint="Theme" HintBackground="{StaticResource MaterialDesign.Brush.Secondary.Light}">
+                <ComboBox
+                    Padding="10"
+                    materialDesign:HintAssist.Hint=""
+                    materialDesign:HintAssist.HintPaddingBrush="Transparent"
+                    ItemsSource="{Binding Themes}"
+                    SelectedItem="{Binding Theme, Mode=TwoWay}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+            </controls:HintControl>
+        </Grid>
 
 
         <TextBlock>
-            <Run Text="Progress:" />
+            <Run Foreground="{DynamicResource MainForeground}" Text="Progress:" />
             <Run Foreground="Green" Text="{Binding Info}" />
         </TextBlock>
 

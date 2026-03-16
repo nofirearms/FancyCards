@@ -19,6 +19,7 @@ namespace FancyCards.ViewModels
         private readonly ViewModelFactory _viewModelFactory;
         private readonly SettingsService _settingsService;
         private readonly OverlayService _overlayService;
+        private readonly ThemeService _themeService;
 
         public string Title => "Fancy Cards";
 
@@ -51,7 +52,8 @@ namespace FancyCards.ViewModels
             AudioEngine audioEngine, 
             SettingsService settingsService, 
             OverlayService overlayService, 
-            OverlayViewModel overlayViewModel)
+            OverlayViewModel overlayViewModel,
+            ThemeService themeService)
         {
             _modalService = modalService;
             _dataService = dataService;
@@ -59,6 +61,7 @@ namespace FancyCards.ViewModels
             _viewModelFactory = viewModelFactory;
             _settingsService = settingsService;
             _overlayService = overlayService;
+            _themeService = themeService;
 
             OverlayViewModel = overlayViewModel;
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>();
@@ -81,11 +84,15 @@ namespace FancyCards.ViewModels
             };
 
             _ = InitializeAsync();
+
+            
         }
 
 
         private async Task InitializeAsync()
         {
+            _themeService.SetBaseTheme(_settingsService.Theme);
+
             await _dataService.InitializeAsync();
 
             await LoadDeckAsync();

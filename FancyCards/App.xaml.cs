@@ -51,6 +51,7 @@ namespace FancyCards
             services.AddSingleton<HotkeyService>();
             services.AddSingleton<NotificationService>();
             services.AddSingleton<LoadingService>();
+            services.AddSingleton<ThemeService>();
 
             services.AddSingleton<ViewModelFactory>();
 
@@ -74,7 +75,6 @@ namespace FancyCards
             // Триггерим инициализацию
             control.Measure(new Size(0, 0));
             control.Arrange(new Rect(0, 0, 0, 0));
-
 
 
             MainWindow = window;

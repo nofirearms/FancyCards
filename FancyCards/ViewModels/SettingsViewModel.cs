@@ -7,11 +7,13 @@ using FancyCards.Helpers;
 using FancyCards.Models;
 using FancyCards.Services;
 using FancyPhrases.Models;
+using MaterialDesignThemes.Wpf;
 using NAudio.CoreAudioApi;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using Card = FancyCards.Models.Card;
 
 
 
@@ -25,9 +27,31 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
         private readonly DataService _dataService;
         private readonly LoadingService _loadingService;
+        private readonly ThemeService _themeService;
 
         [ObservableProperty]
         private bool _devicesLoaded = false;
+
+
+        public IEnumerable<BaseTheme> Themes => new List<BaseTheme>
+        {
+            BaseTheme.Dark, BaseTheme.Light
+        };
+
+        
+        private BaseTheme _theme;
+        [Setting]
+        public BaseTheme Theme
+        {
+            get => _theme;
+            set
+            {
+                SetProperty(ref _theme, value);
+                _themeService.SetBaseTheme(value);
+            }
+        }
+
+
 
         private string _caputreDeviceId;
         [Setting]
@@ -56,14 +80,20 @@ namespace FancyCards.ViewModels
         private List<CaptureDeviceSummary> _captureDevices = new();
 
 
+
         [ObservableProperty]
         private string _info;
 
-        public SettingsViewModel(SettingsService settingsService, DataService dataService, LoadingService loadingService)
+        public SettingsViewModel(
+            SettingsService settingsService, 
+            DataService dataService, 
+            LoadingService loadingService, 
+            ThemeService themeService)
         {
             _settingsService = settingsService;
             _dataService = dataService;
             _loadingService = loadingService;
+            _themeService = themeService;
 
             Header = "Settings";
 
@@ -317,6 +347,10 @@ namespace FancyCards.ViewModels
 
         }
 
+
+
+        
+
         [RelayCommand]
         private async void Save()
         {
@@ -330,6 +364,11 @@ namespace FancyCards.ViewModels
         }
 
         [RelayCommand]
-        private new void Cancel() => base.Cancel();
+        private new void Cancel()
+        {
+            _themeService.SetBaseTheme(_settingsService.Theme);
+
+            base.Cancel();
+        }
     }
 }
