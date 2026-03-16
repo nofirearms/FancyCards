@@ -13,6 +13,8 @@
     d:DataContext="{d:DesignInstance vm:BaseModalViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    materialDesign:ThemeAssist.Theme="Light"
+    Foreground="{DynamicResource ModalForeground}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />

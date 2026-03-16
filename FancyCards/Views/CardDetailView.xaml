@@ -13,6 +13,7 @@
     d:Background="White"
     d:DataContext="{d:DesignInstance vm:CardDetailViewModel}"
     mc:Ignorable="d">
+
     <Grid Width="400" Height="auto">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -64,7 +65,6 @@
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     AcceptsReturn="True"
-                    Style="{StaticResource CustomTextbox}"
                     Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextAlignment="Left"
                     TextWrapping="Wrap" />

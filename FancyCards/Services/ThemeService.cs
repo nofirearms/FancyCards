@@ -36,9 +36,9 @@ namespace FancyCards.Services
             // 1. Указываем пути к вашим словарям
             string themeUri = baseTheme switch
             {
-                BaseTheme.Light => "Resources/Styles/Brushes/LightBrushes.xaml",
-                BaseTheme.Dark => "Resources/Styles/Brushes/DarkBrushes.xaml",
-                _ => "Resources/Styles/Brushes/LightBrushes.xaml"
+                BaseTheme.Light => "Resources/Styles/ThemeBrushes/LightBrushes.xaml",
+                BaseTheme.Dark => "Resources/Styles/ThemeBrushes/DarkBrushes.xaml",
+                _ => "Resources/Styles/ThemeBrushes/LightBrushes.xaml"
             };
                 
 
@@ -46,7 +46,7 @@ namespace FancyCards.Services
 
             // 2. Ищем уже подключенный словарь (по части имени файла)
             var oldDict = dictionaries.FirstOrDefault(d =>
-                d.Source != null && d.Source.OriginalString.Contains("Brushes.xaml"));
+                d.Source != null && d.Source.OriginalString.Contains("ThemeBrushes"));
 
             // 3. Заменяем его на новый
             if (oldDict != null)

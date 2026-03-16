@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:interaction="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:FancyCards.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="self"
@@ -11,9 +12,12 @@
     mc:Ignorable="d">
     <Grid>
 
-        <ContentPresenter Content="{Binding ElementName=self, Path=Content}" />
+        <ContentPresenter Content="{Binding ElementName=self, Path=Content}">
 
-        <Grid x:Name="HintGrid">
+        </ContentPresenter>
+
+        <Grid x:Name="HintGrid" >
+
             <Border
                 Margin="10,-5"
                 Padding="3,0"
@@ -36,18 +40,6 @@
                 </Grid>
 
             </Border>
-            <!--<TextBlock
-            x:Name="HintTextBlock"
-            Margin="10,-5"
-            Padding="3,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="{Binding ElementName=root, Path=HintBackground}"
-            FontSize="12"
-            IsHitTestVisible="False"
-            Text="{Binding ElementName=root, Path=HintText}"
-            Visibility="Collapsed" />-->
-
             <Border
                 Margin="10,-5"
                 Padding="3,0"

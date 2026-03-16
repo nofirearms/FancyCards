@@ -24,12 +24,22 @@
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <converters:IsNullTovisibilityConverter x:Key="IsNullTovisibilityConverter" />
 
+
         <DataTemplate x:Key="ReviewingTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="Refresh" />
+                <Grid>
+                    <materialDesign:PackIcon
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Foreground="{DynamicResource StateIconBrush}"
+                        Kind="RefreshCircle" />
+
+                </Grid>
+
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    FontFamily="Bahnschrift"
                     FontSize="10"
                     Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ReviewingCount}" />
             </StackPanel>
@@ -37,30 +47,42 @@
         </DataTemplate>
         <DataTemplate x:Key="LearningTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="SchoolOutline" />
+                <materialDesign:PackIcon
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource StateIconBrush}"
+                    Kind="School" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    FontFamily="Bahnschrift"
                     FontSize="10"
                     Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.LearningCount}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ArchivedTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="ArchiveOutline" />
+                <materialDesign:PackIcon
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource StateIconBrush}"
+                    Kind="Archive" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    FontFamily="Bahnschrift"
                     FontSize="10"
                     Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ArchivedCount}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ScheduledTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="HourglassEmpty" />
+                <materialDesign:PackIcon
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource StateIconBrush}"
+                    Kind="Clock" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    FontFamily="Bahnschrift"
                     FontSize="10"
                     Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.ScheduledCount}" />
             </StackPanel>
@@ -68,10 +90,14 @@
 
         <DataTemplate x:Key="TotalTemplate">
             <StackPanel Orientation="Vertical">
-                <materialDesign:PackIcon HorizontalAlignment="Center" Kind="CardsPlayingDiamondMultipleOutline" />
+                <materialDesign:PackIcon
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource StateIconBrush}"
+                    Kind="Cards" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    FontFamily="Bahnschrift"
                     FontSize="10"
                     Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.TotalCount}" />
             </StackPanel>
@@ -110,7 +136,10 @@
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             Orientation="Horizontal">
-            <Button Padding="10,0" ClickMode="Press" Style="{StaticResource   CustomButtonStyleNoBg }">
+            <Button
+                Padding="10,0"
+                ClickMode="Press"
+                Style="{StaticResource CustomButtonStyleNoBg}">
                 <interation:Interaction.Behaviors>
                     <behaviors:OpenContextMenuBehavior Button="Left" Command="{Binding OpenMenuCommand}" />
                 </interation:Interaction.Behaviors>
@@ -148,7 +177,7 @@
                             </interation:Interaction.Behaviors>
                             <Grid Margin="10">
 
-                                <TextBlock Text="{Binding FrontText}" />
+                                <TextBlock Foreground="{DynamicResource PrimaryForeground}" Text="{Binding FrontText}" />
                             </Grid>
                         </Border>
 
@@ -181,8 +210,10 @@
                     Padding="10,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
+                    BorderBrush="{DynamicResource PrimaryForeground}"
                     ClickMode="Press"
                     Command="{Binding OpenStartTrainingModalCommand}"
+                    Foreground="{DynamicResource ThemeForeground}"
                     SnapsToDevicePixels="True">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon
@@ -200,9 +231,10 @@
 
                 <Button
                     Padding="10"
+                    BorderBrush="{DynamicResource PrimaryForeground}"
                     ClickMode="Press"
                     Command="{Binding OpenCardDetailModalCommand}"
-                    Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                    Foreground="{DynamicResource ThemeForeground}"
                     SnapsToDevicePixels="True">
                     <StackPanel Orientation="Horizontal">
 
@@ -237,8 +269,7 @@
                 Grid.Column="1"
                 Padding="1"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Style="{StaticResource CustomBorderSimpleStyle}">
+                VerticalAlignment="Center">
                 <ListView
                     Margin="2"
                     Cursor="Hand"
@@ -247,7 +278,7 @@
                     SelectedValue="{Binding SelectedState, Mode=TwoWay}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
-                            <Setter Property="Margin" Value="1,0" />
+                            <Setter Property="Margin" Value="0.5,0" />
                             <Setter Property="Padding" Value="0" />
                             <Setter Property="Focusable" Value="True" />
                             <Setter Property="Template">
@@ -273,7 +304,7 @@
                                             </Trigger>
 
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource PrimaryForeground}" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>

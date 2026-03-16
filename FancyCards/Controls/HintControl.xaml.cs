@@ -31,6 +31,7 @@ namespace FancyCards.Controls
 
             if (content is null) return;
 
+
             content.GotFocus += (_, _) =>
             {
                 var brush = (Brush)Application.Current.FindResource("MaterialDesign.Brush.Primary");
@@ -154,6 +155,10 @@ namespace FancyCards.Controls
                 control.HintContentPresenter.Visibility = Visibility.Visible;
             }
         }
+
+
+
+
 
         protected override void OnContentChanged(object oldContent, object newContent)
         {
