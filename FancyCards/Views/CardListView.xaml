@@ -206,21 +206,30 @@
                 UseLayoutRounding="True">
 
                 <Button
+                    Width="70"
                     Margin="0,0,5,0"
-                    Padding="10,0"
+                    Padding="0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
                     BorderBrush="{DynamicResource PrimaryForeground}"
                     ClickMode="Press"
                     Command="{Binding OpenStartTrainingModalCommand}"
                     Foreground="{DynamicResource ThemeForeground}"
                     SnapsToDevicePixels="True">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        Orientation="Horizontal">
                         <materialDesign:PackIcon
-                            Width="18"
-                            Height="18"
+                            Width="17"
+                            Height="17" Margin="1 0 1 0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource StateIconBrush}"
                             Kind="Dumbbell" />
                         <TextBlock
+                            Grid.Column="1"
                             Margin="2,0"
                             VerticalAlignment="Center"
                             FontSize="12"
@@ -230,34 +239,32 @@
                 </Button>
 
                 <Button
-                    Padding="10"
+                    Width="70"
+                    Padding="0,0"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
                     BorderBrush="{DynamicResource PrimaryForeground}"
                     ClickMode="Press"
                     Command="{Binding OpenCardDetailModalCommand}"
                     Foreground="{DynamicResource ThemeForeground}"
                     SnapsToDevicePixels="True">
-                    <StackPanel Orientation="Horizontal">
-
-                        <!--<materialDesign:PackIcon
-                        Width="20"
-                        Height="20"
-                        Kind="CardPlusOutline" />
-                    <TextBlock
-                        FontFamily="Segoe MDL2 Assets"
-                        FontSize="16"
-                        Text="&#xED0E;" />-->
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        Orientation="Horizontal">
                         <materialDesign:PackIcon
-                            Width="20"
-                            Height="20"
-                            Margin="-5,0,0,0"
+                            Width="24"
+                            Height="24"
+                            Margin="-3,0"
                             VerticalAlignment="Center"
-                            Kind="Add" />
+                            Foreground="{DynamicResource StateIconBrush}"
+                            Kind="plus" />
                         <TextBlock
-                            Margin="1,0"
+                            Grid.Column="1"
+                            Margin="2,0"
                             VerticalAlignment="Center"
                             FontSize="12"
                             Text="Create" />
-
                     </StackPanel>
                 </Button>
             </StackPanel>
