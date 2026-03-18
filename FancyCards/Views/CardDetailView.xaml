@@ -10,7 +10,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:FancyCards.ViewModels"
-    d:Background="White"
+    d:Background="GreenYellow"
     d:DataContext="{d:DesignInstance vm:CardDetailViewModel}"
     mc:Ignorable="d">
 
@@ -28,39 +28,49 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <controls:HintControl
+
+                <controls:WrapperControl
                     x:Name="Prefix"
                     Grid.Column="0"
-                    HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                    HintText="Prefix"
-                    SuffixText="{Binding PrefixText.Length}">
+                    Prefix="Prefix"
+                    Suffix="{Binding PrefixText.Length, UpdateSourceTrigger=PropertyChanged}"
+                    WrapperBackground="{Binding Background}"
+                    WrapperFontSize="12"
+                    WrapperForeground="{DynamicResource StateIconBrush}">
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
                         AcceptsReturn="True"
                         Text="{Binding PrefixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         TextWrapping="Wrap" />
-                </controls:HintControl>
+                </controls:WrapperControl>
 
-                <controls:HintControl
+
+                <controls:WrapperControl
+                    x:Name="Suffix"
                     Grid.Column="1"
-                    HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                    HintText="Suffix"
-                    SuffixText="{Binding SuffixText.Length}">
+                    Prefix="Suffix"
+                    Suffix="{Binding SuffixText.Length, UpdateSourceTrigger=PropertyChanged}"
+                    WrapperBackground="{Binding Background}"
+                    WrapperFontSize="12"
+                    WrapperForeground="{DynamicResource StateIconBrush}">
                     <TextBox
                         materialDesign:HintAssist.Hint=""
                         materialDesign:HintAssist.HintPaddingBrush="Transparent"
                         AcceptsReturn="True"
                         Text="{Binding SuffixText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         TextWrapping="Wrap" />
-                </controls:HintControl>
+                </controls:WrapperControl>
             </Grid>
 
-            <controls:HintControl
+
+            <controls:WrapperControl
                 Margin="0,0,0,5"
-                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                HintText="Front"
-                SuffixText="{Binding FrontText.Length}">
+                Prefix="Front"
+                Suffix="{Binding FrontText.Length, UpdateSourceTrigger=PropertyChanged}"
+                WrapperBackground="{Binding Background}"
+                WrapperFontSize="12"
+                WrapperForeground="{DynamicResource StateIconBrush}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
@@ -68,13 +78,15 @@
                     Text="{Binding FrontText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextAlignment="Left"
                     TextWrapping="Wrap" />
-            </controls:HintControl>
+            </controls:WrapperControl>
 
-            <controls:HintControl
+            <controls:WrapperControl
                 Margin="0,0,0,5"
-                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                HintText="Back"
-                SuffixText="{Binding BackText.Length}">
+                Prefix="Back"
+                Suffix="{Binding BackText.Length, UpdateSourceTrigger=PropertyChanged}"
+                WrapperBackground="{Binding Background}"
+                WrapperFontSize="12"
+                WrapperForeground="{DynamicResource StateIconBrush}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
@@ -82,13 +94,16 @@
                     Text="{Binding BackText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextAlignment="Left"
                     TextWrapping="Wrap" />
-            </controls:HintControl>
+            </controls:WrapperControl>
 
-            <controls:HintControl
+
+            <controls:WrapperControl
                 Margin="0,0,0,5"
-                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                HintText="Comment"
-                SuffixText="{Binding CommentText.Length}">
+                Prefix="Comment"
+                Suffix="{Binding CommentText.Length, UpdateSourceTrigger=PropertyChanged}"
+                WrapperBackground="{Binding Background}"
+                WrapperFontSize="12"
+                WrapperForeground="{DynamicResource StateIconBrush}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
@@ -96,13 +111,15 @@
                     Text="{Binding CommentText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextAlignment="Left"
                     TextWrapping="Wrap" />
-            </controls:HintControl>
+            </controls:WrapperControl>
 
-            <controls:HintControl
+            <controls:WrapperControl
                 Margin="0,0,0,5"
-                HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                HintText="Message"
-                SuffixText="{Binding MessageText.Length}">
+                Prefix="Message"
+                Suffix="{Binding MessageText.Length, UpdateSourceTrigger=PropertyChanged}"
+                WrapperBackground="{Binding Background}"
+                WrapperFontSize="12"
+                WrapperForeground="{DynamicResource StateIconBrush}">
                 <TextBox
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
@@ -110,7 +127,7 @@
                     Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextAlignment="Left"
                     TextWrapping="Wrap" />
-            </controls:HintControl>
+            </controls:WrapperControl>
 
 
             <Grid Margin="1">
@@ -122,7 +139,13 @@
                     Grid.Column="0"
                     Margin="0,0,1,0"
                     Orientation="Vertical">
-                    <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="State">
+                    <controls:WrapperControl
+                        Grid.Column="0"
+                        Margin="0,0,1,0"
+                        Prefix="State"
+                        WrapperBackground="{Binding Background}"
+                        WrapperFontSize="12"
+                        WrapperForeground="{DynamicResource StateIconBrush}">
                         <ComboBox
                             Padding="10"
                             materialDesign:HintAssist.Hint=""
@@ -130,26 +153,37 @@
                             ItemsSource="{Binding States}"
                             SelectedValue="{Binding SelectedState, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" />
-                    </controls:HintControl>
+                    </controls:WrapperControl>
                 </StackPanel>
 
                 <StackPanel
                     Grid.Column="1"
                     Margin="1,0,0,0"
                     Orientation="Vertical">
-                    <controls:HintControl HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}" HintText="Review date">
+
+                    <controls:WrapperControl
+                        Grid.Column="0"
+                        Margin="0,0,1,0"
+                        Prefix="Review date"
+                        WrapperBackground="{Binding Background}"
+                        WrapperFontSize="12"
+                        WrapperForeground="{DynamicResource StateIconBrush}">
                         <DatePicker
                             Padding="10"
                             materialDesign:HintAssist.Hint=""
                             materialDesign:HintAssist.HintPaddingBrush="Transparent"
                             SelectedDate="{Binding NextReviewDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
-                    </controls:HintControl>
+                    </controls:WrapperControl>
 
-                    <controls:HintControl
-                        Margin="0,2,0,0"
-                        HintBackground="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                        HintText="Date created">
+
+                    <controls:WrapperControl
+                        Grid.Column="0"
+                        Margin="0,5,0,0"
+                        Prefix="Created at"
+                        WrapperBackground="{Binding Background}"
+                        WrapperFontSize="12"
+                        WrapperForeground="{DynamicResource StateIconBrush}">
                         <DatePicker
                             Padding="10"
                             materialDesign:HintAssist.Hint=""
@@ -165,8 +199,7 @@
                                 <interactions:ChangePropertyAction PropertyName="Visibility" Value="Visible" />
                             </interactions:DataTrigger>
                         </interactions:Interaction.Triggers>
-                    </controls:HintControl>
-
+                    </controls:WrapperControl>
                 </StackPanel>
             </Grid>
 

@@ -43,4 +43,85 @@
         </Setter>
     </Style>
 
+
+    <Style TargetType="{x:Type controls:WrapperControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:WrapperControl}">
+                    <Grid>
+
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+
+                        <Grid x:Name="HintGrid">
+
+                            <Border
+                                Margin="10,-5"
+                                Padding="3,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="{TemplateBinding WrapperBackground}"
+                                CornerRadius="3">
+                                <ContentPresenter
+                                    x:Name="PrefixContentPresenter"
+                                    Content="{TemplateBinding Prefix}"
+                                    IsHitTestVisible="False"
+                                    TextElement.FontSize="{TemplateBinding WrapperFontSize}"
+                                    TextElement.Foreground="{TemplateBinding WrapperForeground}" />
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Content, ElementName=PrefixContentPresenter}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Content, ElementName=PrefixContentPresenter}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Content, ElementName=PrefixContentPresenter}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                            <Border
+                                Margin="10,-5"
+                                Padding="3,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Background="{TemplateBinding WrapperBackground}"
+                                CornerRadius="3">
+                                <ContentPresenter
+                                    x:Name="SuffixContentPresenter"
+                                    Content="{TemplateBinding Suffix}"
+                                    IsHitTestVisible="False"
+                                    TextElement.FontSize="{TemplateBinding WrapperFontSize}"
+                                    TextElement.Foreground="{TemplateBinding WrapperForeground}" />
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Content, ElementName=PrefixContentPresenter}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Content, ElementName=PrefixContentPresenter}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Content, ElementName=PrefixContentPresenter}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+
+
+                        </Grid>
+
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
