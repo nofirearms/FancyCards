@@ -4,11 +4,12 @@ using DynamicData;
 using DynamicData.Binding;
 using FancyCards.Models;
 using FancyCards.Services;
-using System.Windows.Threading; // Обязательно для Dispatcher
-using System.Reactive.Concurrency;
-
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Windows.Threading; // Обязательно для Dispatcher
 
 namespace FancyCards.ViewModels
 {
@@ -68,6 +69,12 @@ namespace FancyCards.ViewModels
             // 1. Захватываем UI-поток (здесь он еще доступен)
             var uiContext = SynchronizationContext.Current;
 
+
+            var midnightTrigger = GetMidnightTimer()
+                .Select(_ => Unit.Default)
+                .StartWith(Unit.Default);
+
+
             // 1. Создаем поток для текста
             var textChanged = this.WhenPropertyChanged(x => x.FrontTextFilter)
                 .Select(_ => CreateFilter());
@@ -104,7 +111,10 @@ namespace FancyCards.ViewModels
             // Для счетчиков без фильтра
             all_сards
                 .ToCollection()
-                .CombineLatest(_dataService.SelectedDeckChanged, (items, deck) => new { items, deck })
+                .CombineLatest(
+                    _dataService.SelectedDeckChanged,
+                    midnightTrigger.StartWith(Unit.Default),
+                    (items, deck, _) => new { items, deck })
                 .ObserveOn(uiContext)
                 .Subscribe(x =>
                 {
@@ -125,6 +135,19 @@ namespace FancyCards.ViewModels
         }
 
 
+        private IObservable<long> GetMidnightTimer()
+        {
+            return Observable.Create<long>(observer =>
+            {
+                var now = DateTime.Now;
+                var midnight = DateTime.Today.AddDays(1); // следующая полночь
+                var initialDelay = midnight - now;
+
+                // Таймер, который срабатывает в полночь и затем каждые 24 часа
+                return Observable.Timer(initialDelay, TimeSpan.FromDays(1))
+                    .Subscribe(observer);
+            });
+        }
 
         private async Task StoreStartupDeckAsync(int deckId)
         {
