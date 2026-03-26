@@ -9,4 +9,6 @@
 
     <SolidColorBrush x:Key="StateIconBrush" Color="{Binding Color, Source={StaticResource MaterialDesign.Brush.Primary}}" />
 
+    <SolidColorBrush x:Key="SearchIconBrush" Color="{Binding Color, Source={StaticResource MaterialDesign.Brush.Primary}}" />
+
 </ResourceDictionary>

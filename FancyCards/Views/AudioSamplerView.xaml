@@ -250,7 +250,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
                         FontSize="11"
-                        IsHitTestVisible="False"
+                        IsHitTestVisible="False" 
                         Text="{Binding AudioDuration, StringFormat='{}{0:m\\:ss\\.fff}'}" />
                 </Grid>
             </Border>

@@ -11,5 +11,7 @@
     <SolidColorBrush x:Key="SecondaryForeground" Color="{Binding Color, Source={StaticResource MaterialDesign.Brush.Secondary}}" />
 
     <SolidColorBrush x:Key="StateIconBrush" Color="{Binding Color, Source={StaticResource MaterialDesign.Brush.Primary}}" />
-    
+
+    <SolidColorBrush x:Key="SearchIconBrush" Color="White" />
+
 </ResourceDictionary>

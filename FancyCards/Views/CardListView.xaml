@@ -126,7 +126,9 @@
             VerticalAlignment="Center"
             Command="{Binding OpenDeckListModalCommand}"
             Style="{StaticResource CustomButtonStyleNoBg}">
-            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding DeckName}" />
+            <Button.Content>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding DeckName}" />
+            </Button.Content>
         </Button>
 
 
@@ -155,7 +157,7 @@
         <Border
             Grid.Row="1"
             Margin="0,5"
-            BorderBrush="{StaticResource MaterialDesign.Brush.Primary.Foreground}"
+            BorderBrush="{DynamicResource PrimaryForeground}"
             BorderThickness="1"
             CornerRadius="3"
             DockPanel.Dock="Top">
@@ -224,7 +226,8 @@
                         Orientation="Horizontal">
                         <materialDesign:PackIcon
                             Width="17"
-                            Height="17" Margin="1 0 1 0"
+                            Height="17"
+                            Margin="1,0,1,0"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource StateIconBrush}"
                             Kind="Dumbbell" />
@@ -330,25 +333,27 @@
             </Border>
 
             <!--  SEARCH  -->
-            <controls:HintControl
+            <controls:WrapperControl
                 Grid.Row="2"
                 Grid.Column="2"
                 Width="{Binding ElementName=ButtonsPanel, Path=ActualWidth}"
                 Margin="5,0,0,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
-                HintBackground="{Binding ElementName=root, Path=Background}">
-                <controls:HintControl.Hint>
+                WrapperBackground="{Binding ElementName=root, Path=Background}"
+                WrapperForeground="{DynamicResource SearchIconBrush}">
+                <controls:WrapperControl.Prefix>
                     <materialDesign:PackIcon Kind="Search" />
-                </controls:HintControl.Hint>
+                </controls:WrapperControl.Prefix>
                 <TextBox
                     Padding="5,7"
                     materialDesign:HintAssist.Hint=""
                     materialDesign:HintAssist.HintPaddingBrush="Transparent"
                     materialDesign:TextFieldAssist.HasClearButton="True"
+                    BorderBrush="{DynamicResource PrimaryForeground}"
                     Text="{Binding FrontTextFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextWrapping="Wrap" />
-            </controls:HintControl>
+            </controls:WrapperControl>
         </Grid>
 
     </Grid>

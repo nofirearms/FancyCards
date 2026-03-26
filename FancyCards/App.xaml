@@ -11,7 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme
                     BaseTheme="Dark"
-                    PrimaryColor="LightBlue"
+                    PrimaryColor="Blue"
                     SecondaryColor="Amber" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Controls.xaml" />

@@ -46,8 +46,17 @@
                     <materialDesign:PackIcon
                         Width="30"
                         Height="30"
-                        Foreground="{StaticResource MaterialDesign.Brush.Primary}"
                         ToolTip="{Binding CurrentCard.InitialState}">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentCard.Card.Scores.Error}" Value="True">
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Foreground" Value="{StaticResource MaterialDesign.Brush.Primary}" />
+                            </Style>
+                        </materialDesign:PackIcon.Style>
                         <interaction:Interaction.Triggers>
                             <interaction:DataTrigger Binding="{Binding CurrentCard.InitialState}" Value="Learning">
                                 <interaction:ChangePropertyAction PropertyName="Kind" Value="School" />
