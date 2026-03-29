@@ -117,13 +117,10 @@ namespace FancyCards.ViewModels
 
                 CaptureDevices = audio_utilities.GetRecordDevices().Select(d => new CaptureDeviceSummary { Name = d.FriendlyName, ID = d.ID }).ToList();
             });
+
             DevicesLoaded = true;
         }
 
-        public override void Loaded()
-        {
-
-        }
 
         private void LoadSettings()
         {

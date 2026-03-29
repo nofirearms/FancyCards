@@ -8,13 +8,19 @@ namespace FancyCards.ViewModels
 {
     public abstract class BaseModalViewModel : ObservableObject
     {
+        public event Action OnLoaded;
+        protected void RaiseOnLoaded()
+        {
+            OnLoaded?.Invoke();
+        }
         public abstract void Loaded();
         public abstract void CancelObject();
     }
     public abstract partial class BaseModalViewModel<TResult> : BaseModalViewModel
     {
+
         [ObservableProperty]
-        private string _header = "";
+        private string _header = ""; 
 
         public Brush Background { get; set; } = (Brush)App.Current.FindResource("MaterialDesign.Brush.Secondary.Light");
 
@@ -27,7 +33,7 @@ namespace FancyCards.ViewModels
 
         protected BaseModalViewModel()
         {
-            _completionSource = new TaskCompletionSource<ModalResult<TResult>>(); 
+            _completionSource = new TaskCompletionSource<ModalResult<TResult>>();  
         }
 
         protected virtual async void Close(bool success = true, TResult data = default, string buttonTag = "Close")
@@ -53,7 +59,7 @@ namespace FancyCards.ViewModels
 
         public override void Loaded()
         {
-
+            RaiseOnLoaded();
         }
 
         public override void CancelObject()

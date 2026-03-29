@@ -71,9 +71,8 @@ namespace FancyCards.ViewModels
 
 
             var midnightTrigger = GetMidnightTimer()
-                .Select(_ => Unit.Default)
-                .StartWith(Unit.Default);
-
+                .Select(_ => CreateFilter())
+                .StartWith(CreateFilter());
 
             // 1. Создаем поток для текста
             var textChanged = this.WhenPropertyChanged(x => x.FrontTextFilter)
@@ -91,6 +90,7 @@ namespace FancyCards.ViewModels
             var filterTrigger = textChanged
                 .Merge(stateChanged)
                 .Merge(deckChanged)
+                .Merge(midnightTrigger)
                 .StartWith(CreateFilter()); // Чтобы фильтр применился сразу при загрузке
 
 
@@ -113,7 +113,7 @@ namespace FancyCards.ViewModels
                 .ToCollection()
                 .CombineLatest(
                     _dataService.SelectedDeckChanged,
-                    midnightTrigger.StartWith(Unit.Default),
+                    midnightTrigger.Select(_ => Unit.Default).StartWith(Unit.Default),
                     (items, deck, _) => new { items, deck })
                 .ObserveOn(uiContext)
                 .Subscribe(x =>
@@ -141,6 +141,8 @@ namespace FancyCards.ViewModels
             {
                 var now = DateTime.Now;
                 var midnight = DateTime.Today.AddDays(1); // следующая полночь
+                //test
+                //var midnight = DateTime.Now.AddSeconds(20);
                 var initialDelay = midnight - now;
 
                 // Таймер, который срабатывает в полночь и затем каждые 24 часа

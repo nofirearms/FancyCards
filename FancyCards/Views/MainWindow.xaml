@@ -96,9 +96,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <controls:ModalBase
-                        Content="{Binding}"
-                        ContentLoaded="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.StopLoadingCommand}"
-                        ContentLoading="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.StartLoadingCommand}" />
+                        Content="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
 

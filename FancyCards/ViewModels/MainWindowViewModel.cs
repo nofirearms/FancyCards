@@ -20,6 +20,7 @@ namespace FancyCards.ViewModels
         private readonly SettingsService _settingsService;
         private readonly OverlayService _overlayService;
         private readonly ThemeService _themeService;
+        private readonly LoadingService _loadingService;
 
         public string Title => "Fancy Cards";
 
@@ -53,7 +54,8 @@ namespace FancyCards.ViewModels
             SettingsService settingsService, 
             OverlayService overlayService, 
             OverlayViewModel overlayViewModel,
-            ThemeService themeService)
+            ThemeService themeService,
+            LoadingService loadingService)
         {
             _modalService = modalService;
             _dataService = dataService;
@@ -62,6 +64,7 @@ namespace FancyCards.ViewModels
             _settingsService = settingsService;
             _overlayService = overlayService;
             _themeService = themeService;
+            _loadingService = loadingService;
 
             OverlayViewModel = overlayViewModel;
             CardListViewModel = _viewModelFactory.Create<CardListViewModel>();
@@ -73,15 +76,38 @@ namespace FancyCards.ViewModels
                 OnPropertyChanged(nameof(ActiveModals));
             };
 
-            _modalService.OnModalOpen += async () =>
-            {
-                StartLoading(true);
-            };
 
             _modalService.OnContextChanged += (context) =>
             {
                 ContextMenu = context;
             };
+
+            _loadingService.OnLoadingChanged += async(a) =>
+            {
+                if(a.State == LoadingState.Stop)
+                {
+                    Loading = false;
+                    ShowLoadingBackground = false;
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        Mouse.OverrideCursor = null;
+                    });
+                    
+                }
+                else
+                {
+                    Loading = true;
+                    ShowLoadingBackground = a.ShowBackground;
+                    if (a.ShowLoadingCursor)
+                    {
+                        App.Current.Dispatcher.Invoke(() =>
+                        {
+                            Mouse.OverrideCursor = Cursors.Wait;
+                        });
+                    }
+                }
+            };
+
 
             _ = InitializeAsync();
 
@@ -120,32 +146,5 @@ namespace FancyCards.ViewModels
             }
         }
 
-
-        [RelayCommand]
-        public async Task StartLoading(bool showBackground = true)
-        {
-            Loading = true;
-            ShowLoadingBackground = showBackground;
-
-            //unfreeze interface
-            //await Task.Delay(20);
-
-            ChangeCursor(Cursors.Wait);
-        }
-
-        [RelayCommand]
-        public void StopLoading()
-        {
-            Loading = false;
-            ShowLoadingBackground = false;
-
-            ChangeCursor();
-        }
-
-
-        public void ChangeCursor(Cursor cursor = null)
-        {
-            Mouse.OverrideCursor = cursor;
-        }
     }
 }

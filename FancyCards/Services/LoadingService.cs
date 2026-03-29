@@ -14,9 +14,9 @@ namespace FancyCards.Services
 
         }
 
-        public void ShowLoading(bool showWaitCursor = true, bool showBackground = true)
+        public void ShowLoading(bool showWaitCursor = true, bool showBackground = true, LoadingState state = LoadingState.Start)
         {
-            OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = showBackground, ShowLoadingCursor = showWaitCursor });
+            OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = showBackground, ShowLoadingCursor = showWaitCursor, State = state });
         }
 
         public async Task ShowLoadingAsync(
@@ -30,7 +30,7 @@ namespace FancyCards.Services
 
             try
             {
-                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = showBackground, ShowLoadingCursor = showWaitCursor });
+                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = showBackground, ShowLoadingCursor = showWaitCursor, State = LoadingState.Start });
                 await action().ConfigureAwait(false);
             }
             catch (OperationCanceledException)
@@ -46,7 +46,7 @@ namespace FancyCards.Services
             }
             finally
             {
-                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = false, ShowLoadingCursor = false });
+                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = false, ShowLoadingCursor = false, State = LoadingState.Stop });
             }
         }
 
@@ -60,7 +60,7 @@ namespace FancyCards.Services
 
             try
             {
-                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = showBackground, ShowLoadingCursor = showWaitCursor });
+                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = showBackground, ShowLoadingCursor = showWaitCursor, State = LoadingState.Start });
                 return await action().ConfigureAwait(false);
             }
             catch (OperationCanceledException)
@@ -76,7 +76,7 @@ namespace FancyCards.Services
             }
             finally
             {
-                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = false, ShowLoadingCursor = false });
+                OnLoadingChanged?.Invoke(new LoadingArgs { ShowBackground = false, ShowLoadingCursor = false, State = LoadingState.Stop });
             }
         }
 
@@ -90,5 +90,11 @@ namespace FancyCards.Services
     {
         public bool ShowLoadingCursor { get; set; }
         public bool ShowBackground { get; set; }
+        public LoadingState State { get; set; }
+    }
+
+    public enum LoadingState
+    {
+        Start, Stop
     }
 }
